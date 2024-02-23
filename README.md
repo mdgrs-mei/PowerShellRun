@@ -2,6 +2,13 @@
 
 # PowerShellRun
 
+
+[![GitHub license](https://img.shields.io/github/license/mdgrs-mei/PowerShellRun)](https://github.com/mdgrs-mei/PowerShellRun/blob/main/LICENSE)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/p/PowerShellRun)](https://www.powershellgallery.com/packages/PowerShellRun)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/PowerShellRun)](https://www.powershellgallery.com/packages/PowerShellRun)
+
+[![Pester Test](https://github.com/mdgrs-mei/PowerShellRun/actions/workflows/pester-test.yml/badge.svg)](https://github.com/mdgrs-mei/PowerShellRun/actions/workflows/pester-test.yml)
+
 App, Utility and Function Launcher for PowerShell.
 
 ![Demo](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/c0c9d820-da8f-4a0c-a9aa-62c45a3d62e4)
@@ -51,15 +58,15 @@ There are some entry categories that you can selectively enable by passing an ar
 Enable-PSRunEntry -Category Function, Favorite
 ```
 
-### 🚀 Application
+### ・🚀 Application
 
 Installed applications are listed by the `Application` category. You can launch (or launch as admin on Windows) the application by pressing the action key.
 
-### 🔧 Executable
+### ・🔧 Executable
 
 Executable files under the PATH are listed by `Executable` category. You can invoke them on the same console where *PowerShellRun* is running.
 
-### 🔎 Utility
+### ・🔎 Utility
 
 Currently, we have only one utility entry defined by *PowerShellRun*.
 
@@ -67,7 +74,7 @@ Currently, we have only one utility entry defined by *PowerShellRun*.
 
 ![FiileManager](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/6a5f995a-36bc-4046-996e-141095f19004)
 
-### 📁 Favorite
+### ・📁 Favorite
 
 You can register folders or files that you frequently access. The available actions are the same as the ones in `File Manager (PSRun)`.
 
@@ -82,7 +89,7 @@ Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @
 
 ![Favarites](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/bd80a193-37e3-49bc-805b-779cf0404d05)
 
-### 📝 Function
+### ・📝 Function
 
 The ability to call PowerShell functions is what makes *PowerShellRun* special. The functions defined between `Start-PSRunFunctionRegistration` and `Stop-PSRunFunctionRegistration` are registered as entries. The scope of the functions needs to be global so that *PowerShellRun* can call them.
 
@@ -134,7 +141,7 @@ Set-PSRunDefaultSelectorOption $option
 Invoke-PSRun
 ```
 
-### Key Bindings
+### ・Key Bindings
 
 Key bindings are stored in `$option.KeyBinding`. You can set a string of `KeyModifier` and `Key` concatenated with `+` to the key.
 
@@ -147,7 +154,7 @@ $keyBinding.QuitKeys = @(
 $keyBinding.MarkerKeys = 'Ctrl+f'
 ```
 
-### Theme
+### ・Theme
 
 The theme can be custmozied with `$option.Theme` property. We hope someone creates a cool theme library for *PowerShellRun*🙏.
 
@@ -205,7 +212,7 @@ Get-ChildItem | Invoke-PSRunSelector -DescriptionProperty FullName -MultiSelecti
 
 ![SelectorDemo](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/8b0ed6fc-ba69-4eaa-bb77-7c43f4699536)
 
-`-Expression` parameter is useful if you need to build custom strings to be shown.
+`-Expression` parameter is useful if you need to build custom strings.
 
 ```powershell
 Get-ChildItem | Invoke-PSRunSelector -Expression {@{
@@ -261,11 +268,14 @@ if ($result.KeyCombination -eq 'Enter') {
 
 ![Invoke_PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/abb0d171-e5c6-4bc6-8873-a2fbdbaf6707)
 
-
 ## Major Limitations
 
 - No history support
 - Some emojis break the rendering
+
+## Changelog
+
+Changelog is available [here](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CHANGELOG.md).
 
 <div align="center">
 
@@ -278,7 +288,7 @@ if ($result.KeyCombination -eq 'Enter') {
 - Wcwidth  
 https://github.com/spectreconsole/wcwidth
 
-Inspired by these projects:
+Heavily inspired by:
 - fzf  
 https://github.com/junegunn/fzf
 - PowerToys Run  
