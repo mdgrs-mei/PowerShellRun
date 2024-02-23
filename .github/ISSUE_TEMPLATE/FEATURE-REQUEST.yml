@@ -1,0 +1,29 @@
+name: Feature Request
+description: Request a new feature
+title: "[Feature Request]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        👍 Thanks for helping us improve this project.
+
+  - type: checkboxes
+    id: os
+    attributes:
+      label: OS
+      description: Select the OSs if the feature is specific to them.
+      options:
+        - label: Windows
+        - label: macOS
+        - label: Linux
+        - label: Not specific to an OS
+        
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: New feature description
+      description: Specific use cases or images that describe the feature would be helpful.
+    validations:
+      required: true
+
