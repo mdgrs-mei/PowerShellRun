@@ -11,7 +11,7 @@
 
 App, Utility and Function Launcher for PowerShell.
 
-![Demo](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/c0c9d820-da8f-4a0c-a9aa-62c45a3d62e4)
+![Demo](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d133be41-be9b-4045-8fa0-5194220a56fe)
 
 *PowerShellRun* is a PowerShell module that lets you fuzzy search applications, utilities and functions you define and launch them
  with ease. It is a customizable launcher app on the PowerShell terminal.
@@ -38,11 +38,11 @@ Invoke-PSRun
 
 This code enables entries of all categories and opens up this TUI:
 
-![Invoke-PSRun](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/1e265819-d2f0-492a-978d-e16024e6a233)
+![Invoke-PSRun](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/f923bc43-c76b-433a-ada1-c2f49fdaba4e)
 
 Type characters to search entries and hit `Enter` to launch the selected item. There are some other actions that can be performed depending on the item. Hit `Ctrl+k` to open the Action Window and see what actions are available.
 
-![ActionWindow](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/64d37afa-a6ec-4b5d-b739-f37decf9e442)
+![ActionWindow](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/7abc7a2b-7252-4fc7-9753-796186fcb2ec)
 
 You can assign a shortcut key to quickly launch *PowerShellRun*.
 
@@ -72,7 +72,7 @@ Currently, we have only one utility entry defined by *PowerShellRun*.
 
 `File Manager (PSRun)` navigates the folder hierarchy from the current directory using the PowerShellRun TUI.
 
-![FiileManager](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/6a5f995a-36bc-4046-996e-141095f19004)
+![FiileManager](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/536b0853-0dd2-4c03-b429-c4ec95240cdf)
 
 ### ・📁 Favorite
 
@@ -87,7 +87,7 @@ Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @
 "@
 ```
 
-![Favarites](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/bd80a193-37e3-49bc-805b-779cf0404d05)
+![Favarites](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d174b169-3c3b-49f3-8d11-1997350c85fc)
 
 ### ・📝 Function
 
@@ -107,7 +107,7 @@ function global:GitPullRebase()
 Stop-PSRunFunctionRegistration
 ```
 
-![FunctionBasic](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/6e81aa7e-4aea-4c4f-9f4b-7853eae4d03a)
+![FunctionBasic](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/a70e8a1f-5e08-4dd1-861e-8cd74d23c1d2)
 
 `SYNOPSIS` or `DESCRIPTION` in the comment based help is used as a description of the entry. You can also optionally specify parameters using the `COMPONENT`. It uses [ConvertFrom-StringData](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-stringdata?view=powershell-7.4) to extract the parameters.
 
@@ -127,7 +127,7 @@ function global:GitPullRebase()
 }
 ```
 
-![Function](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/4a08a1fd-896e-4961-bbc5-b3f885de1831)
+![Function](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/162b90dd-b51a-4b92-ab75-c8c29b3a385d)
 
 ## Options
 
@@ -192,7 +192,7 @@ $theme.NameFocusHighlightBackgroundColor = $focusHighlight
 $theme.DescriptionFocusHighlightBackgroundColor = $focusHighlight
 ```
 
-![Theme](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/9c6504b1-6369-49b9-af0d-93cd7164c7a9)
+![Theme](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/3b91109f-2d7e-4985-a85f-67df6e402779)
 
 <div align="center">
 
@@ -210,7 +210,7 @@ The underlying fuzzy selector in *PowerShellRun* is accesible with the following
 Get-ChildItem | Invoke-PSRunSelector -DescriptionProperty FullName -MultiSelection
 ```
 
-![SelectorDemo](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/8b0ed6fc-ba69-4eaa-bb77-7c43f4699536)
+![SelectorDemo](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/799397eb-7a31-4349-a4b1-a0e671a4674c)
 
 `-Expression` parameter is useful if you need to build custom strings.
 
@@ -266,7 +266,7 @@ if ($result.KeyCombination -eq 'Enter') {
 }
 ```
 
-![Invoke_PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRunPrivate/assets/81177095/abb0d171-e5c6-4bc6-8873-a2fbdbaf6707)
+![Invoke-PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/49c2fa11-51a4-4cfa-99e7-c5d4ba33c1f0)
 
 ## Major Limitations
 
