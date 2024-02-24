@@ -165,6 +165,7 @@ class FileSystemRegistry
         }
 
         $this.favoritesEntries.Add($entry)
+        $this.isEntryUpdated = $true
     }
 
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview)
@@ -212,6 +213,7 @@ class FileSystemRegistry
         }
 
         $this.favoritesEntries.Add($entry)
+        $this.isEntryUpdated = $true
     }
 
     static [void] FileManagerLoop($rootDir, $arguments)
