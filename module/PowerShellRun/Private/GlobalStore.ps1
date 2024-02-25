@@ -205,4 +205,23 @@ class GlobalStore
             $this.psReadLineChord = $null
         }
     }
+
+    [void] InvokeFile($path)
+    {
+        $command = Get-Command $path -ErrorAction SilentlyContinue
+        if ($command -and ($command.CommandType -eq 'Application'))
+        {
+            # do not open new window when this is a command line app.
+            & $path
+        }
+        elseif ($path.Contains('shell:', 'OrdinalIgnoreCase'))
+        {
+            # On Windows, Invoke-Item cannot open special folders.
+            Start-Process $path
+        }
+        else
+        {
+            Invoke-Item $path
+        }
+    }
 }
