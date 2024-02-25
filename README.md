@@ -156,7 +156,7 @@ $keyBinding.MarkerKeys = 'Ctrl+f'
 
 ### ・Theme
 
-The theme can be custmozied with `$option.Theme` property. We hope someone creates a cool theme library for *PowerShellRun*🙏.
+The theme can be customzied with `$option.Theme` property. We hope someone creates a cool theme library for *PowerShellRun*🙏.
 
 ```powershell
 $default = [PowerShellRun.FontColor]::FromHex('#CBCCC6')
