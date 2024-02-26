@@ -176,7 +176,7 @@ class FileSystemRegistry
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                Invoke-Item $path
+                & $script:globalStore.invokeFile $path
             }
             elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey)
             {
@@ -280,7 +280,7 @@ class FileSystemRegistry
                 }
                 else
                 {
-                    Invoke-Item $item.FullName
+                    & $script:globalStore.invokeFile $item.FullName
                     break
                 }
             }

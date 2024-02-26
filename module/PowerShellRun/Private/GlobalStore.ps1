@@ -206,8 +206,9 @@ class GlobalStore
         }
     }
 
-    [void] InvokeFile($path)
-    {
+    # Class methods cannot pass through the output of invoked command line apps in realtime so we use ScriptBlock.
+    $invokeFile = {
+        param($path)
         $command = Get-Command $path -ErrorAction SilentlyContinue
         if ($command -and ($command.CommandType -eq 'Application'))
         {
@@ -221,6 +222,7 @@ class GlobalStore
         }
         else
         {
+            # .ps1 files or .app files on macOS come here.
             Invoke-Item $path
         }
     }

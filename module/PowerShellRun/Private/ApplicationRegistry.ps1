@@ -34,7 +34,7 @@ class ApplicationRegistry
             $path = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                $script:globalStore.InvokeFile($path)
+                & $script:globalStore.invokeFile $path
             }
             elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey)
             {
@@ -140,7 +140,7 @@ class ApplicationRegistry
             $fullName = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                $script:globalStore.InvokeFile($fullName)
+                & $script:globalStore.invokeFile $fullName
             }
         }
 
