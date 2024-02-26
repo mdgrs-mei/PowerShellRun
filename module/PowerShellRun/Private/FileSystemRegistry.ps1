@@ -95,7 +95,7 @@ class FileSystemRegistry
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                [FileSystemRegistry]::FileManagerLoop($rootDir, $arguments)
+                & $arguments.This.fileManagerLoop $rootDir $arguments
             }
             elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey)
             {
@@ -128,7 +128,7 @@ class FileSystemRegistry
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                [FileSystemRegistry]::FileManagerLoop($path, $arguments)
+                & $arguments.This.fileManagerLoop $path $arguments
             }
             elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey)
             {
@@ -216,8 +216,9 @@ class FileSystemRegistry
         $this.isEntryUpdated = $true
     }
 
-    static [void] FileManagerLoop($rootDir, $arguments)
-    {
+    $fileManagerLoop = {
+        param($rootDir, $arguments)
+
         $option = $script:globalStore.psRunSelectorOption.DeepClone()
         $option.QuitWithBackspaceOnEmptyQuery = $true
 
