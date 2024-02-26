@@ -29,25 +29,12 @@ class ApplicationRegistry
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
             [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Launch App as Admin')
         )
-        $callbackApp = {
+        $callback = {
             $result = $args[0].Result
             $path = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                Start-Process $path
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey)
-            {
-                Start-Process $path -Verb runAs
-            }
-        }
-
-        $callbackExe = {
-            $result = $args[0].Result
-            $path = $args[0].ArgumentList
-            if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
-            {
-                & $path
+                & $script:globalStore.invokeFile $path
             }
             elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey)
             {
@@ -56,7 +43,7 @@ class ApplicationRegistry
         }
 
         $this.registerEntryJob = Start-ThreadJob {
-            param ($categories, $actionKeys, $callbackApp, $callbackExe, $sync)
+            param ($categories, $actionKeys, $callback, $sync)
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
@@ -84,7 +71,7 @@ class ApplicationRegistry
                         $entry.ActionKeys = $actionKeys
 
                         $entry.UserData = @{
-                            ScriptBlock = $callbackApp
+                            ScriptBlock = $callback
                             ArgumentList = $link.FullName
                         }
 
@@ -110,7 +97,7 @@ class ApplicationRegistry
                     $entry.ActionKeys = $actionKeys[0]
 
                     $entry.UserData = @{
-                        ScriptBlock = $callbackApp
+                        ScriptBlock = $callback
                         ArgumentList = $path
                     }
 
@@ -131,7 +118,7 @@ class ApplicationRegistry
                     $entry.ActionKeys = $actionKeys
 
                     $entry.UserData = @{
-                        ScriptBlock = $callbackExe
+                        ScriptBlock = $callback
                         ArgumentList = $app.Source
                     }
 
@@ -140,7 +127,7 @@ class ApplicationRegistry
             }
 
             $sync.entries = $entries
-        } -ArgumentList $categories, $actionKeys, $callbackApp, $callbackExe, $this.sync
+        } -ArgumentList $categories, $actionKeys, $callback, $this.sync
     }
 
     [void] StartRegisterEntriesMacOs($categories)
@@ -148,26 +135,17 @@ class ApplicationRegistry
         $actionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
         )
-        $callbackApp = {
+        $callback = {
             $result = $args[0].Result
             $fullName = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
             {
-                Invoke-Item $fullName
-            }
-        }
-
-        $callbackExe = {
-            $result = $args[0].Result
-            $fullName = $args[0].ArgumentList
-            if ($result.KeyCombination -eq $script:globalStore.firstActionKey)
-            {
-                & $fullName
+                & $script:globalStore.invokeFile $fullName
             }
         }
 
         $this.registerEntryJob = Start-ThreadJob {
-            param ($categories, $actionKeys, $callbackApp, $callbackExe, $sync)
+            param ($categories, $actionKeys, $callback, $sync)
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
@@ -193,7 +171,7 @@ class ApplicationRegistry
                         $entry.ActionKeys = $actionKeys
 
                         $entry.UserData = @{
-                            ScriptBlock = $callbackApp
+                            ScriptBlock = $callback
                             ArgumentList = $app.FullName
                         }
 
@@ -215,7 +193,7 @@ class ApplicationRegistry
                     $entry.ActionKeys = $actionKeys
 
                     $entry.UserData = @{
-                        ScriptBlock = $callbackExe
+                        ScriptBlock = $callback
                         ArgumentList = $app.Source
                     }
 
@@ -224,7 +202,7 @@ class ApplicationRegistry
             }
 
             $sync.entries = $entries
-        } -ArgumentList $categories, $actionKeys, $callbackApp, $callbackExe, $this.sync
+        } -ArgumentList $categories, $actionKeys, $callback, $this.sync
     }
 
     [bool] UpdateEntries()
