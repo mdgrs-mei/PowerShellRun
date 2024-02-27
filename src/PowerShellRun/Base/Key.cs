@@ -4,7 +4,7 @@ using System.Text;
 
 public class KeyCombination : DeepCloneable
 {
-    public KeyModifier Modifier 
+    public KeyModifier Modifier
     {
         get => _modifier;
         set
@@ -67,7 +67,7 @@ public class KeyCombination : DeepCloneable
         KeyCombination other = (KeyCombination)obj;
         return Modifier == other.Modifier && Key == other.Key;
     }
-    
+
     public override int GetHashCode()
     {
         return (Modifier, Key).GetHashCode();
@@ -104,7 +104,7 @@ public class KeyCombination : DeepCloneable
             }
             builder.Append(Key.ToString());
         }
-        
+
         _string = builder.ToString();
     }
 
@@ -224,7 +224,9 @@ public enum Key
     X,
     Y,
     Z,
-   
+    Å,
+    Ä,
+    Ö,
     F1,
     F2,
     F3,

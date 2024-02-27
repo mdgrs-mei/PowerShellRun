@@ -22,14 +22,14 @@ internal class SearchBar
 
     public int CursorXInCanvas
     {
-        get 
+        get
         {
             return _cursorX + _textBox.X;
         }
     }
     public int CursorYInCanvas
     {
-        get 
+        get
         {
             return _textBox.Y;
         }
@@ -49,7 +49,7 @@ internal class SearchBar
         int borderHeight = theme.SearchBarBorderFlags.HasFlag(BorderFlag.Top) ? 1 : 0;
         borderHeight += theme.SearchBarBorderFlags.HasFlag(BorderFlag.Bottom) ? 1 : 0;
         RootLayout.LayoutSizeHeight.Set(LayoutSizeType.Absolute, 1 + borderHeight);
-        
+
         int promptLength = TextBox.GetDisplayWidth(promptString);
         _prompt.OnlyStoreLinesInVisibleRange = false;
         _prompt.LayoutSizeWidth.Set(LayoutSizeType.Absolute, promptLength);
@@ -182,13 +182,15 @@ internal class SearchBar
                 }
                 continue;
             }
-
-            if (!Char.IsAscii(key.ConsoleKeyInfo.KeyChar))
+            // old method if !Char.IsAscii(key.ConsoleKeyInfo.KeyChar) does not allow for non-ascii characters.
+            if (!Enum.IsDefined(typeof(Key), key.KeyCombination.Key) && (key.ConsoleKeyInfo.KeyChar < 0 || key.ConsoleKeyInfo.KeyChar > 127))
+            {
                 continue;
-
+            }
             if (_readKeysBuffer.Length >= Constants.QueryCharacterMaxCount)
+            {
                 continue;
-
+            }
             if (_cursorX == _readKeysBuffer.Length)
             {
                 _readKeysBuffer.Append(key.ConsoleKeyInfo.KeyChar);

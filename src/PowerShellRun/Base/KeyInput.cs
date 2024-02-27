@@ -102,7 +102,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
         return new KeyCombination(modifier, key);
     }
 
-    private static (Key Key, ConsoleKey ConsoleKey)[] _keyConsoleKeyTable = 
+    private static (Key Key, ConsoleKey ConsoleKey)[] _keyConsoleKeyTable =
     {
         (Key.Backspace, ConsoleKey.Backspace),
         (Key.Tab, ConsoleKey.Tab),
@@ -156,6 +156,9 @@ internal sealed class KeyInput : Singleton<KeyInput>
         (Key.X, ConsoleKey.X),
         (Key.Y, ConsoleKey.Y),
         (Key.Z, ConsoleKey.Z),
+        (Key.Å, ConsoleKey.Oem6),
+        (Key.Ä, ConsoleKey.Oem7),
+        (Key.Ö, ConsoleKey.Oem3),
 
         (Key.F1, ConsoleKey.F1),
         (Key.F2, ConsoleKey.F2),
