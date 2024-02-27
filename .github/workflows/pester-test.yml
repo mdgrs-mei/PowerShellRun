@@ -1,5 +1,11 @@
 name: Pester Test
-on: push
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   windows-latest:
