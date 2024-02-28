@@ -6,7 +6,7 @@
     It 'should add an entry' {
         Add-PSRunFavoriteFolder -Path 'C:/folder' -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview'
         InModuleScope 'PowerShellRun' {
-            $script:globalStore.fileSystemRegistry.Count | Should -Be 1
+            $script:globalStore.fileSystemRegistry.favoritesEntries.Count | Should -Be 1
         }
     }
 
