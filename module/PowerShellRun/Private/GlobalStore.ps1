@@ -1,5 +1,4 @@
-class GlobalStore
-{
+class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
@@ -20,8 +19,7 @@ class GlobalStore
     $thirdActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
     $copyActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
 
-    [void] Initialize()
-    {
+    [void] Initialize() {
         $this.InitializeActionKeys()
 
         $this.functionRegistry = New-Object FunctionRegistry
@@ -29,8 +27,7 @@ class GlobalStore
         $this.fileSystemRegistry = New-Object FileSystemRegistry
     }
 
-    [void] Terminate()
-    {
+    [void] Terminate() {
         # Wait for async entry initializations
         $this.UpdateEntries()
 
@@ -38,17 +35,14 @@ class GlobalStore
         $this.RestorePSConsoleHostReadLine()
     }
 
-    [void] InitializeActionKeys()
-    {
+    [void] InitializeActionKeys() {
         $_firstActionKey = [PowerShellRun.KeyCombination]::new('Enter')
-        if ($script:isMacOs)
-        {
+        if ($script:isMacOs) {
             $_secondActionKey = [PowerShellRun.KeyCombination]::new('Alt+Enter')
             $_thirdActionKey = [PowerShellRun.KeyCombination]::new('Alt+J')
             $_copyActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+C')
         }
-        else
-        {
+        else {
             $_secondActionKey = [PowerShellRun.KeyCombination]::new('Shift+Enter')
             $_thirdActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+Enter')
             $_copyActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+C')
@@ -56,8 +50,7 @@ class GlobalStore
         $this.SetActionKeys($_firstActionKey, $_secondActionKey, $_thirdActionKey, $_copyActionKey)
     }
 
-    [void] SetActionKeys($firstActionKey, $secondActionKey, $thirdActionKey, $copyActionKey)
-    {
+    [void] SetActionKeys($firstActionKey, $secondActionKey, $thirdActionKey, $copyActionKey) {
         # Change the values instead of references so that entries that are already created can see the keys.
         $this.firstActionKey.Modifier = $firstActionKey.Modifier
         $this.firstActionKey.Key = $firstActionKey.Key
@@ -72,8 +65,7 @@ class GlobalStore
         $this.copyActionKey.Key = $copyActionKey.Key
     }
 
-    [void] SetDefaultSelectorOption([PowerShellRun.SelectorOption]$option)
-    {
+    [void] SetDefaultSelectorOption([PowerShellRun.SelectorOption]$option) {
         $this.defaultSelectorOption = $option.DeepClone()
         $this.psRunSelectorOption = $option.DeepClone()
 
@@ -82,57 +74,46 @@ class GlobalStore
         $psRunKeyBinding.DefaultActionKeys[0].Description = 'Quit'
     }
 
-    [void] EnableEntries([String[]]$entryCategories)
-    {
+    [void] EnableEntries([String[]]$entryCategories) {
         $this.applicationRegistry.EnableEntries($entryCategories)
         $this.functionRegistry.EnableEntries($entryCategories)
         $this.fileSystemRegistry.EnableEntries($entryCategories)
     }
 
-    [void] UpdateEntries()
-    {
+    [void] UpdateEntries() {
         $updated = $false
         $updated = $this.applicationRegistry.UpdateEntries() -or $updated
         $updated = $this.functionRegistry.UpdateEntries() -or $updated
         $updated = $this.fileSystemRegistry.UpdateEntries() -or $updated
 
-        if ($updated)
-        {
+        if ($updated) {
             $this.entries.Clear()
-            if ($_entries = $this.functionRegistry.GetEntries())
-            {
+            if ($_entries = $this.functionRegistry.GetEntries()) {
                 $this.entries.AddRange($_entries)
             }
-            if ($_entries = $this.fileSystemRegistry.GetEntries())
-            {
+            if ($_entries = $this.fileSystemRegistry.GetEntries()) {
                 $this.entries.AddRange($_entries)
             }
-            if ($_entries = $this.applicationRegistry.GetEntries())
-            {
+            if ($_entries = $this.applicationRegistry.GetEntries()) {
                 $this.entries.AddRange($_entries)
             }
         }
     }
 
-    [void] RequestParentSelectorRestore()
-    {
+    [void] RequestParentSelectorRestore() {
         $this.parentSelectorRestoreRequest = $true
     }
 
-    [void] ClearParentSelectorRestoreRequest()
-    {
+    [void] ClearParentSelectorRestoreRequest() {
         $this.parentSelectorRestoreRequest = $false
     }
 
-    [bool] IsParentSelectorRestoreRequested()
-    {
+    [bool] IsParentSelectorRestoreRequested() {
         return $this.parentSelectorRestoreRequest
     }
 
-    [void] ReplacePSConsoleHostReadLine()
-    {
-        if ($this.isReadLineReplaced)
-        {
+    [void] ReplacePSConsoleHostReadLine() {
+        if ($this.isReadLineReplaced) {
             return
         }
 
@@ -143,10 +124,8 @@ class GlobalStore
         }
     }
 
-    [void] RestorePSConsoleHostReadLine()
-    {
-        if (-not $this.isReadLineReplaced)
-        {
+    [void] RestorePSConsoleHostReadLine() {
+        if (-not $this.isReadLineReplaced) {
             return
         }
 
@@ -154,35 +133,28 @@ class GlobalStore
         $this.isReadLineReplaced = $false
     }
 
-    [Object] InvokePSConsoleHostReadLine()
-    {
+    [Object] InvokePSConsoleHostReadLine() {
         $command = $this.originalPSConsoleHostReadLine.Invoke()
-        if ($this.invokePsRunRequest)
-        {
+        if ($this.invokePsRunRequest) {
             $this.invokePsRunRequest = $false
-            if ($this.invokePsRunRequestQuery)
-            {
+            if ($this.invokePsRunRequestQuery) {
                 return ('Invoke-PSRun -Query "{0}"' -f $this.invokePsRunRequestQuery)
             }
-            else
-            {
+            else {
                 return 'Invoke-PSRun'
             }
         }
-        else
-        {
+        else {
             return $command
         }
     }
 
-    [void] RequestInvokePsRun($query)
-    {
+    [void] RequestInvokePsRun($query) {
         $this.invokePsRunRequest = $true
         $this.invokePsRunRequestQuery = $query
     }
 
-    [void] SetPSReadLineKeyHandler($chord)
-    {
+    [void] SetPSReadLineKeyHandler($chord) {
         $this.RemovePSReadLineKeyHandler()
 
         $this.psReadLineChord = $chord
@@ -197,10 +169,8 @@ class GlobalStore
         }
     }
 
-    [void] RemovePSReadLineKeyHandler()
-    {
-        if ($this.psReadLineChord)
-        {
+    [void] RemovePSReadLineKeyHandler() {
+        if ($this.psReadLineChord) {
             Remove-PSReadLineKeyHandler -Chord $this.psReadLineChord
             $this.psReadLineChord = $null
         }
@@ -210,18 +180,15 @@ class GlobalStore
     $invokeFile = {
         param($path)
         $command = Get-Command $path -ErrorAction SilentlyContinue
-        if ($command -and ($command.CommandType -eq 'Application'))
-        {
+        if ($command -and ($command.CommandType -eq 'Application')) {
             # do not open new window when this is a command line app.
             & $path
         }
-        elseif ($path.Contains('shell:', 'OrdinalIgnoreCase'))
-        {
+        elseif ($path -Contains 'shell:') {
             # On Windows, Invoke-Item cannot open special folders.
             Start-Process $path
         }
-        else
-        {
+        else {
             # .ps1 files or .app files on macOS come here.
             Invoke-Item $path
         }
