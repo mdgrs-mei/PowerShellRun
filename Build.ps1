@@ -26,9 +26,9 @@ New-Item -Path $outDeps -ItemType Directory
 
 $deps = [System.Collections.Generic.List[string]]::new()
 Get-ChildItem -Path "$depSrc/bin/$Configuration/$netVersion/publish/" |
-    Where-Object { $_.Extension -in $copyExtensions } |
-    ForEach-Object { [void]$deps.Add($_.Name); Copy-Item -Path $_.FullName -Destination $outDeps }
+Where-Object { $_.Extension -in $copyExtensions } |
+ForEach-Object { [void]$deps.Add($_.Name); Copy-Item -Path $_.FullName -Destination $outDeps }
 
 Get-ChildItem -Path "$coreSrc/bin/$Configuration/$netVersion/publish/" |
-    Where-Object { -not $deps.Contains($_.Name) -and $_.Extension -in $copyExtensions } |
-    ForEach-Object { Copy-Item -Path $_.FullName -Destination $outDir }
+Where-Object { -not ($deps -Contains $_.Name) -and $_.Extension -in $copyExtensions } |
+ForEach-Object { Copy-Item -Path $_.FullName -Destination $outDir }
