@@ -184,7 +184,7 @@ class GlobalStore {
             # do not open new window when this is a command line app.
             & $path
         }
-        elseif ($path -Contains 'shell:') {
+        elseif ($path.Contains('shell:', 'OrdinalIgnoreCase')) {
             # On Windows, Invoke-Item cannot open special folders.
             Start-Process $path
         }
