@@ -2,8 +2,7 @@
 .SYNOPSIS
 Initializes PSRun entries.
 #>
-function Enable-PSRunEntry
-{
+function Enable-PSRunEntry {
     [CmdletBinding()]
     param
     (
@@ -11,8 +10,7 @@ function Enable-PSRunEntry
         [String[]]$Category = 'All'
     )
 
-    if ($Category.Contains('All'))
-    {
+    if ($Category -Contains 'All') {
         $Category = 'Application', 'Executable', 'Function', 'Utility', 'Favorite'
     }
     $script:globalStore.EnableEntries($Category)
