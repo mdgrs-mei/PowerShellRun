@@ -12,8 +12,8 @@ internal enum LayoutSizeType
 
 internal class LayoutSize
 {
-    public LayoutSizeType Type {get; private set;}
-    public int Value {get; private set;}
+    public LayoutSizeType Type { get; private set; }
+    public int Value { get; private set; }
 
     public LayoutSize(LayoutSizeType type = LayoutSizeType.Stretch, int value = 0)
     {

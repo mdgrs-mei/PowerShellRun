@@ -8,20 +8,20 @@ namespace PowerShellRun;
 
 internal class InternalEntry
 {
-    public SelectorEntry SelectorEntry {get; set;}
-    public string Name {get; set;} = "";
-    public string NameLowerCase {get; private set;} = "";
-    public string Description {get; set;} = "";
-    public string DescriptionLowerCase {get; private set;} = "";
+    public SelectorEntry SelectorEntry { get; set; }
+    public string Name { get; set; } = "";
+    public string NameLowerCase { get; private set; } = "";
+    public string Description { get; set; } = "";
+    public string DescriptionLowerCase { get; private set; } = "";
 
-    public bool[] NameMatches {get; set;}
-    public bool[] DescriptionMatches {get; set;}
-    public int Score {get; set;} = 0;
+    public bool[] NameMatches { get; set; }
+    public bool[] DescriptionMatches { get; set; }
+    public int Score { get; set; } = 0;
 
-    public bool IsMarked {get; set;} = false;
-    public bool IsUpdated {get; private set;} = false;
+    public bool IsMarked { get; set; } = false;
+    public bool IsUpdated { get; private set; } = false;
 
-    public BackgroundRunspace.Task? PreviewTask {get; set;} = null;
+    public BackgroundRunspace.Task? PreviewTask { get; set; } = null;
     private int _previewTaskExecutionCount = 0;
     private string[]? _previewLines = null;
     private readonly object? _previewLinesLock = null;
@@ -61,13 +61,13 @@ internal class InternalEntry
     public ActionKey[] GetActionKeys()
     {
         var keyBinding = SelectorOptionHolder.GetInstance().Option.KeyBinding;
-        return SelectorEntry.ActionKeys?? keyBinding.DefaultActionKeys;
+        return SelectorEntry.ActionKeys ?? keyBinding.DefaultActionKeys;
     }
 
     public ActionKey[] GetActionKeysMultiSelection()
     {
         var keyBinding = SelectorOptionHolder.GetInstance().Option.KeyBinding;
-        return SelectorEntry.ActionKeysMultiSelection?? keyBinding.DefaultActionKeysMultiSelection;
+        return SelectorEntry.ActionKeysMultiSelection ?? keyBinding.DefaultActionKeysMultiSelection;
     }
 
     public void CompletePreviewTask(System.Collections.ObjectModel.Collection<PSObject> taskResult)
@@ -91,7 +91,7 @@ internal class InternalEntry
     {
         if (_previewLinesLock is null)
             return _previewLines;
-        
+
         lock (_previewLinesLock)
         {
             return _previewLines;

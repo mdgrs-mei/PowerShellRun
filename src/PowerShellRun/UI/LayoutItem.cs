@@ -6,10 +6,10 @@ internal abstract class LayoutItem
 {
     public class Rect
     {
-        public int Left {get; set;} = 0;
-        public int Right {get; set;} = 0;
-        public int Top {get; set;} = 0;
-        public int Bottom {get; set;} = 0;
+        public int Left { get; set; } = 0;
+        public int Right { get; set; } = 0;
+        public int Top { get; set; } = 0;
+        public int Bottom { get; set; } = 0;
     }
 
     public enum Align
@@ -27,22 +27,22 @@ internal abstract class LayoutItem
     public Align HorizontalAlign = Align.Left;
     public Align VerticalAlign = Align.Top;
 
-    public int X {get; private set;} = 0;
-    public int Y {get; private set;} = 0;
-    public int Width {get; private set;} = 0;
-    public int Height {get; private set;} = 0;
-    public int? MinWidth {get; set;} = null;
-    public int? MinHeight {get; set;} = null;
-    public Rect Padding {get; set;} = new Rect();
-    public Rect Margin {get; set;} = new Rect();
-    public BorderFlag BorderFlags {get; set;} = BorderFlag.None;
-    public BorderSymbol BorderSymbol {get; set;} = new BorderSymbol();
-    public FontColor? BorderForegroundColor {get; set;} = null;
-    public FontColor? BorderBackgroundColor {get; set;} = null;
+    public int X { get; private set; } = 0;
+    public int Y { get; private set; } = 0;
+    public int Width { get; private set; } = 0;
+    public int Height { get; private set; } = 0;
+    public int? MinWidth { get; set; } = null;
+    public int? MinHeight { get; set; } = null;
+    public Rect Padding { get; set; } = new Rect();
+    public Rect Margin { get; set; } = new Rect();
+    public BorderFlag BorderFlags { get; set; } = BorderFlag.None;
+    public BorderSymbol BorderSymbol { get; set; } = new BorderSymbol();
+    public FontColor? BorderForegroundColor { get; set; } = null;
+    public FontColor? BorderBackgroundColor { get; set; } = null;
 
-    public bool Active {get; set;} = true;
-    public bool Visible {get; set;} = true;
-    
+    public bool Active { get; set; } = true;
+    public bool Visible { get; set; } = true;
+
     public virtual (LayoutSize Width, LayoutSize Height) GetLayoutSize()
     {
         return (LayoutSizeWidth, LayoutSizeHeight);
@@ -112,7 +112,7 @@ internal abstract class LayoutItem
         {
             if (!child.Active || !child.Visible)
                 continue;
-                
+
             child.Render();
         }
     }

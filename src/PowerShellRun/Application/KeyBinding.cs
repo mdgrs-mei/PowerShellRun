@@ -2,15 +2,15 @@
 
 public class KeyBinding
 {
-    public KeyCombination[] QuitKeys {get; set;}
-    public KeyCombination[] PreviewVerticalScrollUpKeys {get; set;}
-    public KeyCombination[] PreviewVerticalScrollDownKeys {get; set;}
-    public KeyCombination[] MarkerKeys {get; set;}
-    public KeyCombination[] ToggleAllMarkerKeys {get; set;}
-    public ActionKey[] DefaultActionKeys {get; set;}
-    public ActionKey[] DefaultActionKeysMultiSelection {get; set;}
-    public KeyCombination[] ActionWindowOpenKeys {get; set;}
-    public KeyCombination[] ActionWindowAcceptKeys {get; set;}
+    public KeyCombination[] QuitKeys { get; set; }
+    public KeyCombination[] PreviewVerticalScrollUpKeys { get; set; }
+    public KeyCombination[] PreviewVerticalScrollDownKeys { get; set; }
+    public KeyCombination[] MarkerKeys { get; set; }
+    public KeyCombination[] ToggleAllMarkerKeys { get; set; }
+    public ActionKey[] DefaultActionKeys { get; set; }
+    public ActionKey[] DefaultActionKeysMultiSelection { get; set; }
+    public KeyCombination[] ActionWindowOpenKeys { get; set; }
+    public KeyCombination[] ActionWindowAcceptKeys { get; set; }
 
     public KeyBinding()
     {

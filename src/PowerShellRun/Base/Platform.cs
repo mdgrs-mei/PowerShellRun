@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 internal sealed class Platform : Singleton<Platform>
 {
-    public bool IsWindows {get; set;}
-    public bool IsMacOs {get; set;}
-    public bool IsLinux {get; set;}
+    public bool IsWindows { get; set; }
+    public bool IsMacOs { get; set; }
+    public bool IsLinux { get; set; }
 
     public Platform()
     {

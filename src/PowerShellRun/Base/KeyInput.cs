@@ -7,8 +7,8 @@ internal sealed class KeyInput : Singleton<KeyInput>
 {
     public class KeyInfo
     {
-        public KeyCombination KeyCombination {get; set;}
-        public ConsoleKeyInfo ConsoleKeyInfo {get; set;}
+        public KeyCombination KeyCombination { get; set; }
+        public ConsoleKeyInfo ConsoleKeyInfo { get; set; }
 
         public KeyInfo(KeyCombination keyCombination, ConsoleKeyInfo consoleKeyInfo)
         {
@@ -102,7 +102,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
         return new KeyCombination(modifier, key);
     }
 
-    private static (Key Key, ConsoleKey ConsoleKey)[] _keyConsoleKeyTable = 
+    private static (Key Key, ConsoleKey ConsoleKey)[] _keyConsoleKeyTable =
     {
         (Key.Backspace, ConsoleKey.Backspace),
         (Key.Tab, ConsoleKey.Tab),

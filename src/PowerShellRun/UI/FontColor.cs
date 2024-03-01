@@ -38,12 +38,12 @@ public class FontColor : DeepCloneable
         FontColor other = (FontColor)obj;
         return _paletteId == other._paletteId && _rgb == other._rgb;
     }
-    
+
     public override int GetHashCode()
     {
         return (_paletteId, _rgb).GetHashCode();
     }
-    
+
     public static FontColor FromHex(string hexString)
     {
         int r = 0;

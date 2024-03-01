@@ -12,24 +12,24 @@ internal class SearchBar
     private TextBox _prompt = new TextBox();
     private TextBox _textBox = new TextBox();
 
-    public string Query {get; set;} = "";
-    public LayoutItem RootLayout {get;} = new HorizontalLayout();
-    public bool IsQuit {get; set;} = false;
-    public KeyCombination? LastKeyCombination {get; private set;} = null;
-    public bool IsQueryUpdated {get; set;} = false;
-    public bool IsCursorUpdated {get; set;} = false;
+    public string Query { get; set; } = "";
+    public LayoutItem RootLayout { get; } = new HorizontalLayout();
+    public bool IsQuit { get; set; } = false;
+    public KeyCombination? LastKeyCombination { get; private set; } = null;
+    public bool IsQueryUpdated { get; set; } = false;
+    public bool IsCursorUpdated { get; set; } = false;
     public string DebugPerfString = "";
 
     public int CursorXInCanvas
     {
-        get 
+        get
         {
             return _cursorX + _textBox.X;
         }
     }
     public int CursorYInCanvas
     {
-        get 
+        get
         {
             return _textBox.Y;
         }
@@ -49,7 +49,7 @@ internal class SearchBar
         int borderHeight = theme.SearchBarBorderFlags.HasFlag(BorderFlag.Top) ? 1 : 0;
         borderHeight += theme.SearchBarBorderFlags.HasFlag(BorderFlag.Bottom) ? 1 : 0;
         RootLayout.LayoutSizeHeight.Set(LayoutSizeType.Absolute, 1 + borderHeight);
-        
+
         int promptLength = TextBox.GetDisplayWidth(promptString);
         _prompt.OnlyStoreLinesInVisibleRange = false;
         _prompt.LayoutSizeWidth.Set(LayoutSizeType.Absolute, promptLength);

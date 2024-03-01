@@ -21,8 +21,8 @@ internal sealed class Canvas : Singleton<Canvas>
     FontColor _defaultForegroundColor = FontColor.Default;
     FontColor _defaultBackgroundColor = FontColor.Default;
 
-    public int Width {get; private set;} = 0;
-    public int Height {get; private set;} = 0;
+    public int Width { get; private set; } = 0;
+    public int Height { get; private set; } = 0;
 
     public void Init(int heightPercentage)
     {
@@ -93,7 +93,7 @@ internal sealed class Canvas : Singleton<Canvas>
         var option = SelectorOptionHolder.GetInstance().Option;
         if (option.AutoReturnBestMatch)
             return;
-        
+
         int windowWidth = Console.WindowWidth;
         int windowHeight = Console.WindowHeight;
 
@@ -144,10 +144,10 @@ internal sealed class Canvas : Singleton<Canvas>
         if (_cells is null)
             return;
 
-        int index = Width * y  + x;
+        int index = Width * y + x;
         if (index < 0 || index >= _cells.Length)
             return;
-            
+
         var cell = _cells[index];
         cell.SetCharacter(character, foregroundColor, backgroundColor, fontStyle, optionFlags);
         cell.HeadEscapeSequence = escapeSequence;
@@ -162,7 +162,7 @@ internal sealed class Canvas : Singleton<Canvas>
         if (_cells is null)
             return;
 
-        int index = Width * y  + x;
+        int index = Width * y + x;
         if (index < 0 || index >= _cells.Length)
             return;
 
@@ -177,10 +177,10 @@ internal sealed class Canvas : Singleton<Canvas>
         if (_cells is null)
             return;
 
-        int index = Width * y  + x;
+        int index = Width * y + x;
         if (index < 0 || index >= _cells.Length)
             return;
-            
+
         var cell = _cells[index];
         cell.OptionFlags = optionFlags;
     }
@@ -211,11 +211,11 @@ internal sealed class Canvas : Singleton<Canvas>
         {
             for (int x = 0; x < Width; ++x)
             {
-                int index = Width * y  + x;
+                int index = Width * y + x;
                 var cell = _cells[index];
                 if (cell.Character == '\0')
                     continue;
-                    
+
                 bool forceResetColor = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetColor);
 
                 if (forceResetColor ||
@@ -294,7 +294,7 @@ internal sealed class Canvas : Singleton<Canvas>
     private void SetCursorPositionToRoot()
     {
         int cursorX = 0;
-        int cursorY = _rootCursorY?? (Console.CursorTop - _cursorOffsetYFromRoot);
+        int cursorY = _rootCursorY ?? (Console.CursorTop - _cursorOffsetYFromRoot);
         cursorX = Math.Clamp(cursorX, 0, Console.WindowWidth - 1);
         cursorY = Math.Clamp(cursorY, 0, Console.WindowHeight - 1);
 

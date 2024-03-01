@@ -4,7 +4,7 @@ using System.Text;
 
 public class KeyCombination : DeepCloneable
 {
-    public KeyModifier Modifier 
+    public KeyModifier Modifier
     {
         get => _modifier;
         set
@@ -40,7 +40,7 @@ public class KeyCombination : DeepCloneable
     }
 
     private KeyCombination()
-    {}
+    { }
 
     protected override object EmptyNew()
     {
@@ -67,7 +67,7 @@ public class KeyCombination : DeepCloneable
         KeyCombination other = (KeyCombination)obj;
         return Modifier == other.Modifier && Key == other.Key;
     }
-    
+
     public override int GetHashCode()
     {
         return (Modifier, Key).GetHashCode();
@@ -104,7 +104,7 @@ public class KeyCombination : DeepCloneable
             }
             builder.Append(Key.ToString());
         }
-        
+
         _string = builder.ToString();
     }
 
@@ -149,15 +149,15 @@ public class KeyCombination : DeepCloneable
         SetString();
     }
 
-    internal static KeyCombination LeftArrow {get;} = new KeyCombination(KeyModifier.None, Key.LeftArrow);
-    internal static KeyCombination UpArrow {get;} = new KeyCombination(KeyModifier.None, Key.UpArrow);
-    internal static KeyCombination RightArrow {get;} = new KeyCombination(KeyModifier.None, Key.RightArrow);
-    internal static KeyCombination DownArrow {get;} = new KeyCombination(KeyModifier.None, Key.DownArrow);
-    internal static KeyCombination Enter {get;} = new KeyCombination(KeyModifier.None, Key.Enter);
-    internal static KeyCombination CtrlEnter {get;} = new KeyCombination(KeyModifier.Ctrl, Key.Enter);
-    internal static KeyCombination ShiftEnter {get;} = new KeyCombination(KeyModifier.Shift, Key.Enter);
-    internal static KeyCombination Backspace {get;} = new KeyCombination(KeyModifier.None, Key.Backspace);
-    internal static KeyCombination Escape {get;} = new KeyCombination(KeyModifier.None, Key.Escape);
+    internal static KeyCombination LeftArrow { get; } = new KeyCombination(KeyModifier.None, Key.LeftArrow);
+    internal static KeyCombination UpArrow { get; } = new KeyCombination(KeyModifier.None, Key.UpArrow);
+    internal static KeyCombination RightArrow { get; } = new KeyCombination(KeyModifier.None, Key.RightArrow);
+    internal static KeyCombination DownArrow { get; } = new KeyCombination(KeyModifier.None, Key.DownArrow);
+    internal static KeyCombination Enter { get; } = new KeyCombination(KeyModifier.None, Key.Enter);
+    internal static KeyCombination CtrlEnter { get; } = new KeyCombination(KeyModifier.Ctrl, Key.Enter);
+    internal static KeyCombination ShiftEnter { get; } = new KeyCombination(KeyModifier.Shift, Key.Enter);
+    internal static KeyCombination Backspace { get; } = new KeyCombination(KeyModifier.None, Key.Backspace);
+    internal static KeyCombination Escape { get; } = new KeyCombination(KeyModifier.None, Key.Escape);
 }
 
 [Flags]
@@ -224,7 +224,7 @@ public enum Key
     X,
     Y,
     Z,
-   
+
     F1,
     F2,
     F3,

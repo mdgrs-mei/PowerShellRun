@@ -2,8 +2,8 @@
 
 public class ActionKey : DeepCloneable
 {
-    public KeyCombination KeyCombination {get; set;} = new KeyCombination(KeyModifier.None, Key.None);
-    public string Description {get; set;} = "";
+    public KeyCombination KeyCombination { get; set; } = new KeyCombination(KeyModifier.None, Key.None);
+    public string Description { get; set; } = "";
 
     public ActionKey(KeyCombination keyCombination, string description)
     {

@@ -11,7 +11,7 @@ public class AssemblyResolver : IModuleAssemblyInitializer, IModuleAssemblyClean
 
     static AssemblyResolver()
     {
-        string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)?? "";
+        string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
         _dependencyDirPath = Path.GetFullPath(
             Path.Combine(

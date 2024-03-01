@@ -12,13 +12,13 @@ internal class CanvasCell
         ForceResetColor = 1 << 0,
     }
 
-    public char Character {get; set;}
-    public string? HeadEscapeSequence {get; set;}
-    public string? TailEscapeSequence {get; set;}
-    public FontColor? ForegroundColor {get; set;}
-    public FontColor? BackgroundColor {get; set;}
-    public FontStyle FontStyle {get; set;}
-    public Option OptionFlags {get; set;}
+    public char Character { get; set; }
+    public string? HeadEscapeSequence { get; set; }
+    public string? TailEscapeSequence { get; set; }
+    public FontColor? ForegroundColor { get; set; }
+    public FontColor? BackgroundColor { get; set; }
+    public FontStyle FontStyle { get; set; }
+    public Option OptionFlags { get; set; }
 
     public CanvasCell()
     {

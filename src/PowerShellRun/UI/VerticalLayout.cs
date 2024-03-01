@@ -20,7 +20,7 @@ internal class VerticalLayout : LayoutItem
         {
             if (!child.Active)
                 continue;
-                
+
             var sizeRequest = child.GetLayoutSize();
             var margin = child.Margin;
 

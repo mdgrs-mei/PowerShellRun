@@ -23,13 +23,13 @@ public static class Selector
             bgRunspace.Init();
         }
         bgRunspace.Start();
-        
+
         var keyInput = KeyInput.GetInstance();
         keyInput.Init();
 
         var canvas = Canvas.GetInstance();
         canvas.Init(theme.CanvasHeightPercentage);
-        
+
         var searchBar = new SearchBar(option.Prompt);
         var resultWindow = new ResultWindow(mode, searchBar.RootLayout);
         var pacemaker = new Pacemaker(16);

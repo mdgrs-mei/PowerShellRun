@@ -6,11 +6,11 @@ namespace PowerShellRun;
 
 internal class ActionWindow
 {
-    public LayoutItem RootLayout {get;} = new HorizontalLayout();
-    public bool IsUpdated {get; set;} = false;
-    public bool IsQuit {get; private set;} = false;
-    public bool IsActionAccepted {get; private set;} = false;
-    public KeyCombination? LastKeyCombination {get; private set;} = null;
+    public LayoutItem RootLayout { get; } = new HorizontalLayout();
+    public bool IsUpdated { get; set; } = false;
+    public bool IsQuit { get; private set; } = false;
+    public bool IsActionAccepted { get; private set; } = false;
+    public KeyCombination? LastKeyCombination { get; private set; } = null;
 
     private TextBox _cursorBox = new TextBox();
     private TextBox _keyBox = new TextBox();
@@ -18,7 +18,7 @@ internal class ActionWindow
     private InternalEntry? _entry = null;
     private bool _isAnyEntryMarked = false;
     private int _cursorIndex = 0;
-    
+
     public ActionWindow()
     {
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
@@ -60,7 +60,7 @@ internal class ActionWindow
         {
             _keyBox.Padding.Left = 1;
         }
-        
+
         _keyBox.LayoutSizeWidth.Set(LayoutSizeType.Content);
         _keyBox.Padding.Right = 1;
         _keyBox.FillCells = true;
@@ -96,7 +96,7 @@ internal class ActionWindow
         _isAnyEntryMarked = isAnyEntryMarked;
     }
 
-    public void Update() 
+    public void Update()
     {
         ReadKeys();
         BuildUi();

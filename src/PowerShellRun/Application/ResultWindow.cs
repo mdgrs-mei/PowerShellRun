@@ -7,7 +7,7 @@ using System.Management.Automation.Host;
 
 internal class ResultWindow
 {
-    public StackLayout RootLayout {get;} = new StackLayout();
+    public StackLayout RootLayout { get; } = new StackLayout();
     private LayoutItem _resultLayout;
     private VerticalLayout _searchLayout = new VerticalLayout();
     private HorizontalLayout _entryLayout = new HorizontalLayout();
@@ -22,7 +22,7 @@ internal class ResultWindow
     private IReadOnlyList<SelectorEntry>? _selectorEntries = null;
     private InternalEntry[]? _internalEntries = null;
     private string _query = "";
-    private InternalEntry[] _searchResults = new InternalEntry[]{};
+    private InternalEntry[] _searchResults = new InternalEntry[] { };
     private InternalEntry? _prevFocusedEntry = null;
     private SelectorMode _mode;
     private bool _isFocusedEntryContentUpdated = false;
@@ -34,14 +34,14 @@ internal class ResultWindow
     private int? _cursorIndexRequest = null;
     private int _previewVerticalScroll = 0;
 
-    public bool IsUpdated {get; private set;} = false;
-    public bool IsQuit {get; private set;} = false;
-    public bool IsActionAccepted {get; private set;} = false;
+    public bool IsUpdated { get; private set; } = false;
+    public bool IsQuit { get; private set; } = false;
+    public bool IsActionAccepted { get; private set; } = false;
     public bool IsActionWindowOpen
     {
         get => _actionWindow.IsVisible();
     }
-    public KeyCombination? LastKeyCombination {get; private set;} = null;
+    public KeyCombination? LastKeyCombination { get; private set; } = null;
 
     public ResultWindow(SelectorMode mode, LayoutItem searchBarLayout)
     {
@@ -75,7 +75,7 @@ internal class ResultWindow
         _entryLayout.BorderSymbol = theme.EntryBorderSymbol;
         _entryLayout.BorderForegroundColor = theme.EntryBorderForegroundColor;
         _entryLayout.BorderBackgroundColor = theme.EntryBorderBackgroundColor;
-        
+
         int cursorLength = TextBox.GetDisplayWidth(theme.Cursor);
         _cursorBox.LayoutSizeWidth.Set(LayoutSizeType.Absolute, cursorLength);
         if (theme.CursorBoxBackgroundColor is not null)
@@ -123,7 +123,7 @@ internal class ResultWindow
 
         _previewBox.ScrollBarForegroundColor = theme.PreviewScrollBarForegroundColor;
         _previewBox.ScrollBarBackgroundColor = theme.PreviewScrollBarBackgroundColor;
-        _previewBox.Padding.Left = 1; 
+        _previewBox.Padding.Left = 1;
         if (theme.PreviewBoxBackgroundColor is not null)
         {
             _previewBox.FillCells = true;
@@ -391,7 +391,7 @@ internal class ResultWindow
                 return;
             }
         }
-        
+
         foreach (var downKey in keyBinding.PreviewVerticalScrollDownKeys)
         {
             if (key.KeyCombination.Equals(downKey))
@@ -515,7 +515,7 @@ internal class ResultWindow
                         for (int previewLineIndex = 0; previewLineIndex < previewLineCount; ++previewLineIndex)
                         {
                             _previewBox.AddWord(
-                                previewLineIndex, 
+                                previewLineIndex,
                                 previewLines[previewLineIndex],
                                 theme.PreviewForegroundColor,
                                 theme.PreviewBackgroundColor,
@@ -529,7 +529,7 @@ internal class ResultWindow
                 {
                     _cursorBox.AddWord(
                         i,
-                        theme.Cursor, 
+                        theme.Cursor,
                         theme.CursorForegroundColor,
                         theme.CursorBackgroundColor);
                 }

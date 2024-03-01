@@ -9,8 +9,8 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
 {
     public class Task
     {
-        public ScriptBlock ScriptBlock {get;}
-        public object? ArgumentList {get;} = null;
+        public ScriptBlock ScriptBlock { get; }
+        public object? ArgumentList { get; } = null;
 
         private InternalEntry _outputEntry;
 
@@ -27,7 +27,7 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
         }
     }
 
-    public bool IsInit {get; private set;} = false;
+    public bool IsInit { get; private set; } = false;
     private Thread? _thread = null;
 
     private Stack<Task> _tasks = new Stack<Task>();
@@ -120,7 +120,7 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
 
         if (Interlocked.Exchange(ref _createRunspaceRequest, 0) == 1)
         {
-            if (_powershell is null) 
+            if (_powershell is null)
             {
                 _runspace = RunspaceFactory.CreateRunspace();
                 _runspace.Open();
@@ -135,7 +135,7 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
     {
         if (_powershell is null)
             return;
-            
+
         _powershell.Commands.Clear();
         _powershell.AddScript(task.ScriptBlock.ToString());
         if (task.ArgumentList is not null)

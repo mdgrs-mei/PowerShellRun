@@ -9,13 +9,13 @@ internal class TextBox : LayoutItem
 {
     public class Word
     {
-        public string String {get; set;} = "";
-        public FontColor? ForegroundColor {get; set;} = null;
-        public FontColor? BackgroundColor {get; set;} = null;
+        public string String { get; set; } = "";
+        public FontColor? ForegroundColor { get; set; } = null;
+        public FontColor? BackgroundColor { get; set; } = null;
         public FontStyle FontStyle = FontStyle.Default;
-        public bool[]? HighlightFlags {get; set;} = null;
-        public FontColor? HighlightForegroundColor {get; set;} = null;
-        public FontColor? HighlightBackgroundColor {get; set;} = null;
+        public bool[]? HighlightFlags { get; set; } = null;
+        public FontColor? HighlightForegroundColor { get; set; } = null;
+        public FontColor? HighlightBackgroundColor { get; set; } = null;
         public FontStyle HighlightFontStyle = FontStyle.Default;
 
         public Word(
@@ -41,8 +41,8 @@ internal class TextBox : LayoutItem
 
     private class Line
     {
-        public List<Word> Words {get; set;} = new List<Word>();
-        public List<CanvasCell>? Cells {get; set;} = null;
+        public List<Word> Words { get; set; } = new List<Word>();
+        public List<CanvasCell>? Cells { get; set; } = null;
 
         public void ClearCells()
         {
@@ -211,12 +211,12 @@ internal class TextBox : LayoutItem
     private int _verticalScroll = 0;
     private int _lineCountForScrollBar = 0;
 
-    public bool FillCells {get; set;} = false;
-    public FontColor? DefaultBackgroundColor {get; set;} = null;
-    public bool VerticalScrollBarEnable {get; set;} = false;
-    public FontColor? ScrollBarForegroundColor {get; set;} = null;
-    public FontColor? ScrollBarBackgroundColor {get; set;} = null;
-    public bool OnlyStoreLinesInVisibleRange {get; set;} = true;
+    public bool FillCells { get; set; } = false;
+    public FontColor? DefaultBackgroundColor { get; set; } = null;
+    public bool VerticalScrollBarEnable { get; set; } = false;
+    public FontColor? ScrollBarForegroundColor { get; set; } = null;
+    public FontColor? ScrollBarBackgroundColor { get; set; } = null;
+    public bool OnlyStoreLinesInVisibleRange { get; set; } = true;
 
     public void ClearAndSetFocusLine(int focusLineIndex)
     {
@@ -423,7 +423,7 @@ internal class TextBox : LayoutItem
     {
         if (!Active)
             return;
-            
+
         RenderLines();
         RenderScrollBars();
         base.Render();
@@ -498,7 +498,7 @@ internal class TextBox : LayoutItem
         {
             var topEnd = Y;
             var bottomEnd = Y + Height - 1;
-            
+
             for (y = innerLayoutY - 1; y >= topEnd; --y)
             {
                 for (int x = leftEnd; x <= rightEnd; ++x)
@@ -555,7 +555,7 @@ internal class TextBox : LayoutItem
         {
             canvas.SetCell(
                 innerLayout.X + innerWidth - 1,
-                innerLayout.Y + i, 
+                innerLayout.Y + i,
                 ' ',
                 null,
                 ScrollBarBackgroundColor);
@@ -583,10 +583,10 @@ internal class TextBox : LayoutItem
                 {
                     canvas.SetCell(
                         innerLayout.X + innerWidth - 1,
-                        innerLayout.Y + i, 
-                        '│', 
-                        ScrollBarForegroundColor, 
-                        ScrollBarBackgroundColor, 
+                        innerLayout.Y + i,
+                        '│',
+                        ScrollBarForegroundColor,
+                        ScrollBarBackgroundColor,
                         FontStyle.Default,
                         null,
                         CanvasCell.Option.ForceResetColor);
