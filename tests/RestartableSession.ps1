@@ -9,8 +9,7 @@ Enter-RSSession -OnStart {
     & $build Debug
     Import-Module "$root/module/PowerShellRun"
 
-    function Pester
-    {
+    function Pester {
         & "$root/tests/RunPesterTests.ps1"
     }
 } -OnStartArgumentList $root -ShowProcessId

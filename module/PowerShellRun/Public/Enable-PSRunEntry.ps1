@@ -4,8 +4,7 @@ Initializes PSRun entries.
 #>
 function Enable-PSRunEntry {
     [CmdletBinding()]
-    param
-    (
+    param (
         [ValidateSet('All', 'Application', 'Executable', 'Function', 'Utility', 'Favorite')]
         [String[]]$Category = 'All'
     )

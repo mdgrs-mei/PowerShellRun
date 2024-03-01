@@ -16,14 +16,14 @@ class FileSystemRegistry {
         }
 
         $this.fileManagerArguments = @{
-            This                = $this
-            FolderActionKeys    = @(
+            This = $this
+            FolderActionKeys = @(
                 [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Go inside')
                 [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Set-Location')
                 [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Open with default app')
                 [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy path to Clipboard')
             )
-            FileActionKeys      = @(
+            FileActionKeys = @(
                 [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Open with default app')
                 [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Edit with default editor')
                 [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Open containing folder')
@@ -35,14 +35,13 @@ class FileSystemRegistry {
                 $childItems | ForEach-Object {
                     if ($_.PSIsContainer) {
                         $icon = '📁'
-                    }
-                    else {
+                    } else {
                         $icon = '📄'
                     }
-                    "{0} {1}" -f $icon, $_.Name
+                    '{0} {1}' -f $icon, $_.Name
                 }
             }
-            PreviewScriptFile   = {
+            PreviewScriptFile = {
                 param ($path)
                 Get-Item $path | Out-String
             }
@@ -84,8 +83,7 @@ class FileSystemRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $arguments.This.fileManagerLoop $rootDir $arguments
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $rootDir | Set-Clipboard
             }
         }
@@ -100,7 +98,7 @@ class FileSystemRegistry {
         )
 
         $entry.UserData = @{
-            ScriptBlock  = $callback
+            ScriptBlock = $callback
             ArgumentList = $this.fileManagerArguments
         }
 
@@ -114,14 +112,11 @@ class FileSystemRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $arguments.This.fileManagerLoop $path $arguments
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 Set-Location $path
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 Invoke-Item $path
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $path | Set-Clipboard
             }
         }
@@ -132,15 +127,14 @@ class FileSystemRegistry {
         $entry.Description = if ($description) { $description } else { $folderPath }
         if ($preview) {
             $entry.Preview = $preview
-        }
-        else {
+        } else {
             $entry.PreviewAsyncScript = $this.fileManagerArguments.PreviewScriptFolder
             $entry.PreviewAsyncScriptArgumentList = $folderPath
         }
         $entry.ActionKeys = $this.fileManagerArguments.FolderActionKeys
 
         $entry.UserData = @{
-            ScriptBlock  = $callback
+            ScriptBlock = $callback
             ArgumentList = $this.fileManagerArguments, $folderPath
         }
 
@@ -155,14 +149,11 @@ class FileSystemRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $arguments.This.EditWithDefaultEditor($path)
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $arguments.This.OpenContainingFolder($path)
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $path | Set-Clipboard
             }
         }
@@ -173,15 +164,14 @@ class FileSystemRegistry {
         $entry.Description = if ($description) { $description } else { $filePath }
         if ($preview) {
             $entry.Preview = $preview
-        }
-        else {
+        } else {
             $entry.PreviewAsyncScript = $this.fileManagerArguments.PreviewScriptFile
             $entry.PreviewAsyncScriptArgumentList = $filePath
         }
         $entry.ActionKeys = $this.fileManagerArguments.FileActionKeys
 
         $entry.UserData = @{
-            ScriptBlock  = $callback
+            ScriptBlock = $callback
             ArgumentList = $this.fileManagerArguments, $filePath
         }
 
@@ -209,8 +199,7 @@ class FileSystemRegistry {
                     $entry.Icon = '📁'
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFolder
                     $entry.ActionKeys = $arguments.FolderActionKeys
-                }
-                else {
+                } else {
                     $entry.Icon = '📄'
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFile
                     $entry.ActionKeys = $arguments.FileActionKeys
@@ -223,8 +212,7 @@ class FileSystemRegistry {
                 if ($depth -eq 0) {
                     Restore-PSRunFunctionParentSelector
                     break
-                }
-                else {
+                } else {
                     $depth--
                     $dir = $parentDir
                     $parentDir = ([System.IO.Directory]::GetParent($dir)).FullName
@@ -242,35 +230,28 @@ class FileSystemRegistry {
                     $depth++
                     $parentDir = $dir
                     $dir = $item.FullName
-                }
-                else {
+                } else {
                     & $script:globalStore.invokeFile $item.FullName
                     break
                 }
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 if ($item.PSIsContainer) {
                     Set-Location $item.FullName
-                }
-                else {
+                } else {
                     $arguments.This.EditWithDefaultEditor($item.FullName)
                 }
                 break
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 if ($item.PSIsContainer) {
                     Invoke-Item $item.FullName
-                }
-                else {
+                } else {
                     $arguments.This.OpenContainingFolder($item.FullName)
                 }
                 break
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $item.FullName | Set-Clipboard
                 break
-            }
-            else {
+            } else {
                 break
             }
         }
@@ -279,8 +260,7 @@ class FileSystemRegistry {
     [void] OpenContainingFolder($path) {
         if ($script:isWindows) {
             & explorer.exe (('/select,{0}' -f $path).Split())
-        }
-        else {
+        } else {
             $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
             Invoke-Item $parentDir
         }

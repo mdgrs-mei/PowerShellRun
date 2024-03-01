@@ -9,7 +9,7 @@
         }
 
         Restore-PSRunFunctionParentSelector
-        
+
         InModuleScope 'PowerShellRun' {
             $script:globalStore.IsParentSelectorRestoreRequested() | Should -Be $true
         }

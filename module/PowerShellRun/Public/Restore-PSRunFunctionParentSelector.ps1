@@ -1,5 +1,4 @@
-function Restore-PSRunFunctionParentSelector
-{
+function Restore-PSRunFunctionParentSelector {
     [CmdletBinding()]
     param()
 

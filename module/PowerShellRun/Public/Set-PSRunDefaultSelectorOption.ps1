@@ -1,15 +1,12 @@
-function Set-PSRunDefaultSelectorOption
-{
+function Set-PSRunDefaultSelectorOption {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [PowerShellRun.SelectorOption]$Option
     )
 
-    process
-    {
+    process {
         $script:globalStore.SetDefaultSelectorOption($Option)
     }
 }

@@ -4,7 +4,7 @@
     }
 
     It 'should throw an error' {
-        {Stop-PSRunFunctionRegistration -ErrorAction Stop} | Should -Throw
+        { Stop-PSRunFunctionRegistration -ErrorAction Stop } | Should -Throw
     }
 
     It 'should register a function' {

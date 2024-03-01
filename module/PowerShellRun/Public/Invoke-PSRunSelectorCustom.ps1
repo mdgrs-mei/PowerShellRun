@@ -1,10 +1,8 @@
-function Invoke-PSRunSelectorCustom
-{
+function Invoke-PSRunSelectorCustom {
     [CmdletBinding()]
     [OutputType([PowerShellRun.SelectorResult])]
-    param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [PowerShellRun.SelectorEntry[]]$Entry,
 
         [Switch]$MultiSelection,
@@ -14,30 +12,22 @@ function Invoke-PSRunSelectorCustom
         [PowerShellRun.SelectorContext]$Context
     )
 
-    begin
-    {
+    begin {
         $isPipelineInput = $MyInvocation.ExpectingInput
-        if ($isPipelineInput)
-        {
+        if ($isPipelineInput) {
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
         }
     }
-    process
-    {
-        if ($isPipelineInput)
-        {
+    process {
+        if ($isPipelineInput) {
             $entries.Add($Entry[0])
         }
     }
-    end
-    {
-        $mode = if ($MultiSelection) {[PowerShellRun.SelectorMode]::MultiSelection} else {[PowerShellRun.SelectorMode]::SingleSelection}
-        if ($isPipelineInput)
-        {
+    end {
+        $mode = if ($MultiSelection) { [PowerShellRun.SelectorMode]::MultiSelection } else { [PowerShellRun.SelectorMode]::SingleSelection }
+        if ($isPipelineInput) {
             $result = [PowerShellRun.Selector]::Open($entries, $mode, $Option, $Context)
-        }
-        else
-        {
+        } else {
             $result = [PowerShellRun.Selector]::Open($Entry, $mode, $Option, $Context)
         }
         $result

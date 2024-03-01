@@ -1,40 +1,32 @@
-function Invoke-PSRun
-{
+function Invoke-PSRun {
     [CmdletBinding()]
-    param
-    (
+    param (
         [PowerShellRun.SelectorOption]$Option = $script:globalStore.psRunSelectorOption,
 
         [String]$InitialQuery
     )
 
     $script:globalStore.UpdateEntries()
-    if ($script:globalStore.entries.Count -eq 0)
-    {
+    if ($script:globalStore.entries.Count -eq 0) {
         Write-Error -Message 'There is no entry.' -Category InvalidOperation
         return
     }
 
-    if ($InitialQuery)
-    {
+    if ($InitialQuery) {
         $prevContext = [PowerShellRun.SelectorContext]::new()
         $prevContext.Query = $InitialQuery
-    }
-    else
-    {
+    } else {
         $prevContext = $null
     }
 
-    while ($true)
-    {
+    while ($true) {
         $script:globalStore.ClearParentSelectorRestoreRequest()
 
         $mode = [PowerShellRun.SelectorMode]::SingleSelection
         $result = [PowerShellRun.Selector]::Open($script:globalStore.entries, $mode, $Option, $prevContext)
         $prevContext = $result.Context
 
-        if ($result.FocusedEntry)
-        {
+        if ($result.FocusedEntry) {
             $callback = $result.FocusedEntry.UserData.ScriptBlock
             $argumentList = @{
                 Result = $result
@@ -43,8 +35,7 @@ function Invoke-PSRun
             & $callback $argumentList
         }
 
-        if (-not $script:globalStore.IsParentSelectorRestoreRequested())
-        {
+        if (-not $script:globalStore.IsParentSelectorRestoreRequested()) {
             break
         }
     }

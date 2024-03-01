@@ -2,18 +2,15 @@
 .SYNOPSIS
 Sets the default file editor script.
 #>
-function Set-PSRunDefaultEditorScript
-{
+function Set-PSRunDefaultEditorScript {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ScriptBlock]$ScriptBlock
     )
 
-    process
-    {
+    process {
         $script:globalStore.fileSystemRegistry.SetDefaultEditorScript($ScriptBlock)
     }
 }

@@ -1,15 +1,12 @@
-function Set-PSRunPSReadLineKeyHandler
-{
+function Set-PSRunPSReadLineKeyHandler {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [String[]]$Chord
     )
 
-    process
-    {
+    process {
         $script:globalStore.ReplacePSConsoleHostReadLine()
         $script:globalStore.SetPSReadLineKeyHandler($Chord)
     }

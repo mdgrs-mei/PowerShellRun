@@ -11,7 +11,7 @@ class GlobalStore {
     $originalPSConsoleHostReadLine = $null
     $isReadLineReplaced = $false
     $invokePsRunRequest = $false
-    $invokePsRunRequestQuery = ""
+    $invokePsRunRequestQuery = ''
     $psReadLineChord = $null
 
     $firstActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
@@ -41,8 +41,7 @@ class GlobalStore {
             $_secondActionKey = [PowerShellRun.KeyCombination]::new('Alt+Enter')
             $_thirdActionKey = [PowerShellRun.KeyCombination]::new('Alt+J')
             $_copyActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+C')
-        }
-        else {
+        } else {
             $_secondActionKey = [PowerShellRun.KeyCombination]::new('Shift+Enter')
             $_thirdActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+Enter')
             $_copyActionKey = [PowerShellRun.KeyCombination]::new('Ctrl+C')
@@ -139,12 +138,10 @@ class GlobalStore {
             $this.invokePsRunRequest = $false
             if ($this.invokePsRunRequestQuery) {
                 return ('Invoke-PSRun -Query "{0}"' -f $this.invokePsRunRequestQuery)
-            }
-            else {
+            } else {
                 return 'Invoke-PSRun'
             }
-        }
-        else {
+        } else {
             return $command
         }
     }
@@ -183,12 +180,10 @@ class GlobalStore {
         if ($command -and ($command.CommandType -eq 'Application')) {
             # do not open new window when this is a command line app.
             & $path
-        }
-        elseif ($path.Contains('shell:', 'OrdinalIgnoreCase')) {
+        } elseif ($path.Contains('shell:', 'OrdinalIgnoreCase')) {
             # On Windows, Invoke-Item cannot open special folders.
             Start-Process $path
-        }
-        else {
+        } else {
             # .ps1 files or .app files on macOS come here.
             Invoke-Item $path
         }

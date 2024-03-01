@@ -10,7 +10,7 @@
         }
 
         Set-PSRunDefaultEditorScript $script
-        
+
         InModuleScope 'PowerShellRun' -ArgumentList $script {
             param($script)
             $script:globalStore.fileSystemRegistry.defaultEditorScript | Should -Be $script

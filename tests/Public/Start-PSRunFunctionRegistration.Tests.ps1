@@ -9,7 +9,7 @@
 
     It 'should throw an error if called twice' {
         Start-PSRunFunctionRegistration
-        {Start-PSRunFunctionRegistration -ErrorAction Stop} | Should -Throw
+        { Start-PSRunFunctionRegistration -ErrorAction Stop } | Should -Throw
     }
 
     AfterEach {

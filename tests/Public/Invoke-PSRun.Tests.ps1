@@ -4,7 +4,7 @@
     }
 
     It 'should throw with no entry' {
-        {Invoke-PSRun -ErrorAction Stop} | Should -Throw
+        { Invoke-PSRun -ErrorAction Stop } | Should -Throw
     }
 
     AfterEach {

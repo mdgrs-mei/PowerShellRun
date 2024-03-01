@@ -11,7 +11,7 @@
             CopyActionKey = 'Ctrl+d'
         }
         Set-PSRunActionKeyBinding @params
-        
+
         InModuleScope 'PowerShellRun' -ArgumentList $params {
             param ($params)
             $script:globalStore.firstActionKey | Should -Be $params.FirstActionKey

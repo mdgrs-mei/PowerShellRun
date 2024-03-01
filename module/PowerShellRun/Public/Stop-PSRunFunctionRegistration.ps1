@@ -1,5 +1,4 @@
-function Stop-PSRunFunctionRegistration
-{
+function Stop-PSRunFunctionRegistration {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param()

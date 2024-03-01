@@ -34,12 +34,10 @@ class FunctionRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $functionName
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $function = Get-Command $functionName
                 $function.Definition
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $function = Get-Command $functionName
                 $function.Definition | Set-Clipboard
             }
@@ -73,21 +71,19 @@ class FunctionRegistry {
             $entry = [PowerShellRun.SelectorEntry]::new()
             $entry.Icon = if ($customAttributes.Icon) { $customAttributes.Icon } else { '📝' }
             $entry.Name = if ($customAttributes.Name) { $customAttributes.Name } else { $function.Name }
-            $entry.Preview = if ($customAttributes.Preview) { $customAttributes.Preview } else { "{" + $function.Definition + "}" }
+            $entry.Preview = if ($customAttributes.Preview) { $customAttributes.Preview } else { '{' + $function.Definition + '}' }
             if ($customAttributes.Description) {
                 $entry.Description = $customAttributes.Description
-            }
-            elseif ($help.Description) {
+            } elseif ($help.Description) {
                 $entry.Description = $help.Description.Text
-            }
-            elseif ($help.Synopsis) {
+            } elseif ($help.Synopsis) {
                 $entry.Description = $help.Synopsis
             }
 
             $entry.ActionKeys = $this.actionKeys
 
             $entry.UserData = @{
-                ScriptBlock  = $this.callback
+                ScriptBlock = $this.callback
                 ArgumentList = $function.Name
             }
 

@@ -2,29 +2,26 @@
 .SYNOPSIS
 Adds a favorite folder.
 #>
-function Add-PSRunFavoriteFolder
-{
+function Add-PSRunFavoriteFolder {
     [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [String]$Path,
 
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Icon,
 
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Name,
 
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Description,
 
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String[]]$Preview
     )
 
-    process
-    {
+    process {
         $script:globalStore.fileSystemRegistry.AddFavoriteFolder($Path, $Icon, $Name, $Description, $Preview)
     }
 }

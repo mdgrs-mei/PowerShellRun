@@ -12,8 +12,7 @@ class ApplicationRegistry {
 
         if ($script:isWindows) {
             $this.StartRegisterEntriesWindows($categories)
-        }
-        elseif ($script:isMacOs) {
+        } elseif ($script:isMacOs) {
             $this.StartRegisterEntriesMacOs($categories)
         }
     }
@@ -28,8 +27,7 @@ class ApplicationRegistry {
             $path = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
-            }
-            elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 Start-Process $path -Verb runAs
             }
         }
@@ -60,7 +58,7 @@ class ApplicationRegistry {
                         $entry.ActionKeys = $actionKeys
 
                         $entry.UserData = @{
-                            ScriptBlock  = $callback
+                            ScriptBlock = $callback
                             ArgumentList = $link.FullName
                         }
 
@@ -70,12 +68,12 @@ class ApplicationRegistry {
 
                 # Store Apps
                 $shell = New-Object -ComObject shell.application
-                $appsFolder = $shell.NameSpace("shell:AppsFolder")
+                $appsFolder = $shell.NameSpace('shell:AppsFolder')
                 foreach ($item in $appsFolder.Items()) {
                     if (-not $item.Path.Contains('!')) {
                         continue
                     }
-                    $path = "shell:AppsFolder\{0}" -f $item.Path
+                    $path = 'shell:AppsFolder\{0}' -f $item.Path
                     $entry = [PowerShellRun.SelectorEntry]::new()
                     $entry.Icon = '🪟'
                     $entry.Name = $item.Name
@@ -84,7 +82,7 @@ class ApplicationRegistry {
                     $entry.ActionKeys = $actionKeys[0]
 
                     $entry.UserData = @{
-                        ScriptBlock  = $callback
+                        ScriptBlock = $callback
                         ArgumentList = $path
                     }
 
@@ -103,7 +101,7 @@ class ApplicationRegistry {
                     $entry.ActionKeys = $actionKeys
 
                     $entry.UserData = @{
-                        ScriptBlock  = $callback
+                        ScriptBlock = $callback
                         ArgumentList = $app.Source
                     }
 
@@ -151,7 +149,7 @@ class ApplicationRegistry {
                         $entry.ActionKeys = $actionKeys
 
                         $entry.UserData = @{
-                            ScriptBlock  = $callback
+                            ScriptBlock = $callback
                             ArgumentList = $app.FullName
                         }
 
@@ -171,7 +169,7 @@ class ApplicationRegistry {
                     $entry.ActionKeys = $actionKeys
 
                     $entry.UserData = @{
-                        ScriptBlock  = $callback
+                        ScriptBlock = $callback
                         ArgumentList = $app.Source
                     }
 
