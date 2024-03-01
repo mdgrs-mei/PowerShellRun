@@ -9,5 +9,6 @@
     "powershell.codeFormatting.useCorrectCasing": true,
     "powershell.codeFormatting.whitespaceBetweenParameters": true,
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
 }
