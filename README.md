@@ -15,7 +15,7 @@ App, Utility and Function Launcher for PowerShell.
 
 *PowerShellRun* is a PowerShell module that lets you fuzzy search applications, utilities and functions you define and launch them
  with ease. It is a customizable launcher app on the PowerShell terminal.
- 
+
  </div>
 
 ## Installation
@@ -285,12 +285,8 @@ Changelog is available [here](https://github.com/mdgrs-mei/PowerShellRun/blob/ma
 
 *PowerShellRun* uses:
 
-- Wcwidth  
-https://github.com/spectreconsole/wcwidth
+- Wcwidth<br>https://github.com/spectreconsole/wcwidth
 
 Heavily inspired by:
-- fzf  
-https://github.com/junegunn/fzf
-- PowerToys Run  
-https://github.com/microsoft/PowerToys
-
+- fzf<br>https://github.com/junegunn/fzf
+- PowerToys Run<br>https://github.com/microsoft/PowerToys
