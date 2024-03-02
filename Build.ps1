@@ -1,5 +1,4 @@
-param
-(
+param (
     [ValidateSet('Debug', 'Release')]
     [String]$Configuration = 'Debug'
 )
