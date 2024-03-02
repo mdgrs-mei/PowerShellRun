@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using PowerShellRun.Dependency;
 
 internal class SearchBar
 {
@@ -19,21 +20,6 @@ internal class SearchBar
     public bool IsQueryUpdated { get; set; } = false;
     public bool IsCursorUpdated { get; set; } = false;
     public string DebugPerfString = "";
-
-    public int CursorXInCanvas
-    {
-        get
-        {
-            return _cursorX + _textBox.X;
-        }
-    }
-    public int CursorYInCanvas
-    {
-        get
-        {
-            return _textBox.Y;
-        }
-    }
 
     public SearchBar(string promptString)
     {
@@ -71,6 +57,25 @@ internal class SearchBar
         _isQuerySetFromOutside = true;
     }
 
+    public (int X, int Y) GetCursorPositionInCanvas()
+    {
+        int x = _textBox.X;
+        int y = _textBox.Y;
+        for (int i = 0; i < _cursorX; ++i)
+        {
+            if (i >= _readKeysBuffer.Length)
+                break;
+
+            int displayWidth = Unicode.GetDisplayWidth(_readKeysBuffer[i]);
+            if (displayWidth <= 0)
+                continue;
+
+            x += displayWidth;
+        }
+
+        return (x, y);
+    }
+
     public void Update()
     {
         ReadKeys();
@@ -102,14 +107,6 @@ internal class SearchBar
         }
     }
 
-    private static Key[] _skipKeys =
-    {
-        Key.Enter,
-        Key.Escape,
-        Key.UpArrow,
-        Key.DownArrow,
-        Key.Tab,
-    };
     private void ReadKeys()
     {
         IsQueryUpdated = false;
@@ -121,18 +118,6 @@ internal class SearchBar
             if (key.KeyCombination.Modifier.HasFlag(KeyModifier.Ctrl))
                 continue;
             if (key.KeyCombination.Modifier.HasFlag(KeyModifier.Alt))
-                continue;
-
-            bool skip = false;
-            foreach (var skipKey in _skipKeys)
-            {
-                if (skipKey == key.KeyCombination.Key)
-                {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip)
                 continue;
 
             if (key.KeyCombination.Key == Key.LeftArrow)
@@ -183,7 +168,7 @@ internal class SearchBar
                 continue;
             }
 
-            if (!Char.IsAscii(key.ConsoleKeyInfo.KeyChar))
+            if (Unicode.GetDisplayWidth(key.ConsoleKeyInfo.KeyChar) <= 0)
                 continue;
 
             if (_readKeysBuffer.Length >= Constants.QueryCharacterMaxCount)

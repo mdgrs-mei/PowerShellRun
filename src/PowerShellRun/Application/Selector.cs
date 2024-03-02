@@ -86,7 +86,8 @@ public static class Selector
                 break;
             }
 
-            canvas.SetCursorOffset(searchBar.CursorXInCanvas, searchBar.CursorYInCanvas);
+            var cursorPosInCanvas = searchBar.GetCursorPositionInCanvas();
+            canvas.SetCursorOffset(cursorPosInCanvas.X, cursorPosInCanvas.Y);
             if (searchBar.IsQueryUpdated || resultWindow.IsUpdated)
             {
                 canvas.ClearCells();

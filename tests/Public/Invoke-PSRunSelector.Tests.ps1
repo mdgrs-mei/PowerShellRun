@@ -53,6 +53,12 @@
         $match | Should -Be 'abc'
     }
 
+    It 'should support non-ascii character query' {
+        $context.Query = 'あ'
+        $match = 'abc', 'aあ' | Invoke-PSRunSelector -Option $option -Context $context
+        $match | Should -Be 'aあ'
+    }
+
     It 'should not throw an exception with multi selection' {
         $match = 'a' | Invoke-PSRunSelector -Option $option -MultiSelection
         $match | Should -Be 'a'
