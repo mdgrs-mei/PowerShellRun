@@ -2,7 +2,6 @@
 
 # PowerShellRun
 
-
 [![GitHub license](https://img.shields.io/github/license/mdgrs-mei/PowerShellRun)](https://github.com/mdgrs-mei/PowerShellRun/blob/main/LICENSE)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/p/PowerShellRun)](https://www.powershellgallery.com/packages/PowerShellRun)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/PowerShellRun)](https://www.powershellgallery.com/packages/PowerShellRun)
@@ -276,6 +275,24 @@ if ($result.KeyCombination -eq 'Enter') {
 ## Changelog
 
 Changelog is available [here](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CHANGELOG.md).
+
+<div align="center">
+
+# Contributing
+
+</div>
+
+## Code of Conduct
+
+Please read our [Code of Conduct](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CODE_OF_CONDUCT.md) to foster a welcoming environment. By participating in this project, you are expected to uphold this code.
+
+## Have a question or want to showcase something?
+
+Please come to our [Discussions](https://github.com/mdgrs-mei/PowerShellRun/discussions) page and avoid filing an issue to ask a question.
+
+## Want to file an issue or make a PR?
+
+Please see our [Contribution Guidelines](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CONTRIBUTING.md).
 
 <div align="center">
 
