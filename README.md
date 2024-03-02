@@ -193,6 +193,8 @@ $theme.DescriptionFocusHighlightBackgroundColor = $focusHighlight
 
 ![Theme](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/3b91109f-2d7e-4985-a85f-67df6e402779)
 
+<br>
+
 <div align="center">
 
 # *PowerShellRun* as a Generic Selector
@@ -276,6 +278,8 @@ if ($result.KeyCombination -eq 'Enter') {
 
 Changelog is available [here](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CHANGELOG.md).
 
+<br>
+
 <div align="center">
 
 # Contributing
@@ -293,6 +297,8 @@ Please come to our [Discussions](https://github.com/mdgrs-mei/PowerShellRun/disc
 ## Want to file an issue or make a PR?
 
 Please see our [Contribution Guidelines](https://github.com/mdgrs-mei/PowerShellRun/blob/main/CONTRIBUTING.md).
+
+<br>
 
 <div align="center">
 
