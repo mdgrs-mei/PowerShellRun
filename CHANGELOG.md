@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.0] - 2024-03-02
+
+### Added
+
+- Added non-ascii character support for query
+
+### Changed
+
+- File entries are now executed on the same window if they are command line applications
+- Changed `Category` parameter of `Enable-PSRunEntry` to be case insensitive
+
+### Fixed
+
+- Fixed an issue where favorite entries added after `Invoke-PSRun` are not updated
+
 ## [0.0.1] - 2024-02-23
 
 ### Added
