@@ -30,5 +30,5 @@ Get-ChildItem -Path "$depSrc/bin/$Configuration/$netVersion/publish/" |
     ForEach-Object { [void]$deps.Add($_.Name); Copy-Item -Path $_.FullName -Destination $outDeps }
 
 Get-ChildItem -Path "$coreSrc/bin/$Configuration/$netVersion/publish/" |
-    Where-Object { -not ($deps -Contains $_.Name) -and $_.Extension -in $copyExtensions } |
+    Where-Object { -not ($deps -contains $_.Name) -and $_.Extension -in $copyExtensions } |
     ForEach-Object { Copy-Item -Path $_.FullName -Destination $outDir }

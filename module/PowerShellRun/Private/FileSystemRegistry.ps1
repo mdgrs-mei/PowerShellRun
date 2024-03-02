@@ -62,9 +62,9 @@ class FileSystemRegistry {
     [void] EnableEntries([String[]]$categories) {
         $this.isEntryUpdated = $true
 
-        $this.isFavoritesEnabled = $categories -Contains 'Favorite'
+        $this.isFavoritesEnabled = $categories -contains 'Favorite'
 
-        $this.isFileManagerEnabled = $categories -Contains 'Utility'
+        $this.isFileManagerEnabled = $categories -contains 'Utility'
         $this.fileManagerEntry.Clear()
         if ($this.isFileManagerEnabled) {
             $this.RegisterFileManagerEntry()

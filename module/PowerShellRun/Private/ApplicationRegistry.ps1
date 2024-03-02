@@ -37,7 +37,7 @@ class ApplicationRegistry {
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
-            if ($categories -Contains 'Application') {
+            if ($categories -contains 'Application') {
                 # Start Menu shortcuts
                 $startMenuFolders = @(
                     "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs",
@@ -91,7 +91,7 @@ class ApplicationRegistry {
             }
 
             # Executables in Path
-            if ($categories -Contains 'Executable') {
+            if ($categories -contains 'Executable') {
                 $apps = Get-Command -CommandType Application
                 foreach ($app in $apps) {
                     $entry = [PowerShellRun.SelectorEntry]::new()
@@ -130,7 +130,7 @@ class ApplicationRegistry {
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
-            if ($categories -Contains 'Application' ) {
+            if ($categories -contains 'Application' ) {
                 $folders = @(
                     '/Applications'
                     '/Applications/Utilities'
@@ -159,7 +159,7 @@ class ApplicationRegistry {
             }
 
             # Executables in Path
-            if ($categories -Contains 'Executable') {
+            if ($categories -contains 'Executable') {
                 $apps = Get-Command -CommandType Application
                 foreach ($app in $apps) {
                     $entry = [PowerShellRun.SelectorEntry]::new()

@@ -9,7 +9,7 @@ function Enable-PSRunEntry {
         [String[]]$Category = 'All'
     )
 
-    if ($Category -Contains 'All') {
+    if ($Category -contains 'All') {
         $Category = 'Application', 'Executable', 'Function', 'Utility', 'Favorite'
     }
     $script:globalStore.EnableEntries($Category)
