@@ -8,7 +8,11 @@ Enter-RSSession -OnStart {
 
     & $build Debug
     Import-Module "$root/module/PowerShellRun"
+    Enable-PSRunEntry -Category All
 
+    function Restart {
+        Restart-RSSession
+    }
     function Pester {
         & "$root/tests/RunPesterTests.ps1"
     }
