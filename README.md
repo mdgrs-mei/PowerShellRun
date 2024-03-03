@@ -73,6 +73,15 @@ Currently, we have only one utility entry defined by *PowerShellRun*.
 
 ![FiileManager](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/536b0853-0dd2-4c03-b429-c4ec95240cdf)
 
+On the file entries, there is an action described as `"Edit with Default Editor"`. You can customize the script for this action like below:
+
+```powershell
+Set-PSRunDefaultEditorScript -ScriptBlock {
+    param ($path)
+    & code $path
+}
+```
+
 ### ・📁 Favorite
 
 You can register folders or files that you frequently access. The available actions are the same as the ones in `File Manager (PSRun)`.
@@ -97,8 +106,7 @@ Start-PSRunFunctionRegistration
 
 #.SYNOPSIS
 # git pull with rebase option.
-function global:GitPullRebase()
-{
+function global:GitPullRebase() {
     git pull --rebase
 }
 # ... Define functions here as many as you want.
@@ -120,13 +128,34 @@ PSRun(
     Icon = 🌿
     Preview = This is a custom preview.\nNew lines need to be written like this.)
 #>
-function global:GitPullRebase()
-{
+function global:GitPullRebase() {
     git pull --rebase
 }
 ```
 
 ![Function](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/162b90dd-b51a-4b92-ab75-c8c29b3a385d)
+
+It's even possible to open *PowerShellRun*'s TUI inside a registered function entry using the commands described in the following [section](#powershellrun-as-a-generic-selector). To create a pseudo nested menu, we recommend that you use `Restore-PSRunFunctionParentSelector` command to restore the parent menu with `Backspace` key. `File Manager (PSRun)` is a good example of the nested menu.
+
+```powershell
+function global:OpenNestedMenu() {
+    $option = [PowerShellRun.SelectorOption]::new()
+    $option.QuitWithBackspaceOnEmptyQuery = $true
+
+    $result = Get-ChildItem | ForEach-Object {
+        $entry = [PowerShellRun.SelectorEntry]::new()
+        $entry.UserData = $_
+        $entry.Name = $_.Name
+        $entry
+    } | Invoke-PSRunSelectorCustom -Option $option
+
+    if ($result.KeyCombination -eq 'Backspace') {
+        Restore-PSRunFunctionParentSelector
+        return
+    }
+    # ... Other key handlings here
+}
+```
 
 ## Options
 
@@ -201,7 +230,7 @@ $theme.DescriptionFocusHighlightBackgroundColor = $focusHighlight
 
 </div>
 
-The underlying fuzzy selector in *PowerShellRun* is accesible with the following commands.
+The underlying fuzzy selector in *PowerShellRun* is accessible with the following commands.
 
 ## Invoke-PSRunSelector
 
