@@ -4,9 +4,9 @@
 
 Thank you for taking the time to contribute to this project👏
 
-The followings are the types of contributions we expect and the guidelines to follow.
+</div>
 
- </div>
+The followings are the types of contributions we expect and the guidelines to follow.
 
 ## Reporting Bugs
 
@@ -23,6 +23,8 @@ If you are thinking about requesting new features or minor improvements to exist
 - File an issue and follow the `Feature Request` issue form.
 
 ## Making Pull Requests
+
+When you make a code contribution, you must agree that the content you submit is provided under the project [license](https://github.com/mdgrs-mei/PowerShellRun/blob/main/LICENSE). To make a PR, please follow the steps below:
 
 - File an issue by following the above guidelines before making a PR
 - In the issue, suggest that you are willing to make a PR
