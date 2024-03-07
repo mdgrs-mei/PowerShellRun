@@ -137,7 +137,7 @@ class GlobalStore {
         if ($this.invokePsRunRequest) {
             $this.invokePsRunRequest = $false
             if ($this.invokePsRunRequestQuery) {
-                return ('Invoke-PSRun -Query "{0}"' -f $this.invokePsRunRequestQuery)
+                return ('Invoke-PSRun -InitialQuery "{0}"' -f $this.invokePsRunRequestQuery)
             } else {
                 return 'Invoke-PSRun'
             }
