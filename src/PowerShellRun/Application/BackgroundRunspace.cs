@@ -10,11 +10,11 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
     public class Task
     {
         public ScriptBlock ScriptBlock { get; }
-        public object? ArgumentList { get; } = null;
+        public object[]? ArgumentList { get; } = null;
 
         private InternalEntry _outputEntry;
 
-        public Task(ScriptBlock scriptBlock, object? argumentList, InternalEntry outputEntry)
+        public Task(ScriptBlock scriptBlock, object[]? argumentList, InternalEntry outputEntry)
         {
             ScriptBlock = scriptBlock;
             ArgumentList = argumentList;
@@ -140,7 +140,10 @@ internal sealed class BackgroundRunspace : Singleton<BackgroundRunspace>
         _powershell.AddScript(task.ScriptBlock.ToString());
         if (task.ArgumentList is not null)
         {
-            _powershell.AddArgument(task.ArgumentList);
+            foreach (var argument in task.ArgumentList)
+            {
+                _powershell.AddArgument(argument);
+            }
         }
         System.Collections.ObjectModel.Collection<PSObject> result = _powershell.Invoke();
         task.SetResult(result);

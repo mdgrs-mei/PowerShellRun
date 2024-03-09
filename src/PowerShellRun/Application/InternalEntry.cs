@@ -109,7 +109,7 @@ internal class InternalEntry
             if (PreviewTask is null && _previewTaskExecutionCount == 0)
             {
                 ScriptBlock scriptBlock = SelectorEntry.PreviewAsyncScript!;
-                object? argumentList = SelectorEntry.PreviewAsyncScriptArgumentList;
+                object[]? argumentList = SelectorEntry.PreviewAsyncScriptArgumentList;
                 var task = new BackgroundRunspace.Task(scriptBlock, argumentList, this);
                 PreviewTask = task;
                 BackgroundRunspace.GetInstance().AddTask(task);
