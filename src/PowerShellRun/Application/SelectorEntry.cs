@@ -11,7 +11,7 @@ public class SelectorEntry
     public string? Description { get; set; } = null;
     public string[]? Preview { get; set; } = null;
     public ScriptBlock? PreviewAsyncScript { get; set; } = null;
-    public object? PreviewAsyncScriptArgumentList { get; set; } = null;
+    public object[]? PreviewAsyncScriptArgumentList { get; set; } = null;
     public int PreviewInitialVerticalScroll { get; set; } = 0;
     public ActionKey[]? ActionKeys = null;
     public ActionKey[]? ActionKeysMultiSelection = null;
