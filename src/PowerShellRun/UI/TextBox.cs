@@ -222,14 +222,18 @@ internal class TextBox : LayoutItem
     {
         _focusLineIndex = focusLineIndex;
         _verticalScroll = 0;
-        _lineCount = lineCount;
-        Clear();
+        Clear(lineCount);
     }
 
     public void ClearAndSetVerticalScroll(int scroll, int lineCount)
     {
         _focusLineIndex = null;
         _verticalScroll = Math.Max(scroll, 0);
+        Clear(lineCount);
+    }
+
+    public void Clear(int lineCount)
+    {
         _lineCount = lineCount;
         Clear();
     }
@@ -238,16 +242,66 @@ internal class TextBox : LayoutItem
     {
         _lines.Clear();
         UpdateVisibleLineRange();
+    }
 
-        if (OnlyStoreLinesInVisibleRange)
+    public int GetFocusLineIndex()
+    {
+        return _focusLineIndex ?? 0;
+    }
+
+    public void IncrementFocusLine()
+    {
+        if (_focusLineIndex is null)
+            return;
+
+        ++_focusLineIndex;
+        if (_focusLineIndex >= _lineCount)
         {
-            var visibleRange = GetVisibleLineRange();
-            var lineCount = visibleRange.BottomLineIndex - visibleRange.TopLineIndex + 1;
-            for (int i = 0; i < lineCount; ++i)
-            {
-                _lines.Add(new Line());
-            }
+            _focusLineIndex = 0;
         }
+        UpdateVisibleLineRange();
+    }
+
+    public void DecrementFocusLine()
+    {
+        if (_focusLineIndex is null)
+            return;
+
+        --_focusLineIndex;
+        if (_lineCount == 0)
+        {
+            _focusLineIndex = 0;
+        }
+        else
+        if (_focusLineIndex < 0)
+        {
+            _focusLineIndex = _lineCount - 1;
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void IncrementVerticalScroll()
+    {
+        ++_verticalScroll;
+
+        var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+        if (_verticalScroll > verticalScrollMax)
+        {
+            _verticalScroll = 0;
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void DecrementVerticalScroll()
+    {
+        --_verticalScroll;
+
+        var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+        if (_verticalScroll < 0)
+        {
+            _verticalScroll = verticalScrollMax;
+        }
+        UpdateVisibleLineRange();
     }
 
     public void AddWord(
@@ -263,20 +317,18 @@ internal class TextBox : LayoutItem
     {
         if (OnlyStoreLinesInVisibleRange)
         {
-            lineIndex -= GetVisibleLineRange().TopLineIndex;
-            if (lineIndex >= _lines.Count)
+            var visibleRange = GetVisibleLineRange();
+            if (lineIndex > visibleRange.BottomLineIndex)
                 return;
+            lineIndex -= visibleRange.TopLineIndex;
         }
 
         if (lineIndex < 0)
             return;
 
-        if (!OnlyStoreLinesInVisibleRange)
+        while (_lines.Count <= lineIndex)
         {
-            while (_lines.Count <= lineIndex)
-            {
-                _lines.Add(new Line());
-            }
+            _lines.Add(new Line());
         }
 
         if (backgroundColor is null)
@@ -299,32 +351,6 @@ internal class TextBox : LayoutItem
             highlightFontStyle);
 
         _lines[lineIndex].Words.Add(_word);
-    }
-
-    public void SetLineColor(
-        int lineIndex,
-        FontColor? foregroundColor = null,
-        FontColor? backgroundColor = null,
-        FontColor? highlightForegroundColor = null,
-        FontColor? highlightBackgroundColor = null)
-    {
-        if (OnlyStoreLinesInVisibleRange)
-        {
-            lineIndex -= GetVisibleLineRange().TopLineIndex;
-        }
-
-        if (lineIndex < 0 || lineIndex >= _lines.Count)
-            return;
-
-        var line = _lines[lineIndex];
-        foreach (var word in line.Words)
-        {
-            word.ForegroundColor = foregroundColor;
-            word.BackgroundColor = backgroundColor;
-            word.HighlightForegroundColor = highlightForegroundColor;
-            word.HighlightBackgroundColor = highlightBackgroundColor;
-        }
-        line.ClearCells();
     }
 
     public (int TopLineIndex, int BottomLineIndex) GetVisibleLineRange()

@@ -30,7 +30,6 @@ internal class ResultWindow
     private bool _isCursorUpdated = false;
     private bool _isPreviewScrollUpdated = false;
     private bool _isMarkerUpdated = false;
-    private int _cursorIndex = 0;
     private int? _cursorIndexRequest = null;
     private int _previewVerticalScroll = 0;
 
@@ -239,16 +238,18 @@ internal class ResultWindow
 
     private SelectorEntry? GetFocusedEntry()
     {
-        if (_cursorIndex >= _searchResults.Length)
+        int cursorIndex = _nameBox.GetFocusLineIndex();
+        if (cursorIndex >= _searchResults.Length)
             return null;
-        return _searchResults[_cursorIndex].SelectorEntry;
+        return _searchResults[cursorIndex].SelectorEntry;
     }
 
     private InternalEntry? GetFocusedInternalEntry()
     {
-        if (_cursorIndex >= _searchResults.Length)
+        int cursorIndex = _nameBox.GetFocusLineIndex();
+        if (cursorIndex >= _searchResults.Length)
             return null;
-        return _searchResults[_cursorIndex];
+        return _searchResults[cursorIndex];
     }
 
     private bool IsFocusedEntryUpdated()
@@ -259,12 +260,13 @@ internal class ResultWindow
     public (SelectorEntry? FocusedEntry, int CursorIndex,
             SelectorEntry[]? MarkedEntries, int[]? MarkedEntryIndexes) GetResult()
     {
+        int cursorIndex = _nameBox.GetFocusLineIndex();
         var marked = GetMarkedEntries();
         if (IsActionAccepted)
         {
-            return (GetFocusedEntry(), _cursorIndex, marked.Entries, marked.Indexes);
+            return (GetFocusedEntry(), cursorIndex, marked.Entries, marked.Indexes);
         }
-        return (null, _cursorIndex, null, marked.Indexes);
+        return (null, cursorIndex, null, marked.Indexes);
     }
 
     private void GetActionWindowState()
@@ -374,12 +376,12 @@ internal class ResultWindow
     {
         if (key.KeyCombination.Equals(KeyCombination.UpArrow))
         {
-            SetCursorIndex(_cursorIndex - 1);
+            DecrementCursorIndex();
             return;
         }
         if (key.KeyCombination.Equals(KeyCombination.DownArrow))
         {
-            SetCursorIndex(_cursorIndex + 1);
+            IncrementCursorIndex();
             return;
         }
 
@@ -387,7 +389,7 @@ internal class ResultWindow
         {
             if (key.KeyCombination.Equals(upKey))
             {
-                SetPreviewVerticalScroll(_previewVerticalScroll - 1);
+                DecrementPreviewVerticalScroll();
                 return;
             }
         }
@@ -396,7 +398,7 @@ internal class ResultWindow
         {
             if (key.KeyCombination.Equals(downKey))
             {
-                SetPreviewVerticalScroll(_previewVerticalScroll + 1);
+                IncrementPreviewVerticalScroll();
                 return;
             }
         }
@@ -454,23 +456,11 @@ internal class ResultWindow
         bool isMarkerEnabled = (_mode == SelectorMode.MultiSelection);
         int lineCount = _searchResults.Length;
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
-        _markerBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
-        _nameBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
-        _descriptionBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _cursorBox.Clear(lineCount);
+        _markerBox.Clear(lineCount);
+        _nameBox.Clear(lineCount);
+        _descriptionBox.Clear(lineCount);
 
-        if (IsFocusedEntryUpdated())
-        {
-            var entry = GetFocusedEntry();
-            if (entry is not null)
-            {
-                SetPreviewVerticalScroll(entry.PreviewInitialVerticalScroll);
-            }
-            else
-            {
-                SetPreviewVerticalScroll(0);
-            }
-        }
         if (_searchResults.Length == 0)
         {
             _previewBox.ClearAndSetVerticalScroll(0, 0);
@@ -491,21 +481,23 @@ internal class ResultWindow
                 icon = selectorEntry.Icon + ' ';
             }
 
-            if (i == _cursorIndex)
+            if (i == _nameBox.GetFocusLineIndex())
             {
                 if (theme.PreviewEnable)
                 {
                     var previewLines = internalEntry.GetPreviewLines();
                     int previewLineCount = (previewLines is not null) ? previewLines.Length : 0;
 
-                    int previewVerticalScroll = 0;
-                    if (previewLineCount > 0)
+                    if (IsFocusedEntryUpdated() || _isFocusedEntryContentUpdated)
                     {
-                        var verticalScrollMax = Math.Max(previewLineCount - _previewBox.GetInnerLayout().Height, 0);
-                        _previewVerticalScroll = Math.Min(_previewVerticalScroll, verticalScrollMax);
-                        previewVerticalScroll = _previewVerticalScroll;
+                        _previewBox.ClearAndSetVerticalScroll(
+                            selectorEntry.PreviewInitialVerticalScroll,
+                            previewLineCount);
                     }
-                    _previewBox.ClearAndSetVerticalScroll(previewVerticalScroll, previewLineCount);
+                    else
+                    {
+                        _previewBox.Clear(previewLineCount);
+                    }
 
                     if (previewLines is not null)
                     {
@@ -615,29 +607,45 @@ internal class ResultWindow
 
     private void SetCursorIndex(int index)
     {
-        var resultCount = _searchResults.Length;
-        _cursorIndex = index;
-        if (resultCount == 0)
-        {
-            _cursorIndex = 0;
-        }
-        else
-        {
-            while (_cursorIndex < 0)
-            {
-                _cursorIndex += resultCount;
-            }
-            while (_cursorIndex >= resultCount)
-            {
-                _cursorIndex -= resultCount;
-            }
-        }
+        int lineCount = _searchResults.Length;
+
+        _cursorBox.ClearAndSetFocusLine(index, lineCount);
+        _markerBox.ClearAndSetFocusLine(index, lineCount);
+        _nameBox.ClearAndSetFocusLine(index, lineCount);
+        _descriptionBox.ClearAndSetFocusLine(index, lineCount);
+
         _isCursorUpdated = true;
     }
 
-    private void SetPreviewVerticalScroll(int scroll)
+    private void IncrementCursorIndex()
     {
-        _previewVerticalScroll = Math.Max(scroll, 0);
+        _cursorBox.IncrementFocusLine();
+        _markerBox.IncrementFocusLine();
+        _nameBox.IncrementFocusLine();
+        _descriptionBox.IncrementFocusLine();
+
+        _isCursorUpdated = true;
+    }
+
+    private void DecrementCursorIndex()
+    {
+        _cursorBox.DecrementFocusLine();
+        _markerBox.DecrementFocusLine();
+        _nameBox.DecrementFocusLine();
+        _descriptionBox.DecrementFocusLine();
+
+        _isCursorUpdated = true;
+    }
+
+    private void IncrementPreviewVerticalScroll()
+    {
+        _previewBox.IncrementVerticalScroll();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void DecrementPreviewVerticalScroll()
+    {
+        _previewBox.DecrementVerticalScroll();
         _isPreviewScrollUpdated = true;
     }
 
