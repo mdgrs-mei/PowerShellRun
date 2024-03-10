@@ -452,14 +452,12 @@ internal class ResultWindow
 
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
         bool isMarkerEnabled = (_mode == SelectorMode.MultiSelection);
+        int lineCount = _searchResults.Length;
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex);
-        _markerBox.ClearAndSetFocusLine(_cursorIndex);
-        _nameBox.ClearAndSetFocusLine(_cursorIndex);
-        _descriptionBox.ClearAndSetFocusLine(_cursorIndex);
-
-        _nameBox.SetLineCountForScrollBar(_searchResults.Length);
-        _descriptionBox.SetLineCountForScrollBar(_searchResults.Length);
+        _cursorBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _markerBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _nameBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _descriptionBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
 
         if (IsFocusedEntryUpdated())
         {
@@ -475,8 +473,7 @@ internal class ResultWindow
         }
         if (_searchResults.Length == 0)
         {
-            _previewBox.ClearAndSetVerticalScroll(0);
-            _previewBox.SetLineCountForScrollBar(0);
+            _previewBox.ClearAndSetVerticalScroll(0, 0);
         }
 
         var visibleLineRange = _nameBox.GetVisibleLineRange();
@@ -508,7 +505,7 @@ internal class ResultWindow
                         _previewVerticalScroll = Math.Min(_previewVerticalScroll, verticalScrollMax);
                         previewVerticalScroll = _previewVerticalScroll;
                     }
-                    _previewBox.ClearAndSetVerticalScroll(previewVerticalScroll);
+                    _previewBox.ClearAndSetVerticalScroll(previewVerticalScroll, previewLineCount);
 
                     if (previewLines is not null)
                     {
@@ -522,7 +519,6 @@ internal class ResultWindow
                                 theme.PreviewStyle);
                         }
                     }
-                    _previewBox.SetLineCountForScrollBar(previewLineCount);
                 }
 
                 if (theme.CursorEnable)

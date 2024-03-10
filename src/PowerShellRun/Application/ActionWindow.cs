@@ -199,12 +199,13 @@ internal class ActionWindow
         if (!IsVisible())
             return;
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex);
-        _keyBox.ClearAndSetFocusLine(_cursorIndex);
-        _descBox.ClearAndSetFocusLine(_cursorIndex);
-
         var actionKeys = GetActionKeys();
-        _descBox.SetLineCountForScrollBar(actionKeys.Length);
+        int lineCount = actionKeys.Length;
+
+        _cursorBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _keyBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _descBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
 
         for (int i = 0; i < actionKeys.Length; ++i)

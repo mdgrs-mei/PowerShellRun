@@ -207,9 +207,9 @@ internal class TextBox : LayoutItem
     private List<Line> _lines = new List<Line>();
     private int _topLineIndex = 0;
     private int _bottomLineIndex = 0;
+    private int _lineCount = 0;
     private int? _focusLineIndex = 0;
     private int _verticalScroll = 0;
-    private int _lineCountForScrollBar = 0;
 
     public bool FillCells { get; set; } = false;
     public FontColor? DefaultBackgroundColor { get; set; } = null;
@@ -218,17 +218,19 @@ internal class TextBox : LayoutItem
     public FontColor? ScrollBarBackgroundColor { get; set; } = null;
     public bool OnlyStoreLinesInVisibleRange { get; set; } = true;
 
-    public void ClearAndSetFocusLine(int focusLineIndex)
+    public void ClearAndSetFocusLine(int focusLineIndex, int lineCount)
     {
         _focusLineIndex = focusLineIndex;
         _verticalScroll = 0;
+        _lineCount = lineCount;
         Clear();
     }
 
-    public void ClearAndSetVerticalScroll(int scroll)
+    public void ClearAndSetVerticalScroll(int scroll, int lineCount)
     {
         _focusLineIndex = null;
         _verticalScroll = Math.Max(scroll, 0);
+        _lineCount = lineCount;
         Clear();
     }
 
@@ -246,11 +248,6 @@ internal class TextBox : LayoutItem
                 _lines.Add(new Line());
             }
         }
-    }
-
-    public void SetLineCountForScrollBar(int lineCount)
-    {
-        _lineCountForScrollBar = lineCount;
     }
 
     public void AddWord(
@@ -561,11 +558,11 @@ internal class TextBox : LayoutItem
                 ScrollBarBackgroundColor);
         }
 
-        if (_lineCountForScrollBar > 0)
+        if (_lineCount > 0)
         {
-            int scrollBarHeight = Math.Clamp(innerHeight * innerHeight / _lineCountForScrollBar, 1, innerHeight);
+            int scrollBarHeight = Math.Clamp(innerHeight * innerHeight / _lineCount, 1, innerHeight);
 
-            int scrollBarBottomLineIndex = (int)((innerHeight - 1) * ((double)(visibleRange.BottomLineIndex) / (_lineCountForScrollBar - 1)));
+            int scrollBarBottomLineIndex = (int)((innerHeight - 1) * ((double)(visibleRange.BottomLineIndex) / (_lineCount - 1)));
             scrollBarBottomLineIndex = Math.Clamp(scrollBarBottomLineIndex, 0, innerHeight - 1);
 
             int scrollBarTopLineIndex = Math.Clamp(scrollBarBottomLineIndex - scrollBarHeight + 1, 0, innerHeight - 1);
