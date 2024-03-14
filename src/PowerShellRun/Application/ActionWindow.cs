@@ -17,7 +17,6 @@ internal class ActionWindow
     private TextBox _descBox = new TextBox();
     private InternalEntry? _entry = null;
     private bool _isAnyEntryMarked = false;
-    private int _cursorIndex = 0;
 
     public ActionWindow()
     {
@@ -145,12 +144,12 @@ internal class ActionWindow
         {
             if (key.KeyCombination.Key == Key.UpArrow)
             {
-                SetCursorIndex(_cursorIndex - 1);
+                DecrementCursorIndex();
                 continue;
             }
             if (key.KeyCombination.Key == Key.DownArrow)
             {
-                SetCursorIndex(_cursorIndex + 1);
+                IncrementCursorIndex();
                 continue;
             }
 
@@ -201,17 +200,18 @@ internal class ActionWindow
 
         var actionKeys = GetActionKeys();
         int lineCount = actionKeys.Length;
+        var cursorIndex = _keyBox.GetFocusLineIndex();
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
-        _keyBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
-        _descBox.ClearAndSetFocusLine(_cursorIndex, lineCount);
+        _cursorBox.Clear(lineCount);
+        _keyBox.Clear(lineCount);
+        _descBox.Clear(lineCount);
 
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
 
         for (int i = 0; i < actionKeys.Length; ++i)
         {
             var actionKey = actionKeys[i];
-            if (i == _cursorIndex)
+            if (i == cursorIndex)
             {
                 if (theme.CursorEnable)
                 {
@@ -258,19 +258,37 @@ internal class ActionWindow
     private void SetCursorIndex(int index)
     {
         int actionKeyCount = GetActionKeys().Length;
-        _cursorIndex = index;
-        _cursorIndex = Math.Min(_cursorIndex, actionKeyCount - 1);
-        _cursorIndex = Math.Max(_cursorIndex, 0);
+
+        _cursorBox.ClearAndSetFocusLine(index, actionKeyCount);
+        _keyBox.ClearAndSetFocusLine(index, actionKeyCount);
+        _descBox.ClearAndSetFocusLine(index, actionKeyCount);
+        IsUpdated = true;
+    }
+
+    private void IncrementCursorIndex()
+    {
+        _cursorBox.IncrementFocusLine();
+        _keyBox.IncrementFocusLine();
+        _descBox.IncrementFocusLine();
+        IsUpdated = true;
+    }
+
+    private void DecrementCursorIndex()
+    {
+        _cursorBox.DecrementFocusLine();
+        _keyBox.DecrementFocusLine();
+        _descBox.DecrementFocusLine();
         IsUpdated = true;
     }
 
     private ActionKey? GetFocusedActionKey()
     {
         var actionKeys = GetActionKeys();
-        if (_cursorIndex >= actionKeys.Length)
+        var cursorIndex = _keyBox.GetFocusLineIndex();
+        if (cursorIndex >= actionKeys.Length)
             return null;
 
-        return actionKeys[_cursorIndex];
+        return actionKeys[cursorIndex];
     }
 
     private ActionKey[] GetActionKeys()
