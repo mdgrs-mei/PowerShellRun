@@ -576,7 +576,7 @@ internal class TextBox : LayoutItem
                 }
             }
 
-            for (y = innerLayoutY + innerLayout.Height - 1; y <= bottomEnd; ++y)
+            for (y = innerLayoutY + innerLayout.Height; y <= bottomEnd; ++y)
             {
                 for (int x = leftEnd; x <= rightEnd; ++x)
                 {
