@@ -20,7 +20,8 @@ internal class ActionWindow
 
     public ActionWindow()
     {
-        var theme = SelectorOptionHolder.GetInstance().Option.Theme;
+        var option = SelectorOptionHolder.GetInstance().Option;
+        var theme = option.Theme;
 
         RootLayout.LayoutSizeWidth.Set(LayoutSizeType.Content);
         RootLayout.LayoutSizeHeight.Set(LayoutSizeType.Absolute, Constants.ActionWindowHeight);
@@ -79,6 +80,10 @@ internal class ActionWindow
         _descBox.VerticalScrollBarEnable = true;
         _descBox.ScrollBarForegroundColor = theme.ActionWindowScrollBarForegroundColor;
         _descBox.ScrollBarBackgroundColor = theme.ActionWindowScrollBarBackgroundColor;
+
+        _cursorBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
+        _keyBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
+        _descBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
 
         SetVisible(false);
     }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Management.Automation.Host;
+using System.Runtime.InteropServices;
 
 internal class ResultWindow
 {
@@ -44,7 +45,8 @@ internal class ResultWindow
 
     public ResultWindow(SelectorMode mode, LayoutItem searchBarLayout)
     {
-        var theme = SelectorOptionHolder.GetInstance().Option.Theme;
+        var option = SelectorOptionHolder.GetInstance().Option;
+        var theme = option.Theme;
 
         _mode = mode;
         if (theme.PreviewPosition == PreviewPosition.Bottom)
@@ -106,6 +108,11 @@ internal class ResultWindow
             _descriptionBox.DefaultBackgroundColor = theme.DescriptionBoxBackgroundColor;
         }
 
+        _cursorBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _markerBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _nameBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _descriptionBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+
         _previewBox.VerticalScrollBarEnable = true;
         _previewBox.BorderFlags = theme.PreviewBorderFlags;
         _previewBox.BorderSymbol = theme.PreviewBorderSymbol;
@@ -128,6 +135,8 @@ internal class ResultWindow
             _previewBox.FillCells = true;
             _previewBox.DefaultBackgroundColor = theme.PreviewBoxBackgroundColor;
         }
+
+        _previewBox.CycleScrollEnable = option.PreviewCycleScrollEnable;
     }
 
     public void SetEntries(IReadOnlyList<SelectorEntry> entries)

@@ -212,6 +212,7 @@ internal class TextBox : LayoutItem
     private int _verticalScroll = 0;
 
     public bool FillCells { get; set; } = false;
+    public bool CycleScrollEnable { get; set; } = false;
     public FontColor? DefaultBackgroundColor { get; set; } = null;
     public bool VerticalScrollBarEnable { get; set; } = false;
     public FontColor? ScrollBarForegroundColor { get; set; } = null;
@@ -255,9 +256,18 @@ internal class TextBox : LayoutItem
             return;
 
         ++_focusLineIndex;
-        if (_focusLineIndex >= _lineCount)
+
+        var focusLineMax = Math.Max(_lineCount - 1, 0);
+        if (_focusLineIndex > focusLineMax)
         {
-            _focusLineIndex = 0;
+            if (CycleScrollEnable)
+            {
+                _focusLineIndex = 0;
+            }
+            else
+            {
+                _focusLineIndex = focusLineMax;
+            }
         }
         UpdateVisibleLineRange();
     }
@@ -268,14 +278,18 @@ internal class TextBox : LayoutItem
             return;
 
         --_focusLineIndex;
-        if (_lineCount == 0)
-        {
-            _focusLineIndex = 0;
-        }
-        else
+
+        var focusLineMax = Math.Max(_lineCount - 1, 0);
         if (_focusLineIndex < 0)
         {
-            _focusLineIndex = _lineCount - 1;
+            if (CycleScrollEnable)
+            {
+                _focusLineIndex = focusLineMax;
+            }
+            else
+            {
+                _focusLineIndex = 0;
+            }
         }
         UpdateVisibleLineRange();
     }
@@ -287,7 +301,14 @@ internal class TextBox : LayoutItem
         var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
         if (_verticalScroll > verticalScrollMax)
         {
-            _verticalScroll = 0;
+            if (CycleScrollEnable)
+            {
+                _verticalScroll = 0;
+            }
+            else
+            {
+                _verticalScroll = verticalScrollMax;
+            }
         }
         UpdateVisibleLineRange();
     }
@@ -299,7 +320,14 @@ internal class TextBox : LayoutItem
         var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
         if (_verticalScroll < 0)
         {
-            _verticalScroll = verticalScrollMax;
+            if (CycleScrollEnable)
+            {
+                _verticalScroll = verticalScrollMax;
+            }
+            else
+            {
+                _verticalScroll = 0;
+            }
         }
         UpdateVisibleLineRange();
     }
