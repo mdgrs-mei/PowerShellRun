@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Management.Automation.Host;
+using System.Runtime.InteropServices;
 
 internal class ResultWindow
 {
@@ -30,7 +31,6 @@ internal class ResultWindow
     private bool _isCursorUpdated = false;
     private bool _isPreviewScrollUpdated = false;
     private bool _isMarkerUpdated = false;
-    private int _cursorIndex = 0;
     private int? _cursorIndexRequest = null;
     private int _previewVerticalScroll = 0;
 
@@ -45,7 +45,8 @@ internal class ResultWindow
 
     public ResultWindow(SelectorMode mode, LayoutItem searchBarLayout)
     {
-        var theme = SelectorOptionHolder.GetInstance().Option.Theme;
+        var option = SelectorOptionHolder.GetInstance().Option;
+        var theme = option.Theme;
 
         _mode = mode;
         if (theme.PreviewPosition == PreviewPosition.Bottom)
@@ -107,6 +108,11 @@ internal class ResultWindow
             _descriptionBox.DefaultBackgroundColor = theme.DescriptionBoxBackgroundColor;
         }
 
+        _cursorBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _markerBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _nameBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+        _descriptionBox.CycleScrollEnable = option.EntryCycleScrollEnable;
+
         _previewBox.VerticalScrollBarEnable = true;
         _previewBox.BorderFlags = theme.PreviewBorderFlags;
         _previewBox.BorderSymbol = theme.PreviewBorderSymbol;
@@ -129,6 +135,8 @@ internal class ResultWindow
             _previewBox.FillCells = true;
             _previewBox.DefaultBackgroundColor = theme.PreviewBoxBackgroundColor;
         }
+
+        _previewBox.CycleScrollEnable = option.PreviewCycleScrollEnable;
     }
 
     public void SetEntries(IReadOnlyList<SelectorEntry> entries)
@@ -239,16 +247,18 @@ internal class ResultWindow
 
     private SelectorEntry? GetFocusedEntry()
     {
-        if (_cursorIndex >= _searchResults.Length)
+        int cursorIndex = _nameBox.GetFocusLineIndex();
+        if (cursorIndex >= _searchResults.Length)
             return null;
-        return _searchResults[_cursorIndex].SelectorEntry;
+        return _searchResults[cursorIndex].SelectorEntry;
     }
 
     private InternalEntry? GetFocusedInternalEntry()
     {
-        if (_cursorIndex >= _searchResults.Length)
+        int cursorIndex = _nameBox.GetFocusLineIndex();
+        if (cursorIndex >= _searchResults.Length)
             return null;
-        return _searchResults[_cursorIndex];
+        return _searchResults[cursorIndex];
     }
 
     private bool IsFocusedEntryUpdated()
@@ -259,12 +269,13 @@ internal class ResultWindow
     public (SelectorEntry? FocusedEntry, int CursorIndex,
             SelectorEntry[]? MarkedEntries, int[]? MarkedEntryIndexes) GetResult()
     {
+        int cursorIndex = _nameBox.GetFocusLineIndex();
         var marked = GetMarkedEntries();
         if (IsActionAccepted)
         {
-            return (GetFocusedEntry(), _cursorIndex, marked.Entries, marked.Indexes);
+            return (GetFocusedEntry(), cursorIndex, marked.Entries, marked.Indexes);
         }
-        return (null, _cursorIndex, null, marked.Indexes);
+        return (null, cursorIndex, null, marked.Indexes);
     }
 
     private void GetActionWindowState()
@@ -374,20 +385,38 @@ internal class ResultWindow
     {
         if (key.KeyCombination.Equals(KeyCombination.UpArrow))
         {
-            SetCursorIndex(_cursorIndex - 1);
+            DecrementCursorIndex();
             return;
         }
         if (key.KeyCombination.Equals(KeyCombination.DownArrow))
         {
-            SetCursorIndex(_cursorIndex + 1);
+            IncrementCursorIndex();
             return;
+        }
+
+        foreach (var upKey in keyBinding.PageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                EntryPageUp();
+                return;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                EntryPageDown();
+                return;
+            }
         }
 
         foreach (var upKey in keyBinding.PreviewVerticalScrollUpKeys)
         {
             if (key.KeyCombination.Equals(upKey))
             {
-                SetPreviewVerticalScroll(_previewVerticalScroll - 1);
+                DecrementPreviewVerticalScroll();
                 return;
             }
         }
@@ -396,7 +425,25 @@ internal class ResultWindow
         {
             if (key.KeyCombination.Equals(downKey))
             {
-                SetPreviewVerticalScroll(_previewVerticalScroll + 1);
+                IncrementPreviewVerticalScroll();
+                return;
+            }
+        }
+
+        foreach (var upKey in keyBinding.PreviewPageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                PreviewPageUp();
+                return;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PreviewPageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                PreviewPageDown();
                 return;
             }
         }
@@ -452,31 +499,16 @@ internal class ResultWindow
 
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
         bool isMarkerEnabled = (_mode == SelectorMode.MultiSelection);
+        int lineCount = _searchResults.Length;
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex);
-        _markerBox.ClearAndSetFocusLine(_cursorIndex);
-        _nameBox.ClearAndSetFocusLine(_cursorIndex);
-        _descriptionBox.ClearAndSetFocusLine(_cursorIndex);
+        _cursorBox.Clear(lineCount);
+        _markerBox.Clear(lineCount);
+        _nameBox.Clear(lineCount);
+        _descriptionBox.Clear(lineCount);
 
-        _nameBox.SetLineCountForScrollBar(_searchResults.Length);
-        _descriptionBox.SetLineCountForScrollBar(_searchResults.Length);
-
-        if (IsFocusedEntryUpdated())
-        {
-            var entry = GetFocusedEntry();
-            if (entry is not null)
-            {
-                SetPreviewVerticalScroll(entry.PreviewInitialVerticalScroll);
-            }
-            else
-            {
-                SetPreviewVerticalScroll(0);
-            }
-        }
         if (_searchResults.Length == 0)
         {
-            _previewBox.ClearAndSetVerticalScroll(0);
-            _previewBox.SetLineCountForScrollBar(0);
+            _previewBox.ClearAndSetVerticalScroll(0, 0);
         }
 
         var visibleLineRange = _nameBox.GetVisibleLineRange();
@@ -494,21 +526,23 @@ internal class ResultWindow
                 icon = selectorEntry.Icon + ' ';
             }
 
-            if (i == _cursorIndex)
+            if (i == _nameBox.GetFocusLineIndex())
             {
                 if (theme.PreviewEnable)
                 {
                     var previewLines = internalEntry.GetPreviewLines();
                     int previewLineCount = (previewLines is not null) ? previewLines.Length : 0;
 
-                    int previewVerticalScroll = 0;
-                    if (previewLineCount > 0)
+                    if (IsFocusedEntryUpdated() || _isFocusedEntryContentUpdated)
                     {
-                        var verticalScrollMax = Math.Max(previewLineCount - _previewBox.GetInnerLayout().Height, 0);
-                        _previewVerticalScroll = Math.Min(_previewVerticalScroll, verticalScrollMax);
-                        previewVerticalScroll = _previewVerticalScroll;
+                        _previewBox.ClearAndSetVerticalScroll(
+                            selectorEntry.PreviewInitialVerticalScroll,
+                            previewLineCount);
                     }
-                    _previewBox.ClearAndSetVerticalScroll(previewVerticalScroll);
+                    else
+                    {
+                        _previewBox.Clear(previewLineCount);
+                    }
 
                     if (previewLines is not null)
                     {
@@ -522,7 +556,6 @@ internal class ResultWindow
                                 theme.PreviewStyle);
                         }
                     }
-                    _previewBox.SetLineCountForScrollBar(previewLineCount);
                 }
 
                 if (theme.CursorEnable)
@@ -619,29 +652,75 @@ internal class ResultWindow
 
     private void SetCursorIndex(int index)
     {
-        var resultCount = _searchResults.Length;
-        _cursorIndex = index;
-        if (resultCount == 0)
-        {
-            _cursorIndex = 0;
-        }
-        else
-        {
-            while (_cursorIndex < 0)
-            {
-                _cursorIndex += resultCount;
-            }
-            while (_cursorIndex >= resultCount)
-            {
-                _cursorIndex -= resultCount;
-            }
-        }
+        int lineCount = _searchResults.Length;
+
+        _cursorBox.ClearAndSetFocusLine(index, lineCount);
+        _markerBox.ClearAndSetFocusLine(index, lineCount);
+        _nameBox.ClearAndSetFocusLine(index, lineCount);
+        _descriptionBox.ClearAndSetFocusLine(index, lineCount);
+
         _isCursorUpdated = true;
     }
 
-    private void SetPreviewVerticalScroll(int scroll)
+    private void IncrementCursorIndex()
     {
-        _previewVerticalScroll = Math.Max(scroll, 0);
+        _cursorBox.IncrementFocusLine();
+        _markerBox.IncrementFocusLine();
+        _nameBox.IncrementFocusLine();
+        _descriptionBox.IncrementFocusLine();
+
+        _isCursorUpdated = true;
+    }
+
+    private void DecrementCursorIndex()
+    {
+        _cursorBox.DecrementFocusLine();
+        _markerBox.DecrementFocusLine();
+        _nameBox.DecrementFocusLine();
+        _descriptionBox.DecrementFocusLine();
+
+        _isCursorUpdated = true;
+    }
+
+    private void EntryPageUp()
+    {
+        _cursorBox.PageUp();
+        _markerBox.PageUp();
+        _nameBox.PageUp();
+        _descriptionBox.PageUp();
+        _isCursorUpdated = true;
+    }
+
+    private void EntryPageDown()
+    {
+        _cursorBox.PageDown();
+        _markerBox.PageDown();
+        _nameBox.PageDown();
+        _descriptionBox.PageDown();
+        _isCursorUpdated = true;
+    }
+
+    private void IncrementPreviewVerticalScroll()
+    {
+        _previewBox.IncrementVerticalScroll();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void DecrementPreviewVerticalScroll()
+    {
+        _previewBox.DecrementVerticalScroll();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void PreviewPageUp()
+    {
+        _previewBox.PageUp();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void PreviewPageDown()
+    {
+        _previewBox.PageDown();
         _isPreviewScrollUpdated = true;
     }
 

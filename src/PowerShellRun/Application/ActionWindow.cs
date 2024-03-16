@@ -17,11 +17,11 @@ internal class ActionWindow
     private TextBox _descBox = new TextBox();
     private InternalEntry? _entry = null;
     private bool _isAnyEntryMarked = false;
-    private int _cursorIndex = 0;
 
     public ActionWindow()
     {
-        var theme = SelectorOptionHolder.GetInstance().Option.Theme;
+        var option = SelectorOptionHolder.GetInstance().Option;
+        var theme = option.Theme;
 
         RootLayout.LayoutSizeWidth.Set(LayoutSizeType.Content);
         RootLayout.LayoutSizeHeight.Set(LayoutSizeType.Absolute, Constants.ActionWindowHeight);
@@ -80,6 +80,10 @@ internal class ActionWindow
         _descBox.VerticalScrollBarEnable = true;
         _descBox.ScrollBarForegroundColor = theme.ActionWindowScrollBarForegroundColor;
         _descBox.ScrollBarBackgroundColor = theme.ActionWindowScrollBarBackgroundColor;
+
+        _cursorBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
+        _keyBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
+        _descBox.CycleScrollEnable = option.ActionWindowCycleScrollEnable;
 
         SetVisible(false);
     }
@@ -143,17 +147,6 @@ internal class ActionWindow
 
         foreach (var key in inputKeys)
         {
-            if (key.KeyCombination.Key == Key.UpArrow)
-            {
-                SetCursorIndex(_cursorIndex - 1);
-                continue;
-            }
-            if (key.KeyCombination.Key == Key.DownArrow)
-            {
-                SetCursorIndex(_cursorIndex + 1);
-                continue;
-            }
-
             foreach (var quitKey in keyBinding.QuitKeys)
             {
                 if (key.KeyCombination.Equals(quitKey))
@@ -188,10 +181,48 @@ internal class ActionWindow
                 }
             }
 
+            if (ReadKeysContinue(key, keyBinding))
+                continue;
+
             // Hide if any other keys are pressed.
             SetVisible(false);
             return;
         }
+    }
+
+    private bool ReadKeysContinue(KeyInput.KeyInfo key, KeyBinding keyBinding)
+    {
+        if (key.KeyCombination.Key == Key.UpArrow)
+        {
+            DecrementCursorIndex();
+            return true;
+        }
+
+        if (key.KeyCombination.Key == Key.DownArrow)
+        {
+            IncrementCursorIndex();
+            return true;
+        }
+
+        foreach (var upKey in keyBinding.PageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                PageUp();
+                return true;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                PageDown();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void BuildUi()
@@ -199,18 +230,20 @@ internal class ActionWindow
         if (!IsVisible())
             return;
 
-        _cursorBox.ClearAndSetFocusLine(_cursorIndex);
-        _keyBox.ClearAndSetFocusLine(_cursorIndex);
-        _descBox.ClearAndSetFocusLine(_cursorIndex);
-
         var actionKeys = GetActionKeys();
-        _descBox.SetLineCountForScrollBar(actionKeys.Length);
+        int lineCount = actionKeys.Length;
+        var cursorIndex = _keyBox.GetFocusLineIndex();
+
+        _cursorBox.Clear(lineCount);
+        _keyBox.Clear(lineCount);
+        _descBox.Clear(lineCount);
+
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
 
         for (int i = 0; i < actionKeys.Length; ++i)
         {
             var actionKey = actionKeys[i];
-            if (i == _cursorIndex)
+            if (i == cursorIndex)
             {
                 if (theme.CursorEnable)
                 {
@@ -257,19 +290,53 @@ internal class ActionWindow
     private void SetCursorIndex(int index)
     {
         int actionKeyCount = GetActionKeys().Length;
-        _cursorIndex = index;
-        _cursorIndex = Math.Min(_cursorIndex, actionKeyCount - 1);
-        _cursorIndex = Math.Max(_cursorIndex, 0);
+
+        _cursorBox.ClearAndSetFocusLine(index, actionKeyCount);
+        _keyBox.ClearAndSetFocusLine(index, actionKeyCount);
+        _descBox.ClearAndSetFocusLine(index, actionKeyCount);
+        IsUpdated = true;
+    }
+
+    private void IncrementCursorIndex()
+    {
+        _cursorBox.IncrementFocusLine();
+        _keyBox.IncrementFocusLine();
+        _descBox.IncrementFocusLine();
+        IsUpdated = true;
+    }
+
+    private void DecrementCursorIndex()
+    {
+        _cursorBox.DecrementFocusLine();
+        _keyBox.DecrementFocusLine();
+        _descBox.DecrementFocusLine();
+        IsUpdated = true;
+    }
+
+    private void PageUp()
+    {
+        _cursorBox.PageUp();
+        _keyBox.PageUp();
+        _descBox.PageUp();
+        IsUpdated = true;
+    }
+
+    private void PageDown()
+    {
+        _cursorBox.PageDown();
+        _keyBox.PageDown();
+        _descBox.PageDown();
         IsUpdated = true;
     }
 
     private ActionKey? GetFocusedActionKey()
     {
         var actionKeys = GetActionKeys();
-        if (_cursorIndex >= actionKeys.Length)
+        var cursorIndex = _keyBox.GetFocusLineIndex();
+        if (cursorIndex >= actionKeys.Length)
             return null;
 
-        return actionKeys[_cursorIndex];
+        return actionKeys[cursorIndex];
     }
 
     private ActionKey[] GetActionKeys()

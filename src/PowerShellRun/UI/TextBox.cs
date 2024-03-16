@@ -207,28 +207,35 @@ internal class TextBox : LayoutItem
     private List<Line> _lines = new List<Line>();
     private int _topLineIndex = 0;
     private int _bottomLineIndex = 0;
+    private int _lineCount = 0;
     private int? _focusLineIndex = 0;
     private int _verticalScroll = 0;
-    private int _lineCountForScrollBar = 0;
 
     public bool FillCells { get; set; } = false;
+    public bool CycleScrollEnable { get; set; } = false;
     public FontColor? DefaultBackgroundColor { get; set; } = null;
     public bool VerticalScrollBarEnable { get; set; } = false;
     public FontColor? ScrollBarForegroundColor { get; set; } = null;
     public FontColor? ScrollBarBackgroundColor { get; set; } = null;
     public bool OnlyStoreLinesInVisibleRange { get; set; } = true;
 
-    public void ClearAndSetFocusLine(int focusLineIndex)
+    public void ClearAndSetFocusLine(int focusLineIndex, int lineCount)
     {
         _focusLineIndex = focusLineIndex;
         _verticalScroll = 0;
-        Clear();
+        Clear(lineCount);
     }
 
-    public void ClearAndSetVerticalScroll(int scroll)
+    public void ClearAndSetVerticalScroll(int scroll, int lineCount)
     {
         _focusLineIndex = null;
         _verticalScroll = Math.Max(scroll, 0);
+        Clear(lineCount);
+    }
+
+    public void Clear(int lineCount)
+    {
+        _lineCount = lineCount;
         Clear();
     }
 
@@ -236,21 +243,143 @@ internal class TextBox : LayoutItem
     {
         _lines.Clear();
         UpdateVisibleLineRange();
-
-        if (OnlyStoreLinesInVisibleRange)
-        {
-            var visibleRange = GetVisibleLineRange();
-            var lineCount = visibleRange.BottomLineIndex - visibleRange.TopLineIndex + 1;
-            for (int i = 0; i < lineCount; ++i)
-            {
-                _lines.Add(new Line());
-            }
-        }
     }
 
-    public void SetLineCountForScrollBar(int lineCount)
+    public int GetFocusLineIndex()
     {
-        _lineCountForScrollBar = lineCount;
+        return _focusLineIndex ?? 0;
+    }
+
+    public void IncrementFocusLine()
+    {
+        if (_focusLineIndex is null)
+            return;
+
+        ++_focusLineIndex;
+
+        var focusLineMax = Math.Max(_lineCount - 1, 0);
+        if (_focusLineIndex > focusLineMax)
+        {
+            if (CycleScrollEnable)
+            {
+                _focusLineIndex = 0;
+            }
+            else
+            {
+                _focusLineIndex = focusLineMax;
+            }
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void DecrementFocusLine()
+    {
+        if (_focusLineIndex is null)
+            return;
+
+        --_focusLineIndex;
+
+        var focusLineMax = Math.Max(_lineCount - 1, 0);
+        if (_focusLineIndex < 0)
+        {
+            if (CycleScrollEnable)
+            {
+                _focusLineIndex = focusLineMax;
+            }
+            else
+            {
+                _focusLineIndex = 0;
+            }
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void IncrementVerticalScroll()
+    {
+        ++_verticalScroll;
+
+        var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+        if (_verticalScroll > verticalScrollMax)
+        {
+            if (CycleScrollEnable)
+            {
+                _verticalScroll = 0;
+            }
+            else
+            {
+                _verticalScroll = verticalScrollMax;
+            }
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void DecrementVerticalScroll()
+    {
+        --_verticalScroll;
+
+        var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+        if (_verticalScroll < 0)
+        {
+            if (CycleScrollEnable)
+            {
+                _verticalScroll = verticalScrollMax;
+            }
+            else
+            {
+                _verticalScroll = 0;
+            }
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void PageDown()
+    {
+        if (_focusLineIndex is int focusLineIndex)
+        {
+            var visibleRange = GetVisibleLineRange();
+            if (visibleRange.BottomLineIndex != focusLineIndex)
+            {
+                focusLineIndex = visibleRange.BottomLineIndex;
+            }
+            else
+            {
+                focusLineIndex += GetInnerLayout().Height;
+            }
+
+            var focusLineMax = Math.Max(_lineCount - 1, 0);
+            _focusLineIndex = Math.Min(focusLineIndex, focusLineMax);
+        }
+        else
+        {
+            _verticalScroll += GetInnerLayout().Height;
+
+            var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+            _verticalScroll = Math.Min(_verticalScroll, verticalScrollMax);
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void PageUp()
+    {
+        if (_focusLineIndex is int focusLineIndex)
+        {
+            var visibleRange = GetVisibleLineRange();
+            if (visibleRange.TopLineIndex != focusLineIndex)
+            {
+                focusLineIndex = visibleRange.TopLineIndex;
+            }
+            else
+            {
+                focusLineIndex -= GetInnerLayout().Height;
+            }
+            _focusLineIndex = Math.Max(focusLineIndex, 0);
+        }
+        else
+        {
+            _verticalScroll -= GetInnerLayout().Height;
+            _verticalScroll = Math.Max(_verticalScroll, 0);
+        }
+        UpdateVisibleLineRange();
     }
 
     public void AddWord(
@@ -266,20 +395,18 @@ internal class TextBox : LayoutItem
     {
         if (OnlyStoreLinesInVisibleRange)
         {
-            lineIndex -= GetVisibleLineRange().TopLineIndex;
-            if (lineIndex >= _lines.Count)
+            var visibleRange = GetVisibleLineRange();
+            if (lineIndex > visibleRange.BottomLineIndex)
                 return;
+            lineIndex -= visibleRange.TopLineIndex;
         }
 
         if (lineIndex < 0)
             return;
 
-        if (!OnlyStoreLinesInVisibleRange)
+        while (_lines.Count <= lineIndex)
         {
-            while (_lines.Count <= lineIndex)
-            {
-                _lines.Add(new Line());
-            }
+            _lines.Add(new Line());
         }
 
         if (backgroundColor is null)
@@ -302,32 +429,6 @@ internal class TextBox : LayoutItem
             highlightFontStyle);
 
         _lines[lineIndex].Words.Add(_word);
-    }
-
-    public void SetLineColor(
-        int lineIndex,
-        FontColor? foregroundColor = null,
-        FontColor? backgroundColor = null,
-        FontColor? highlightForegroundColor = null,
-        FontColor? highlightBackgroundColor = null)
-    {
-        if (OnlyStoreLinesInVisibleRange)
-        {
-            lineIndex -= GetVisibleLineRange().TopLineIndex;
-        }
-
-        if (lineIndex < 0 || lineIndex >= _lines.Count)
-            return;
-
-        var line = _lines[lineIndex];
-        foreach (var word in line.Words)
-        {
-            word.ForegroundColor = foregroundColor;
-            word.BackgroundColor = backgroundColor;
-            word.HighlightForegroundColor = highlightForegroundColor;
-            word.HighlightBackgroundColor = highlightBackgroundColor;
-        }
-        line.ClearCells();
     }
 
     public (int TopLineIndex, int BottomLineIndex) GetVisibleLineRange()
@@ -394,7 +495,7 @@ internal class TextBox : LayoutItem
                 _topLineIndex = focusLineIndex;
             }
             else
-            if (_focusLineIndex >= _topLineIndex + innerLayoutHeight)
+            if (focusLineIndex >= _topLineIndex + innerLayoutHeight)
             {
                 _topLineIndex = focusLineIndex - innerLayoutHeight + 1;
             }
@@ -433,14 +534,14 @@ internal class TextBox : LayoutItem
     {
         var innerLayout = GetInnerLayout();
         var canvas = Canvas.GetInstance();
-        int lineIndexStart = 0;
-        int lineIndexEnd = _lines.Count - 1;
+        var visibleRange = GetVisibleLineRange();
 
-        if (!OnlyStoreLinesInVisibleRange)
+        int lineIndexStart = visibleRange.TopLineIndex;
+        int lineIndexEnd = visibleRange.BottomLineIndex;
+        if (OnlyStoreLinesInVisibleRange)
         {
-            var visibleRange = GetVisibleLineRange();
-            lineIndexStart = visibleRange.TopLineIndex;
-            lineIndexEnd = visibleRange.BottomLineIndex;
+            lineIndexStart -= visibleRange.TopLineIndex;
+            lineIndexEnd -= visibleRange.TopLineIndex;
         }
 
         int innerLayoutX = innerLayout.X;
@@ -512,7 +613,7 @@ internal class TextBox : LayoutItem
                 }
             }
 
-            for (y = innerLayoutY + innerLayout.Height - 1; y <= bottomEnd; ++y)
+            for (y = innerLayoutY + innerLayout.Height; y <= bottomEnd; ++y)
             {
                 for (int x = leftEnd; x <= rightEnd; ++x)
                 {
@@ -561,11 +662,11 @@ internal class TextBox : LayoutItem
                 ScrollBarBackgroundColor);
         }
 
-        if (_lineCountForScrollBar > 0)
+        if (_lineCount > 0)
         {
-            int scrollBarHeight = Math.Clamp(innerHeight * innerHeight / _lineCountForScrollBar, 1, innerHeight);
+            int scrollBarHeight = Math.Clamp(innerHeight * innerHeight / _lineCount, 1, innerHeight);
 
-            int scrollBarBottomLineIndex = (int)((innerHeight - 1) * ((double)(visibleRange.BottomLineIndex) / (_lineCountForScrollBar - 1)));
+            int scrollBarBottomLineIndex = (int)((innerHeight - 1) * ((double)(visibleRange.BottomLineIndex) / (_lineCount - 1)));
             scrollBarBottomLineIndex = Math.Clamp(scrollBarBottomLineIndex, 0, innerHeight - 1);
 
             int scrollBarTopLineIndex = Math.Clamp(scrollBarBottomLineIndex - scrollBarHeight + 1, 0, innerHeight - 1);

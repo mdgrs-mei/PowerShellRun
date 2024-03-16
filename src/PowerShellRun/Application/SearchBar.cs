@@ -39,7 +39,7 @@ internal class SearchBar
         int promptLength = TextBox.GetDisplayWidth(promptString);
         _prompt.OnlyStoreLinesInVisibleRange = false;
         _prompt.LayoutSizeWidth.Set(LayoutSizeType.Absolute, promptLength);
-        _prompt.ClearAndSetFocusLine(0);
+        _prompt.ClearAndSetFocusLine(0, 1);
         _prompt.AddWord(0, promptString, theme.PromptForegroundColor, theme.PromptBackgroundColor);
 
         if (theme.QueryBoxBackgroundColor is not null)
@@ -97,7 +97,7 @@ internal class SearchBar
         if (IsQueryUpdated)
         {
             var theme = SelectorOptionHolder.GetInstance().Option.Theme;
-            _textBox.ClearAndSetFocusLine(0);
+            _textBox.ClearAndSetFocusLine(0, 1);
             _textBox.AddWord(0, Query, theme.QueryForegroundColor, theme.QueryBackgroundColor, theme.QueryStyle);
 
             if (!string.IsNullOrEmpty(DebugPerfString))
