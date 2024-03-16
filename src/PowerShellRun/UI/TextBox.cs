@@ -334,15 +334,20 @@ internal class TextBox : LayoutItem
 
     public void PageDown()
     {
-        if (_lineCount == 0)
-            return;
-
         if (_focusLineIndex is int focusLineIndex)
         {
             var visibleRange = GetVisibleLineRange();
-            focusLineIndex += GetInnerLayout().Height + visibleRange.BottomLineIndex - focusLineIndex;
+            if (visibleRange.BottomLineIndex != focusLineIndex)
+            {
+                focusLineIndex = visibleRange.BottomLineIndex;
+            }
+            else
+            {
+                focusLineIndex += GetInnerLayout().Height;
+            }
 
-            _focusLineIndex = Math.Min(focusLineIndex, _lineCount - 1);
+            var focusLineMax = Math.Max(_lineCount - 1, 0);
+            _focusLineIndex = Math.Min(focusLineIndex, focusLineMax);
         }
         else
         {
@@ -356,13 +361,17 @@ internal class TextBox : LayoutItem
 
     public void PageUp()
     {
-        if (_lineCount == 0)
-            return;
-
         if (_focusLineIndex is int focusLineIndex)
         {
             var visibleRange = GetVisibleLineRange();
-            focusLineIndex -= GetInnerLayout().Height + focusLineIndex - visibleRange.TopLineIndex;
+            if (visibleRange.TopLineIndex != focusLineIndex)
+            {
+                focusLineIndex = visibleRange.TopLineIndex;
+            }
+            else
+            {
+                focusLineIndex -= GetInnerLayout().Height;
+            }
             _focusLineIndex = Math.Max(focusLineIndex, 0);
         }
         else
