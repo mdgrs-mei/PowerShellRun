@@ -304,6 +304,47 @@ internal class TextBox : LayoutItem
         UpdateVisibleLineRange();
     }
 
+    public void PageDown()
+    {
+        if (_lineCount == 0)
+            return;
+
+        if (_focusLineIndex is int focusLineIndex)
+        {
+            var visibleRange = GetVisibleLineRange();
+            focusLineIndex += GetInnerLayout().Height + visibleRange.BottomLineIndex - focusLineIndex;
+
+            _focusLineIndex = Math.Min(focusLineIndex, _lineCount - 1);
+        }
+        else
+        {
+            _verticalScroll += GetInnerLayout().Height;
+
+            var verticalScrollMax = Math.Max(_lineCount - GetInnerLayout().Height, 0);
+            _verticalScroll = Math.Min(_verticalScroll, verticalScrollMax);
+        }
+        UpdateVisibleLineRange();
+    }
+
+    public void PageUp()
+    {
+        if (_lineCount == 0)
+            return;
+
+        if (_focusLineIndex is int focusLineIndex)
+        {
+            var visibleRange = GetVisibleLineRange();
+            focusLineIndex -= GetInnerLayout().Height + focusLineIndex - visibleRange.TopLineIndex;
+            _focusLineIndex = Math.Max(focusLineIndex, 0);
+        }
+        else
+        {
+            _verticalScroll -= GetInnerLayout().Height;
+            _verticalScroll = Math.Max(_verticalScroll, 0);
+        }
+        UpdateVisibleLineRange();
+    }
+
     public void AddWord(
         int lineIndex,
         string word,
@@ -417,7 +458,7 @@ internal class TextBox : LayoutItem
                 _topLineIndex = focusLineIndex;
             }
             else
-            if (_focusLineIndex >= _topLineIndex + innerLayoutHeight)
+            if (focusLineIndex >= _topLineIndex + innerLayoutHeight)
             {
                 _topLineIndex = focusLineIndex - innerLayoutHeight + 1;
             }
