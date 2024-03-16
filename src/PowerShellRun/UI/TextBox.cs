@@ -534,14 +534,14 @@ internal class TextBox : LayoutItem
     {
         var innerLayout = GetInnerLayout();
         var canvas = Canvas.GetInstance();
-        int lineIndexStart = 0;
-        int lineIndexEnd = _lines.Count - 1;
+        var visibleRange = GetVisibleLineRange();
 
-        if (!OnlyStoreLinesInVisibleRange)
+        int lineIndexStart = visibleRange.TopLineIndex;
+        int lineIndexEnd = visibleRange.BottomLineIndex;
+        if (OnlyStoreLinesInVisibleRange)
         {
-            var visibleRange = GetVisibleLineRange();
-            lineIndexStart = visibleRange.TopLineIndex;
-            lineIndexEnd = visibleRange.BottomLineIndex;
+            lineIndexStart -= visibleRange.TopLineIndex;
+            lineIndexEnd -= visibleRange.TopLineIndex;
         }
 
         int innerLayoutX = innerLayout.X;
