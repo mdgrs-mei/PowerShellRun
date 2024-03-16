@@ -3,8 +3,12 @@
 public class KeyBinding
 {
     public KeyCombination[] QuitKeys { get; set; }
+    public KeyCombination[] PageUpKeys { get; set; }
+    public KeyCombination[] PageDownKeys { get; set; }
     public KeyCombination[] PreviewVerticalScrollUpKeys { get; set; }
     public KeyCombination[] PreviewVerticalScrollDownKeys { get; set; }
+    public KeyCombination[] PreviewPageUpKeys { get; set; }
+    public KeyCombination[] PreviewPageDownKeys { get; set; }
     public KeyCombination[] MarkerKeys { get; set; }
     public KeyCombination[] ToggleAllMarkerKeys { get; set; }
     public ActionKey[] DefaultActionKeys { get; set; }
@@ -16,6 +20,14 @@ public class KeyBinding
     {
         QuitKeys = new KeyCombination[]{
             KeyCombination.Escape,
+        };
+
+        PageUpKeys = new KeyCombination[]{
+            new KeyCombination(KeyModifier.None, Key.PageUp),
+        };
+
+        PageDownKeys = new KeyCombination[]{
+            new KeyCombination(KeyModifier.None, Key.PageDown),
         };
 
         MarkerKeys = new KeyCombination[]{
@@ -50,6 +62,12 @@ public class KeyBinding
             PreviewVerticalScrollDownKeys = new KeyCombination[]{
                 new KeyCombination(KeyModifier.Alt, Key.DownArrow),
             };
+            PreviewPageUpKeys = new KeyCombination[]{
+                new KeyCombination(KeyModifier.Alt, Key.PageUp),
+            };
+            PreviewPageDownKeys = new KeyCombination[]{
+                new KeyCombination(KeyModifier.Alt, Key.PageDown),
+            };
         }
         else
         {
@@ -58,6 +76,12 @@ public class KeyBinding
             };
             PreviewVerticalScrollDownKeys = new KeyCombination[]{
                 new KeyCombination(KeyModifier.Shift, Key.DownArrow),
+            };
+            PreviewPageUpKeys = new KeyCombination[]{
+                new KeyCombination(KeyModifier.Shift, Key.PageUp),
+            };
+            PreviewPageDownKeys = new KeyCombination[]{
+                new KeyCombination(KeyModifier.Shift, Key.PageDown),
             };
         }
     }

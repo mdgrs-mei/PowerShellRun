@@ -142,17 +142,6 @@ internal class ActionWindow
 
         foreach (var key in inputKeys)
         {
-            if (key.KeyCombination.Key == Key.UpArrow)
-            {
-                DecrementCursorIndex();
-                continue;
-            }
-            if (key.KeyCombination.Key == Key.DownArrow)
-            {
-                IncrementCursorIndex();
-                continue;
-            }
-
             foreach (var quitKey in keyBinding.QuitKeys)
             {
                 if (key.KeyCombination.Equals(quitKey))
@@ -187,10 +176,48 @@ internal class ActionWindow
                 }
             }
 
+            if (ReadKeysContinue(key, keyBinding))
+                continue;
+
             // Hide if any other keys are pressed.
             SetVisible(false);
             return;
         }
+    }
+
+    private bool ReadKeysContinue(KeyInput.KeyInfo key, KeyBinding keyBinding)
+    {
+        if (key.KeyCombination.Key == Key.UpArrow)
+        {
+            DecrementCursorIndex();
+            return true;
+        }
+
+        if (key.KeyCombination.Key == Key.DownArrow)
+        {
+            IncrementCursorIndex();
+            return true;
+        }
+
+        foreach (var upKey in keyBinding.PageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                PageUp();
+                return true;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                PageDown();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void BuildUi()
@@ -278,6 +305,22 @@ internal class ActionWindow
         _cursorBox.DecrementFocusLine();
         _keyBox.DecrementFocusLine();
         _descBox.DecrementFocusLine();
+        IsUpdated = true;
+    }
+
+    private void PageUp()
+    {
+        _cursorBox.PageUp();
+        _keyBox.PageUp();
+        _descBox.PageUp();
+        IsUpdated = true;
+    }
+
+    private void PageDown()
+    {
+        _cursorBox.PageDown();
+        _keyBox.PageDown();
+        _descBox.PageDown();
         IsUpdated = true;
     }
 

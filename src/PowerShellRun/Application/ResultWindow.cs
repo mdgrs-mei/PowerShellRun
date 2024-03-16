@@ -385,6 +385,24 @@ internal class ResultWindow
             return;
         }
 
+        foreach (var upKey in keyBinding.PageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                EntryPageUp();
+                return;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                EntryPageDown();
+                return;
+            }
+        }
+
         foreach (var upKey in keyBinding.PreviewVerticalScrollUpKeys)
         {
             if (key.KeyCombination.Equals(upKey))
@@ -399,6 +417,24 @@ internal class ResultWindow
             if (key.KeyCombination.Equals(downKey))
             {
                 IncrementPreviewVerticalScroll();
+                return;
+            }
+        }
+
+        foreach (var upKey in keyBinding.PreviewPageUpKeys)
+        {
+            if (key.KeyCombination.Equals(upKey))
+            {
+                PreviewPageUp();
+                return;
+            }
+        }
+
+        foreach (var downKey in keyBinding.PreviewPageDownKeys)
+        {
+            if (key.KeyCombination.Equals(downKey))
+            {
+                PreviewPageDown();
                 return;
             }
         }
@@ -637,6 +673,24 @@ internal class ResultWindow
         _isCursorUpdated = true;
     }
 
+    private void EntryPageUp()
+    {
+        _cursorBox.PageUp();
+        _markerBox.PageUp();
+        _nameBox.PageUp();
+        _descriptionBox.PageUp();
+        _isCursorUpdated = true;
+    }
+
+    private void EntryPageDown()
+    {
+        _cursorBox.PageDown();
+        _markerBox.PageDown();
+        _nameBox.PageDown();
+        _descriptionBox.PageDown();
+        _isCursorUpdated = true;
+    }
+
     private void IncrementPreviewVerticalScroll()
     {
         _previewBox.IncrementVerticalScroll();
@@ -646,6 +700,18 @@ internal class ResultWindow
     private void DecrementPreviewVerticalScroll()
     {
         _previewBox.DecrementVerticalScroll();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void PreviewPageUp()
+    {
+        _previewBox.PageUp();
+        _isPreviewScrollUpdated = true;
+    }
+
+    private void PreviewPageDown()
+    {
+        _previewBox.PageDown();
         _isPreviewScrollUpdated = true;
     }
 
