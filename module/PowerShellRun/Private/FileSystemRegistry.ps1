@@ -191,7 +191,7 @@ class FileSystemRegistry {
             prevDir = $null
         }
         while ($true) {
-            $option.Prompt = "$($currentDir.path)> "
+            $option.Prompt = "($distance) $($currentDir.path)> "
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {
@@ -200,11 +200,11 @@ class FileSystemRegistry {
                 $entry.UserData = $item
                 $entry.Name = $name
                 if ($item.PSIsContainer) {
-                    $entry.Icon = if ($icon) {$icon} else {'📁'}
+                    $entry.Icon = if ($icon) { $icon } else { '📁' }
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFolder
                     $entry.ActionKeys = $arguments.FolderActionKeys
                 } else {
-                    $entry.Icon = if ($icon) {$icon} else {'📄'}
+                    $entry.Icon = if ($icon) { $icon } else { '📄' }
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFile
                     $entry.ActionKeys = $arguments.FileActionKeys
                 }
@@ -212,13 +212,13 @@ class FileSystemRegistry {
                 $entries.Add($entry)
             }
 
+            Get-ChildItem -Path $currentDir.path | ForEach-Object {
+                $addEntry.Invoke($_, $_.Name)
+            }
+
             $parentItem = (Get-Item $currentDir.path).Parent
             if ($parentItem) {
                 $addEntry.Invoke((Get-Item $parentItem.FullName), '../', '🔼')
-            }
-
-            Get-ChildItem -Path $currentDir.path | ForEach-Object {
-                $addEntry.Invoke($_, $_.Name)
             }
 
             $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
