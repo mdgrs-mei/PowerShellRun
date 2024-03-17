@@ -32,7 +32,6 @@ internal class ResultWindow
     private bool _isPreviewScrollUpdated = false;
     private bool _isMarkerUpdated = false;
     private int? _cursorIndexRequest = null;
-    private int _previewVerticalScroll = 0;
 
     public bool IsUpdated { get; private set; } = false;
     public bool IsQuit { get; private set; } = false;
