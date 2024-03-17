@@ -185,37 +185,52 @@ class FileSystemRegistry {
         $option = $script:globalStore.psRunSelectorOption.DeepClone()
         $option.QuitWithBackspaceOnEmptyQuery = $true
 
-        $depth = 0
-        $dir = $rootDir
-        $parentDir = $null
+        $distance = 0
+        $currentDir = @{
+            path = $rootDir
+            prevDir = $null
+        }
         while ($true) {
-            $option.Prompt = "$dir> "
+            $option.Prompt = "$($currentDir.path)> "
 
-            $result = Get-ChildItem -Path $dir | ForEach-Object {
+            $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+            $addEntry = {
+                param($item, $name, $icon)
                 $entry = [PowerShellRun.SelectorEntry]::new()
-                $entry.UserData = $_
-                $entry.Name = $_.Name
-                if ($_.PSIsContainer) {
-                    $entry.Icon = '📁'
+                $entry.UserData = $item
+                $entry.Name = $name
+                if ($item.PSIsContainer) {
+                    $entry.Icon = if ($icon) {$icon} else {'📁'}
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFolder
                     $entry.ActionKeys = $arguments.FolderActionKeys
                 } else {
-                    $entry.Icon = '📄'
+                    $entry.Icon = if ($icon) {$icon} else {'📄'}
                     $entry.PreviewAsyncScript = $arguments.PreviewScriptFile
                     $entry.ActionKeys = $arguments.FileActionKeys
                 }
-                $entry.PreviewAsyncScriptArgumentList = $_.FullName
-                $entry
-            } | Invoke-PSRunSelectorCustom -Option $option
+                $entry.PreviewAsyncScriptArgumentList = $item.FullName
+                $entries.Add($entry)
+            }
+
+            $parentItem = (Get-Item $currentDir.path).Parent
+            if ($parentItem) {
+                $addEntry.Invoke((Get-Item $parentItem.FullName), '../', '🔼')
+            }
+
+            Get-ChildItem -Path $currentDir.path | ForEach-Object {
+                $addEntry.Invoke($_, $_.Name)
+            }
+
+            $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
 
             if ($result.KeyCombination -eq 'Backspace') {
-                if ($depth -eq 0) {
+                if ($distance -eq 0) {
                     Restore-PSRunFunctionParentSelector
                     break
                 } else {
-                    $depth--
-                    $dir = $parentDir
-                    $parentDir = ([System.IO.Directory]::GetParent($dir)).FullName
+                    $distance--
+                    $currentDir.path = $currentDir.prevDir.path
+                    $currentDir.prevDir = $currentDir.prevDir.prevDir
                     continue
                 }
             }
@@ -227,9 +242,12 @@ class FileSystemRegistry {
             $item = $result.FocusedEntry.UserData
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 if ($item.PSIsContainer) {
-                    $depth++
-                    $parentDir = $dir
-                    $dir = $item.FullName
+                    $distance++
+                    $currentDir.prevDir = @{
+                        path = $currentDir.path
+                        prevDir = $currentDir.prevDir
+                    }
+                    $currentDir.path = $item.FullName
                 } else {
                     & $script:globalStore.invokeFile $item.FullName
                     break
