@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.0] - 2024-03-18
+
+### Added
+
+- Added `EntryCycleScrollEnable` property to `SelectorOption`
+- Added `PreviewCycleScrollEnable` property to `SelectorOption`
+- Added `ActionWindowCycleScrollEnable` property to `SelectorOption`
+- Added `PageUpKeys` property to `KeyBinding`
+- Added `PageDownKeys` property to `KeyBinding`
+- Added `PreviewPageUpKeys` property to `KeyBinding`
+- Added `PreviewPageDownKeys` property to `KeyBinding`
+- Added parent folder entries to File Manager (PSRun)
+- Added an indicator that shows distance from the root folder in File Manager (PSRun)
+
+### Changed
+
+- Changed `SelectorEntry.PreviewAsyncScriptArgumentList` to `object[]` to support named parameters in `PreviewAsyncScript`
+
+### Fixed
+
+- Fixed an error that occurs when some characters are typed before invoking PowerShellRun with a PSReadLine chord
+
 ## [0.1.0] - 2024-03-02
 
 ### Added
