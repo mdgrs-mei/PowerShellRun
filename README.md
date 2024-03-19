@@ -272,15 +272,17 @@ PowerShellRun.SelectorEntry               Enter          PowerShellRun.SelectorC
 By using `PreviewAsyncScript`, it's even possible to show information that takes some time to generate without blocking the UI. If you have [bat](https://github.com/sharkdp/bat) installed for syntax highlighting, you can build a Select-String viewer with this script:
 
 ```powershell
-$word = 'Custom'
+$word = Read-Host 'Type word to search for'
+$filter = Read-Host 'Type path filter (e.g. "*.cs")'
+
 $option = [PowerShellRun.SelectorOption]::new()
 $option.Prompt = "Searching for word '{0}'> " -f $word
 
-$matches = Get-ChildItem *.cs -Recurse | Select-String $word
-$result = $matches | ForEach-Object {
+$matchLines = Get-ChildItem $filter -Recurse | Select-String $word
+$result = $matchLines | ForEach-Object {
     $entry = [PowerShellRun.SelectorEntry]::new()
     $entry.UserData = $_
-    $entry.Name = $_.Filename
+    $entry.Name = '{0}:{1}' -f $_.Filename, $_.LineNumber
     $entry.Description = $_.Path
     $entry.PreviewAsyncScript = {
         param($match)
@@ -291,12 +293,14 @@ $result = $matches | ForEach-Object {
     $entry
 } | Invoke-PSRunSelectorCustom -Option $option
 
-if ($result.KeyCombination -eq 'Enter') {
-    code $result.FocusedEntry.UserData.Path
+$match = $result.FocusedEntry.UserData
+if ($match -and ($result.KeyCombination -eq 'Enter')) {
+    $argument = '{0}:{1}' -f $match.Path, $match.LineNumber
+    code --goto $argument
 }
 ```
 
-![Invoke-PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/49c2fa11-51a4-4cfa-99e7-c5d4ba33c1f0)
+![Invoke-PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/c963be6f-88cb-457b-a966-a94def3f057a)
 
 ## Major Limitations
 
