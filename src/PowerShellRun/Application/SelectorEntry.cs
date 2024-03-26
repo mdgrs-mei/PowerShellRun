@@ -15,4 +15,5 @@ public class SelectorEntry
     public int PreviewInitialVerticalScroll { get; set; } = 0;
     public ActionKey[]? ActionKeys = null;
     public ActionKey[]? ActionKeysMultiSelection = null;
+    public bool AlwaysAvailable { get; set; } = false;
 }

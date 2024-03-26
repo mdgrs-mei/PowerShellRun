@@ -16,6 +16,7 @@ internal class InternalEntry
 
     public bool[] NameMatches { get; set; }
     public bool[] DescriptionMatches { get; set; }
+    public bool AlwaysAvailable { get; set; } = false;
     public int Score { get; set; } = 0;
 
     public bool IsMarked { get; set; } = false;
@@ -32,6 +33,10 @@ internal class InternalEntry
         SelectorEntry = selectorEntry;
         Name = FormatWord(selectorEntry.Name);
         NameMatches = new bool[Name.Length];
+        if (selectorEntry.AlwaysAvailable)
+        {
+            AlwaysAvailable = true;
+        }
         if (selectorEntry.Description is not null)
         {
             Description = FormatWord(selectorEntry.Description);
