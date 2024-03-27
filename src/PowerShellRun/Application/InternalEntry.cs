@@ -59,6 +59,7 @@ internal class InternalEntry
 
         if (selectorEntry.PreviewAsyncScript is not null)
         {
+            _previewLines = new string[] { "Loading..." };
             _previewLinesLock = new object();
         }
     }
