@@ -17,41 +17,33 @@ class WingetRegistry {
             This = $this
             ActionKeys = @(
                 [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Install with winget')
-                [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'View details in winget.run')
+                [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'View package details in browser')
                 [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
             )
             PreviewScript = {
                 param ($item)
-                $preview = @(
-                    "$($PSStyle.Underline)Install:$($PSStyle.UnderlineOff)     winget install --exact --id $($item.Id)"
-                    "$($PSStyle.Underline)Name:$($PSStyle.UnderlineOff)        $($item.Latest.Name)"
-                    "$($PSStyle.Underline)Publisher:$($PSStyle.UnderlineOff)   $($item.Latest.Publisher)"
-                    "$($PSStyle.Underline)Homepage:$($PSStyle.UnderlineOff)    $($item.Latest.Homepage)"
-                    "$($PSStyle.Underline)Description:$($PSStyle.UnderlineOff) $($item.Latest.Description -replace '\. ', ".`n             ")"
-                )
-                $preview -join "`n" | Out-String
+                if ($item -is [scriptblock]) {
+                    'No preview available.' | Out-String
+                } else {
+                    # Can't find an equivalent in the powershell module to get the package details
+                    $keys = @('Version', 'Publisher', 'Publisher Url', 'Author', 'Homepage', 'Description', 'License')
+                    $maxKeyLength = ($keys | Measure-Object -Maximum -Property Length).Maximum
+                    $output = @("$($PSStyle.Underline)$('Source'.PadRight($maxKeyLength, ' '))$($PSStyle.UnderlineOff) $($item.Source)")
+                    $output += (winget show --exact --id $($item.Id) | Out-String).Split("`n") | ForEach-Object {
+                        $parts = $_.Split(':')
+                        $label = $parts[0].Trim()
+                        $value = $parts[1..$parts.Length] -join ':'
+                        if ($keys -contains $label) {
+                            "$($PSStyle.Underline)$($label.PadRight($maxKeyLength, ' '))$($PSStyle.UnderlineOff)$value"
+                        }
+                    }
+                    if ([string]::IsNullOrEmpty($output)) {
+                        "No information available for $($item.Id)" | Out-String
+                    } else {
+                        $output -join "`n" | Out-String
+                    }
+                }
             }
-        }
-    }
-
-    static [System.Collections.Generic.List[object]] SearchWinget([string] $Query) {
-        try {
-            $result = Invoke-WebRequest -Method 'GET' -Uri 'https://api.winget.run/v2/packages' -Body @{
-                ensureContains = 'true'
-                partialMatch = 'true'
-                take = '10'
-                query = [System.Web.HttpUtility]::UrlEncode($Query)
-                order = '1'
-            }
-
-            # Response is not valid json, rename some duplicate properties and convert to json
-            $result = $result.Content -creplace 'createdAt', '_createdAt' -replace 'updatedAt', '_updatedAt'
-            $result = $result | ConvertFrom-Json -ErrorAction SilentlyContinue
-
-            return $result.Packages
-        } catch {
-            # Need a way to indicate the registry failed to respond
-            return @()
         }
     }
 
@@ -112,7 +104,10 @@ class WingetRegistry {
 
         $distance = 0
         while ($true) {
-            $option.Prompt = "https://winget.run/ results for packages matching '$($result.Context.Query)'> "
+            # Strip winget from the query if it was used as a prefix to trigger the search
+            $query = $result.Context.Query -replace '^\s*winget\s+(.+)', '$1'
+
+            $option.Prompt = "https://winget.run/ results for packages matching '$query'> "
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {
@@ -127,8 +122,21 @@ class WingetRegistry {
                 $entries.Add($entry)
             }
 
-            [WingetRegistry]::SearchWinget($result.Context.Query) | ForEach-Object {
-                $addEntry.Invoke($_, $_.Latest.Name)
+            if (Get-Module 'Microsoft.WinGet.Client' -ListAvailable -ErrorAction SilentlyContinue) {
+                if (-not [string]::IsNullOrWhiteSpace($query)) {
+                    Find-WinGetPackage -Query $query | ForEach-Object {
+                        $addEntry.Invoke($_, $_.Name)
+                    }
+                }
+            } else {
+                $addEntry.Invoke({
+                        Install-Module -Name Microsoft.WinGet.Client -Scope CurrentUser
+                        Restore-PSRunFunctionParentSelector
+                    }, 'Install the Microsoft.WinGet.Client PowerShell module to use winget search.', '📦')
+            }
+
+            if ($entries.Count -eq 0) {
+                $addEntry.Invoke({ Restore-PSRunFunctionParentSelector }, 'No results found.', '🔙')
             }
 
             $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
@@ -148,14 +156,40 @@ class WingetRegistry {
             }
 
             $item = $result.FocusedEntry.UserData
+
+            # For special cases register a scriptblock as the item userdata
+            if ($item -is [scriptblock]) {
+                $item.Invoke()
+                break
+            }
+
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & winget install --id "$($item.Id)"
+                & winget install --exact --id $item.Id
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
-                Start-Process "https://example.com/$($item.Id)"
+                if ($item.Source -eq 'winget') {
+                    try {
+                        # This logic will work for 99% of the packages it's not worth overcomplicating it for the edge cases
+                        $publisher = [System.Web.HttpUtility]::UrlEncode($item.Id.Split('.')[0])
+                        $package = [System.Web.HttpUtility]::UrlEncode($item.Id.Split('.')[1])
+                        $url = [uri]('https://github.com/microsoft/winget-pkgs/tree/master/manifests/' + $publisher[0].ToString().ToLower() + '/' + $publisher + '/' + $package)
+                        Start-Process $url.ToString()
+                    } catch {
+                        Write-Error "Failed to open the package $($item.Id) in GitHub. $_"
+                    }
+                } elseif ($item.Source -eq 'msstore') {
+                    try {
+                        $url = [uri]"https://www.microsoft.com/store/productid/$($item.Id)"
+                        Start-Process $url.ToString()
+                    } catch {
+                        Write-Error "Failed to open the package $($item.Id) in Microsoft Store. $_"
+                    }
+                } else {
+                    Write-Error "Unknown source $($item.Source), cannot open $(item.Id) in browser."
+                }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
-                $item.ToString() | Set-Clipboard
+                "winget install --exact --id $($item.Id)" | Set-Clipboard
                 break
             } else {
                 break
