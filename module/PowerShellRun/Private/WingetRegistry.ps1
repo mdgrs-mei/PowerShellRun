@@ -107,7 +107,7 @@ class WingetRegistry {
             # Strip winget from the query if it was used as a prefix to trigger the search
             $query = $result.Context.Query -replace '^\s*winget\s+(.+)', '$1'
 
-            $option.Prompt = "https://winget.run/ results for packages matching '$query'> "
+            $option.Prompt = "Winget results for packages matching '$query'> "
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {
