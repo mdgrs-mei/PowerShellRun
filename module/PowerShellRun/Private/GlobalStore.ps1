@@ -6,6 +6,7 @@ class GlobalStore {
     $functionRegistry
     $applicationRegistry
     $fileSystemRegistry
+    $wingetRegistry
 
     $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
@@ -25,6 +26,7 @@ class GlobalStore {
         $this.functionRegistry = New-Object FunctionRegistry
         $this.applicationRegistry = New-Object ApplicationRegistry
         $this.fileSystemRegistry = New-Object FileSystemRegistry
+        $this.wingetRegistry = New-Object WingetRegistry
     }
 
     [void] Terminate() {
@@ -77,6 +79,7 @@ class GlobalStore {
         $this.applicationRegistry.EnableEntries($entryCategories)
         $this.functionRegistry.EnableEntries($entryCategories)
         $this.fileSystemRegistry.EnableEntries($entryCategories)
+        $this.wingetRegistry.EnableEntries($entryCategories)
     }
 
     [void] UpdateEntries() {
@@ -84,6 +87,7 @@ class GlobalStore {
         $updated = $this.applicationRegistry.UpdateEntries() -or $updated
         $updated = $this.functionRegistry.UpdateEntries() -or $updated
         $updated = $this.fileSystemRegistry.UpdateEntries() -or $updated
+        $updated = $this.wingetRegistry.UpdateEntries() -or $updated
 
         if ($updated) {
             $this.entries.Clear()
@@ -94,6 +98,9 @@ class GlobalStore {
                 $this.entries.AddRange($_entries)
             }
             if ($_entries = $this.applicationRegistry.GetEntries()) {
+                $this.entries.AddRange($_entries)
+            }
+            if ($_entries = $this.wingetRegistry.GetEntries()) {
                 $this.entries.AddRange($_entries)
             }
         }

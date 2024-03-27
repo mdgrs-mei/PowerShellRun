@@ -71,8 +71,9 @@ internal class Searcher
 
             int nameScore = CalculateScore(nameEntry, entry.NameMatches, query);
             int descriptionScore = CalculateScore(descriptionEntry, entry.DescriptionMatches, query);
+            int alwaysScore = entry.AlwaysAvailable ? 1 : 0;
 
-            int score = Math.Max(nameScore, descriptionScore);
+            int score = Math.Max(Math.Max(nameScore, descriptionScore), alwaysScore);
             if (operation == ScoreOperation.And && score == 0)
             {
                 entry.Score = 0;
