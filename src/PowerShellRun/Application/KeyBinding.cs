@@ -19,7 +19,7 @@ public class KeyBinding
     public KeyBinding()
     {
         QuitKeys = new KeyCombination[]{
-            KeyCombination.Escape,
+            new KeyCombination(KeyModifier.None, Key.Escape),
         };
 
         PageUpKeys = new KeyCombination[]{
