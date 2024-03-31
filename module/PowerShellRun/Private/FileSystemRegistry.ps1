@@ -150,7 +150,7 @@ class FileSystemRegistry {
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
-                $arguments.This.EditWithDefaultEditor($path)
+                & $arguments.This.defaultEditorScript $path
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $arguments.This.OpenContainingFolder($path)
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
@@ -256,7 +256,7 @@ class FileSystemRegistry {
                 if ($item.PSIsContainer) {
                     Set-Location $item.FullName
                 } else {
-                    $arguments.This.EditWithDefaultEditor($item.FullName)
+                    & $arguments.This.defaultEditorScript $item.FullName
                 }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
@@ -282,10 +282,6 @@ class FileSystemRegistry {
             $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
             Invoke-Item $parentDir
         }
-    }
-
-    [void] EditWithDefaultEditor($path) {
-        $this.defaultEditorScript.Invoke($path)
     }
 
     [bool] UpdateEntries() {
