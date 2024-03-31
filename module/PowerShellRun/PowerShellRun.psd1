@@ -65,6 +65,7 @@
         'Add-PSRunFavoriteFile'
         'Add-PSRunFavoriteFolder'
         'Enable-PSRunEntry'
+        'Get-PSRunDefaultSelectorOption'
         'Invoke-PSRun'
         'Invoke-PSRunSelector'
         'Invoke-PSRunSelectorCustom'
