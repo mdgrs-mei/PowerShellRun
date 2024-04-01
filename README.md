@@ -26,7 +26,7 @@ Install-Module -Name PowerShellRun -Scope CurrentUser
 ## Requirements
 
 - Windows or macOS
-- PowerShell 7 or newer
+- PowerShell 7.2 or newer
 
 ## Quick Start
 
