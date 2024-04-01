@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0] - 2024-04-01
+
+### Added
+
+- Added `Get-PSRunDefaultSelectorOption`
+
+### Fixed
+
+- Fixed an issue where you cannot use cli editors in Default Editor Script
+
 ## [0.2.0] - 2024-03-18
 
 ### Added
