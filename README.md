@@ -139,7 +139,7 @@ It's even possible to open *PowerShellRun*'s TUI inside a registered function en
 
 ```powershell
 function global:OpenNestedMenu() {
-    $option = [PowerShellRun.SelectorOption]::new()
+    $option = Get-PSRunDefaultSelectorOption
     $option.QuitWithBackspaceOnEmptyQuery = $true
 
     $result = Get-ChildItem | ForEach-Object {
@@ -167,6 +167,15 @@ $option.Prompt = 'Type words👉 '
 $option.QuitWithBackspaceOnEmptyQuery = $true
 Set-PSRunDefaultSelectorOption $option
 Invoke-PSRun
+```
+
+The option you set as default can be returned by `Get-PSRunDefaultSelectorOption`. Note that the returned option is always deep cloned. It is useful when you create a nested menu.
+
+```powershell
+$option = Get-PSRunDefaultSelectorOption
+$option.Prompt = 'Nested menu prompt > '
+$option.QuitWithBackspaceOnEmptyQuery = $true
+'a', 'b' | Invoke-PSRunSelector -Option $option
 ```
 
 ### ・Key Bindings
