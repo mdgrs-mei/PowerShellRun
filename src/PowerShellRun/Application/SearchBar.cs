@@ -9,6 +9,7 @@ internal class SearchBar
     private StringBuilder _readKeysBuffer = new StringBuilder();
     private int _cursorX = 0;
     private bool _isFirstFrame = true;
+    private bool _isProcessQuitAcceptKeys = false;
     private bool _isQuerySetFromOutside = false;
     private TextBox _prompt = new TextBox();
     private TextBox _textBox = new TextBox();
@@ -16,15 +17,17 @@ internal class SearchBar
     public string Query { get; set; } = "";
     public LayoutItem RootLayout { get; } = new HorizontalLayout();
     public bool IsQuit { get; set; } = false;
+    public bool IsAccepted { get; set; } = false;
     public KeyCombination? LastKeyCombination { get; private set; } = null;
     public bool IsQueryUpdated { get; set; } = false;
     public bool IsCursorUpdated { get; set; } = false;
     public string DebugPerfString = "";
 
-    public SearchBar(string promptString)
+    public SearchBar(string promptString, bool processQuitAcceptKeys)
     {
         var theme = SelectorOptionHolder.GetInstance().Option.Theme;
 
+        _isProcessQuitAcceptKeys = processQuitAcceptKeys;
         RootLayout.AddChild(_prompt);
         RootLayout.AddChild(_textBox);
 
@@ -113,8 +116,33 @@ internal class SearchBar
         IsCursorUpdated = false;
         var inputKeys = KeyInput.GetInstance().GetFrameInputs();
         var option = SelectorOptionHolder.GetInstance().Option;
+        var keyBinding = option.KeyBinding;
+
         foreach (var key in inputKeys)
         {
+            if (_isProcessQuitAcceptKeys)
+            {
+                foreach (var quitKey in keyBinding.QuitKeys)
+                {
+                    if (key.KeyCombination.Equals(quitKey))
+                    {
+                        IsQuit = true;
+                        LastKeyCombination = key.KeyCombination;
+                        return;
+                    }
+                }
+
+                foreach (var acceptKey in keyBinding.PromptAcceptKeys)
+                {
+                    if (key.KeyCombination.Equals(acceptKey))
+                    {
+                        IsAccepted = true;
+                        LastKeyCombination = key.KeyCombination;
+                        return;
+                    }
+                }
+            }
+
             if (key.KeyCombination.Modifier.HasFlag(KeyModifier.Ctrl))
                 continue;
             if (key.KeyCombination.Modifier.HasFlag(KeyModifier.Alt))

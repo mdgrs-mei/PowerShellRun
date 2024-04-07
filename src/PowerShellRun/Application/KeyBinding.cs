@@ -11,6 +11,7 @@ public class KeyBinding
     public KeyCombination[] PreviewPageDownKeys { get; set; }
     public KeyCombination[] MarkerKeys { get; set; }
     public KeyCombination[] ToggleAllMarkerKeys { get; set; }
+    public KeyCombination[] PromptAcceptKeys { get; set; }
     public ActionKey[] DefaultActionKeys { get; set; }
     public ActionKey[] DefaultActionKeysMultiSelection { get; set; }
     public KeyCombination[] ActionWindowOpenKeys { get; set; }
@@ -36,6 +37,10 @@ public class KeyBinding
 
         ToggleAllMarkerKeys = new KeyCombination[]{
             new KeyCombination(KeyModifier.Shift, Key.Tab),
+        };
+
+        PromptAcceptKeys = new KeyCombination[]{
+            new KeyCombination(KeyModifier.None, Key.Enter),
         };
 
         DefaultActionKeys = new ActionKey[]{

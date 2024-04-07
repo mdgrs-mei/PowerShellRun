@@ -19,7 +19,10 @@ public static class Prompt
         var canvas = Canvas.GetInstance();
         canvas.Init(theme.CanvasHeightPercentage);
 
-        var searchBar = new SearchBar(option.Prompt);
+        var searchBar = new SearchBar(
+            promptString: option.Prompt,
+            processQuitAcceptKeys: true);
+
         var pacemaker = new Pacemaker(16);
         var canvasLayout = new StackLayout();
         canvasLayout.AddChild(searchBar.RootLayout);
@@ -44,7 +47,7 @@ public static class Prompt
             canvasLayout.UpdateLayout(0, 0, canvas.Width, canvas.Height);
 
             searchBar.Update();
-            if (searchBar.IsQuit)
+            if (searchBar.IsQuit || searchBar.IsAccepted)
             {
                 lastKeyCombination = searchBar.LastKeyCombination;
                 break;
@@ -64,7 +67,7 @@ public static class Prompt
         }
 
         var promptResult = new PromptResult();
-        promptResult.Input = searchBar.Query;
+        promptResult.Input = searchBar.IsAccepted ? searchBar.Query : null;
         promptResult.KeyCombination = lastKeyCombination;
         promptResult.Context.Input = searchBar.Query;
 
