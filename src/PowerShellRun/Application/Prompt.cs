@@ -16,16 +16,15 @@ public static class Prompt
         var keyInput = KeyInput.GetInstance();
         keyInput.Init();
 
-        var canvas = Canvas.GetInstance();
-        canvas.Init(theme.CanvasHeightPercentage);
-
         var searchBar = new SearchBar(
             promptString: option.Prompt,
             processQuitAcceptKeys: true);
 
+        var canvas = Canvas.GetInstance();
+        canvas.Init(new LayoutSize(LayoutSizeType.Absolute, searchBar.GetHeight()));
+
         var pacemaker = new Pacemaker(16);
-        var canvasLayout = new StackLayout();
-        canvasLayout.AddChild(searchBar.RootLayout);
+        var canvasLayout = searchBar.RootLayout;
 
         if (context is not null)
         {

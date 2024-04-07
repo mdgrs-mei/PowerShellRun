@@ -28,7 +28,7 @@ public static class Selector
         keyInput.Init();
 
         var canvas = Canvas.GetInstance();
-        canvas.Init(theme.CanvasHeightPercentage);
+        canvas.Init(new LayoutSize(LayoutSizeType.Percentage, theme.CanvasHeightPercentage));
 
         var searchBar = new SearchBar(
             promptString: option.Prompt,
