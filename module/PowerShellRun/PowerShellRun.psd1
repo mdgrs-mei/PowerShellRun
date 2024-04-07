@@ -67,6 +67,7 @@
         'Enable-PSRunEntry'
         'Get-PSRunDefaultSelectorOption'
         'Invoke-PSRun'
+        'Invoke-PSRunPrompt'
         'Invoke-PSRunSelector'
         'Invoke-PSRunSelectorCustom'
         'Restore-PSRunFunctionParentSelector'
