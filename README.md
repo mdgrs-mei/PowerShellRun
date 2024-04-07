@@ -8,6 +8,8 @@
 
 [![Pester Test](https://github.com/mdgrs-mei/PowerShellRun/actions/workflows/pester-test.yml/badge.svg)](https://github.com/mdgrs-mei/PowerShellRun/actions/workflows/pester-test.yml)
 
+[![Hashnode](https://img.shields.io/badge/Hashnode-2962FF?style=for-the-badge&logo=hashnode&logoColor=white)](https://mdgrs.hashnode.dev/streamlining-your-workflow-around-the-powershell-terminal)
+
 App, Utility and Function Launcher for PowerShell.
 
 ![Demo](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d133be41-be9b-4045-8fa0-5194220a56fe)
