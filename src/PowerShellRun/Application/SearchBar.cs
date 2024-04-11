@@ -114,6 +114,8 @@ internal class SearchBar
                 _textBox.AddWord(0, DebugPerfString);
             }
         }
+
+        ProcessAutoReturn();
     }
 
     private void ReadKeys()
@@ -224,6 +226,16 @@ internal class SearchBar
         {
             _isFirstFrame = false;
             IsQueryUpdated = true;
+        }
+    }
+
+    private void ProcessAutoReturn()
+    {
+        var option = SelectorOptionHolder.GetInstance().Option;
+        if (option.AutoReturnBestMatch && _isProcessQuitAcceptKeys)
+        {
+            IsAccepted = true;
+            LastKeyCombination = null;
         }
     }
 
