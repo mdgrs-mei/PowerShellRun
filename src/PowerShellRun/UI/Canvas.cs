@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ internal sealed class Canvas : Singleton<Canvas>
 
     private TextWriter? _originalConsoleOut;
     private System.Text.Encoding? _originalEncoding;
-    private int _heightPercentage = 50;
+    private LayoutSize _height = new LayoutSize(LayoutSizeType.Percentage, 50);
     private int? _rootCursorY = null;
     private int _cursorOffsetX = 0;
     private int _cursorOffsetY = 0;
@@ -24,7 +25,7 @@ internal sealed class Canvas : Singleton<Canvas>
     public int Width { get; private set; } = 0;
     public int Height { get; private set; } = 0;
 
-    public void Init(int heightPercentage)
+    public void Init(LayoutSize height)
     {
         var option = SelectorOptionHolder.GetInstance().Option;
         if (option.AutoReturnBestMatch)
@@ -42,7 +43,8 @@ internal sealed class Canvas : Singleton<Canvas>
         _streamWriter.AutoFlush = false;
         Console.SetOut(_streamWriter);
 
-        _heightPercentage = heightPercentage;
+        Debug.Assert(height.Type == LayoutSizeType.Percentage || height.Type == LayoutSizeType.Absolute);
+        _height = height;
         _cursorOffsetX = 0;
         _cursorOffsetY = 0;
         _cursorOffsetYFromRoot = 0;
@@ -98,7 +100,16 @@ internal sealed class Canvas : Singleton<Canvas>
         int windowHeight = Console.WindowHeight;
 
         int newWidth = windowWidth;
-        int newHeight = windowHeight * _heightPercentage / 100;
+        int newHeight = windowHeight;
+        if (_height.Type == LayoutSizeType.Percentage)
+        {
+            newHeight = windowHeight * _height.Value / 100;
+        }
+        else
+        if (_height.Type == LayoutSizeType.Absolute)
+        {
+            newHeight = _height.Value;
+        }
         newHeight = Math.Clamp(newHeight, 0, Math.Max(windowHeight - option.Theme.CanvasTopMargin, 0));
 
         if (newWidth != Width ||

@@ -28,9 +28,12 @@ public static class Selector
         keyInput.Init();
 
         var canvas = Canvas.GetInstance();
-        canvas.Init(theme.CanvasHeightPercentage);
+        canvas.Init(new LayoutSize(LayoutSizeType.Percentage, theme.CanvasHeightPercentage));
 
-        var searchBar = new SearchBar(option.Prompt);
+        var searchBar = new SearchBar(
+            promptString: option.Prompt,
+            processQuitAcceptKeys: false);
+
         var resultWindow = new ResultWindow(mode, searchBar.RootLayout);
         var pacemaker = new Pacemaker(16);
 
