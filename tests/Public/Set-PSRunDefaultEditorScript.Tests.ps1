@@ -13,7 +13,8 @@
 
         InModuleScope 'PowerShellRun' -ArgumentList $script {
             param($script)
-            $script:globalStore.fileSystemRegistry.defaultEditorScript | Should -Be $script
+            $fileSystemRegistry = $script:globalStore.GetRegistry('FileSystemRegistry')
+            $fileSystemRegistry.defaultEditorScript | Should -Be $script
         }
     }
 

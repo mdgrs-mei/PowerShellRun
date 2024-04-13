@@ -1,4 +1,5 @@
-class FileSystemRegistry {
+using module ./_EntryRegistry.psm1
+class FileSystemRegistry : EntryRegistry {
     $favoritesEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $fileManagerEntry = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 

@@ -1,4 +1,5 @@
-class ApplicationRegistry {
+using module ./_EntryRegistry.psm1
+class ApplicationRegistry : EntryRegistry {
     $sync = [System.Collections.Hashtable]::Synchronized(@{})
     $registerEntryJob = $null
 

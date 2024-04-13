@@ -11,6 +11,7 @@ function Set-PSRunDefaultEditorScript {
     )
 
     process {
-        $script:globalStore.fileSystemRegistry.SetDefaultEditorScript($ScriptBlock)
+        $fileSystemRegistry = $script:globalStore.GetRegistry('FileSystemRegistry')
+        $fileSystemRegistry.SetDefaultEditorScript($ScriptBlock)
     }
 }

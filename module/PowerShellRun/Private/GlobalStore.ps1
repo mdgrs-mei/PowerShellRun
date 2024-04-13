@@ -1,11 +1,16 @@
+using module ./_EntryRegistry.psm1
+
 class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
 
-    $functionRegistry
-    $applicationRegistry
-    $fileSystemRegistry
+    $registryClassNames = @(
+        'FunctionRegistry'
+        'FileSystemRegistry'
+        'ApplicationRegistry'
+    )
+    $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
 
     $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
@@ -22,9 +27,10 @@ class GlobalStore {
     [void] Initialize() {
         $this.InitializeActionKeys()
 
-        $this.functionRegistry = New-Object FunctionRegistry
-        $this.applicationRegistry = New-Object ApplicationRegistry
-        $this.fileSystemRegistry = New-Object FileSystemRegistry
+        foreach ($className in $this.registryClassNames) {
+            $registry = New-Object $className
+            $this.registries.Add($registry)
+        }
     }
 
     [void] Terminate() {
@@ -73,28 +79,33 @@ class GlobalStore {
         $psRunKeyBinding.DefaultActionKeys[0].Description = 'Quit'
     }
 
+    [EntryRegistry] GetRegistry($typeName) {
+        foreach ($registry in $this.registries) {
+            if ($registry.GetType().Name -eq $typeName) {
+                return $registry
+            }
+        }
+        return $null
+    }
+
     [void] EnableEntries([String[]]$entryCategories) {
-        $this.applicationRegistry.EnableEntries($entryCategories)
-        $this.functionRegistry.EnableEntries($entryCategories)
-        $this.fileSystemRegistry.EnableEntries($entryCategories)
+        foreach ($registry in $this.registries) {
+            $registry.EnableEntries($entryCategories)
+        }
     }
 
     [void] UpdateEntries() {
         $updated = $false
-        $updated = $this.applicationRegistry.UpdateEntries() -or $updated
-        $updated = $this.functionRegistry.UpdateEntries() -or $updated
-        $updated = $this.fileSystemRegistry.UpdateEntries() -or $updated
+        foreach ($registry in $this.registries) {
+            $updated = $registry.UpdateEntries() -or $updated
+        }
 
         if ($updated) {
             $this.entries.Clear()
-            if ($_entries = $this.functionRegistry.GetEntries()) {
-                $this.entries.AddRange($_entries)
-            }
-            if ($_entries = $this.fileSystemRegistry.GetEntries()) {
-                $this.entries.AddRange($_entries)
-            }
-            if ($_entries = $this.applicationRegistry.GetEntries()) {
-                $this.entries.AddRange($_entries)
+            foreach ($registry in $this.registries) {
+                if ($_entries = $registry.GetEntries()) {
+                    $this.entries.AddRange($_entries)
+                }
             }
         }
     }
