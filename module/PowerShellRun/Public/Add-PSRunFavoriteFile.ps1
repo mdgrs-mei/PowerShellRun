@@ -22,6 +22,7 @@ function Add-PSRunFavoriteFile {
     )
 
     process {
-        $script:globalStore.fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview)
+        $fileSystemRegistry = $script:globalStore.GetRegistry('FileSystemRegistry')
+        $fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview)
     }
 }

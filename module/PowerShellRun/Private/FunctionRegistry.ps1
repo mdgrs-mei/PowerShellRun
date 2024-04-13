@@ -1,4 +1,5 @@
-class FunctionRegistry {
+using module ./_EntryRegistry.psm1
+class FunctionRegistry : EntryRegistry {
     $functionsAtRegisterStart = $null
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryUpdated = $false
@@ -44,17 +45,17 @@ class FunctionRegistry {
         }
     }
 
-    [void] StartRegistration() {
+    [void] StartRegistration($errorAction) {
         if (-not ($null -eq $this.functionsAtRegisterStart)) {
-            Write-Error -Message 'Function registration already started.' -Category InvalidOperation
+            Write-Error -Message 'Function registration already started.' -Category InvalidOperation -ErrorAction $errorAction
             return
         }
         $this.functionsAtRegisterStart = (Get-Command -Type Function).Name
     }
 
-    [void] StopRegistration() {
+    [void] StopRegistration($errorAction) {
         if ($null -eq $this.functionsAtRegisterStart) {
-            Write-Error -Message 'Function registration has not started yet.' -Category InvalidOperation
+            Write-Error -Message 'Function registration has not started yet.' -Category InvalidOperation -ErrorAction $errorAction
             return
         }
 

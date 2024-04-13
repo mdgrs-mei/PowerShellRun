@@ -13,7 +13,8 @@
         Stop-PSRunFunctionRegistration
 
         InModuleScope 'PowerShellRun' {
-            $script:globalStore.functionRegistry.entries.Count | Should -Be 1
+            $functionRegistry = $script:globalStore.GetRegistry('FunctionRegistry')
+            $functionRegistry.entries.Count | Should -Be 1
         }
         $function:Test = $null
     }

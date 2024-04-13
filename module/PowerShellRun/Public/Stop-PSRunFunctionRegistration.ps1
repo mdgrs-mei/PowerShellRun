@@ -3,5 +3,6 @@ function Stop-PSRunFunctionRegistration {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param()
 
-    $script:globalStore.functionRegistry.StopRegistration()
+    $functionRegistry = $script:globalStore.GetRegistry('FunctionRegistry')
+    $functionRegistry.StopRegistration($ErrorActionPreference)
 }
