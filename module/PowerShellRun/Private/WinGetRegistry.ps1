@@ -5,6 +5,7 @@ class WinGetRegistry : EntryRegistry {
     $isEntryUpdated = $false
     $isEnabled = $false
     $restoreParentMenu = $false
+    $installActionKeys
 
     WinGetRegistry() {
     }
@@ -97,6 +98,11 @@ class WinGetRegistry : EntryRegistry {
     }
 
     [PowerShellRun.SelectorEntry] CreateInstallEntry() {
+        $this.installActionKeys = @(
+            [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Install with winget')
+            [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
+        )
+
         $callback = {
             param ($thisClass)
 
@@ -127,9 +133,28 @@ class WinGetRegistry : EntryRegistry {
                 $result = $packages | ForEach-Object {
                     $entry = [PowerShellRun.SelectorEntry]::new()
                     $entry.UserData = $_
+                    $entry.Icon = if ($_.Source -eq 'winget') {
+                        '📦'
+                    } elseif ($_.Source -eq 'msstore') {
+                        '🛒'
+                    } else {
+                        '🔧'
+                    }
                     $entry.Name = $_.Name
-                    $entry.Description = "[{0}]`t{1}" -f $_.Source, $_.Id
-                    $entry.Preview = $_ | Format-List | Out-String
+                    $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+                    $entry.ActionKeys = $thisClass.installActionKeys
+                    $entry.ActionKeysMultiSelection = $thisClass.installActionKeys
+                    $entry.Preview = 'Loading...'
+                    $entry.PreviewAsyncScript = {
+                        param ($package)
+                        $lines = & winget show --id $package.Id
+                        $lines | Where-Object {
+                            # winget produces empty lines and lines that only have '-' at the beginning. Remove them.
+                            $trimmedLine = $_.Trim()
+                            ($trimmedLine.Length -ne 0) -and ($trimmedLine[0] -ne '-')
+                        }
+                    }
+                    $entry.PreviewAsyncScriptArgumentList = $_
                     $entry
                 } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
 
@@ -147,8 +172,16 @@ class WinGetRegistry : EntryRegistry {
                     return
                 }
 
-                $installPackages | ForEach-Object {
-                    Install-WinGetPackage -Id $_.Id
+                if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
+                    $installPackages | ForEach-Object {
+                        Install-WinGetPackage -Id $_.Id
+                    }
+                } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+                    $installCommand = @()
+                    $installPackages | ForEach-Object {
+                        $installCommand += 'winget install --id {0}' -f $_.Id
+                    }
+                    $installCommand | Set-Clipboard
                 }
                 return
             }
