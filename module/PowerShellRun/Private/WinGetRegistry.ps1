@@ -5,7 +5,6 @@ class WinGetRegistry : EntryRegistry {
     $isEntryUpdated = $false
     $isEnabled = $false
     $restoreParentMenu = $false
-    $installActionKeys
 
     WinGetRegistry() {
     }
@@ -98,10 +97,6 @@ class WinGetRegistry : EntryRegistry {
     }
 
     [PowerShellRun.SelectorEntry] CreateInstallEntry() {
-        $this.installActionKeys = @(
-            [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Install with winget')
-            [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
-        )
 
         $callback = {
             param ($thisClass)
@@ -130,6 +125,11 @@ class WinGetRegistry : EntryRegistry {
                     return
                 }
 
+                $actionKeys = @(
+                    [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Install with winget')
+                    [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
+                )
+
                 $result = $packages | ForEach-Object {
                     $entry = [PowerShellRun.SelectorEntry]::new()
                     $entry.UserData = $_
@@ -142,8 +142,8 @@ class WinGetRegistry : EntryRegistry {
                     }
                     $entry.Name = $_.Name
                     $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
-                    $entry.ActionKeys = $thisClass.installActionKeys
-                    $entry.ActionKeysMultiSelection = $thisClass.installActionKeys
+                    $entry.ActionKeys = $actionKeys
+                    $entry.ActionKeysMultiSelection = $actionKeys
                     $entry.Preview = 'Loading...'
                     $entry.PreviewAsyncScript = {
                         param ($package)
