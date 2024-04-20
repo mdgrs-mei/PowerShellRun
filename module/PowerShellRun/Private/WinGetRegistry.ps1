@@ -95,6 +95,7 @@ class WinGetRegistry : EntryRegistry {
         $this.subMenuEntries.Clear()
         $this.subMenuEntries.Add($this.CreateInstallEntry())
         $this.subMenuEntries.Add($this.CreateUpgradeEntry())
+        $this.subMenuEntries.Add($this.CreateUninstallEntry())
     }
 
     [PowerShellRun.SelectorEntry] CreatePackageEntry($package) {
@@ -108,7 +109,11 @@ class WinGetRegistry : EntryRegistry {
             '🔧'
         }
         $entry.Name = $_.Name
-        $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+        $entry.Description = if ($_.Source) {
+            '[{0}] {1}' -f $_.Source, $_.Id
+        } else {
+            $_.Id
+        }
         return $entry
     }
 
@@ -276,6 +281,95 @@ class WinGetRegistry : EntryRegistry {
         }
 
         return $entry
+    }
+
+    [PowerShellRun.SelectorEntry] CreateUninstallEntry() {
+
+        $callback = {
+            param ($thisClass)
+
+            $option = Get-PSRunDefaultSelectorOption
+            $option.QuitWithBackspaceOnEmptyQuery = $true
+
+            $packages = Get-WinGetPackage
+            if (-not $packages) {
+                Write-Warning -Message 'No application found.'
+                return
+            }
+
+            $actionKeys = @(
+                [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Uninstall with winget')
+                [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy uninstall command to Clipboard')
+            )
+
+            $result = $packages | ForEach-Object {
+                $entry = $thisClass.CreatePackageEntry($_)
+                $entry.ActionKeys = $actionKeys
+                $entry.ActionKeysMultiSelection = $actionKeys
+                $entry.Preview = $_ | Format-List | Out-String
+                $entry
+            } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
+
+            if ($result.KeyCombination -eq 'Backspace') {
+                $thisClass.restoreParentMenu = $true
+                return
+            }
+
+            if ($result.MarkedEntries) {
+                $uninstallPackages = $result.MarkedEntries.UserData
+            } else {
+                $uninstallPackages = $result.FocusedEntry.UserData
+            }
+
+            if (-not $uninstallPackages) {
+                return
+            }
+
+            if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
+                $uninstallPackages | ForEach-Object {
+                    if ($thisClass.IsUninstallableWithVersion($_)) {
+                        Uninstall-WinGetPackage -Id $_.Id -Version $_.InstalledVersion -Confirm
+                    } else {
+                        Uninstall-WinGetPackage -Id $_.Id -Confirm
+                    }
+                }
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+                $command = @()
+                $uninstallPackages | ForEach-Object {
+                    if ($thisClass.IsUninstallableWithVersion($_)) {
+                        $command += 'winget uninstall --id {0} --version {1}' -f $_.Id, $_.InstalledVersion
+                    } else {
+                        $command += 'winget uninstall --id {0}' -f $_.Id
+                    }
+                }
+                $command | Set-Clipboard
+            }
+        }
+
+        $entry = [PowerShellRun.SelectorEntry]::new()
+        $entry.Icon = '⛔'
+        $entry.Name = 'Uninstall'
+        $entry.Description = 'Open Uninstall menu'
+        $entry.ActionKeys = @(
+            [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Open Uninstall menu')
+        )
+        $entry.UserData = @{
+            ScriptBlock = $callback
+            ArgumentList = $this
+        }
+
+        return $entry
+    }
+
+    [bool] IsUninstallableWithVersion($package) {
+        # side by side is still in preview as of winget v1.7.10861.
+        return $false
+        <#
+        if (-not $package.InstalledVersion) {
+            return $false
+        }
+        return $package.Source -eq 'winget'
+        #>
     }
 
     [bool] UpdateEntries() {
