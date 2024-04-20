@@ -97,6 +97,21 @@ class WinGetRegistry : EntryRegistry {
         $this.subMenuEntries.Add($this.CreateUpgradeEntry())
     }
 
+    [PowerShellRun.SelectorEntry] CreatePackageEntry($package) {
+        $entry = [PowerShellRun.SelectorEntry]::new()
+        $entry.UserData = $package
+        $entry.Icon = if ($_.Source -eq 'winget') {
+            '📦'
+        } elseif ($_.Source -eq 'msstore') {
+            '🛒'
+        } else {
+            '🔧'
+        }
+        $entry.Name = $_.Name
+        $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+        return $entry
+    }
+
     [PowerShellRun.SelectorEntry] CreateInstallEntry() {
 
         $callback = {
@@ -132,17 +147,7 @@ class WinGetRegistry : EntryRegistry {
                 )
 
                 $result = $packages | ForEach-Object {
-                    $entry = [PowerShellRun.SelectorEntry]::new()
-                    $entry.UserData = $_
-                    $entry.Icon = if ($_.Source -eq 'winget') {
-                        '📦'
-                    } elseif ($_.Source -eq 'msstore') {
-                        '🛒'
-                    } else {
-                        '🔧'
-                    }
-                    $entry.Name = $_.Name
-                    $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+                    $entry = $thisClass.CreatePackageEntry($_)
                     $entry.ActionKeys = $actionKeys
                     $entry.ActionKeysMultiSelection = $actionKeys
                     $entry.Preview = 'Loading...'
@@ -223,17 +228,7 @@ class WinGetRegistry : EntryRegistry {
             )
 
             $result = $packages | ForEach-Object {
-                $entry = [PowerShellRun.SelectorEntry]::new()
-                $entry.UserData = $_
-                $entry.Icon = if ($_.Source -eq 'winget') {
-                    '📦'
-                } elseif ($_.Source -eq 'msstore') {
-                    '🛒'
-                } else {
-                    '🔧'
-                }
-                $entry.Name = $_.Name
-                $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+                $entry = $thisClass.CreatePackageEntry($_)
                 $entry.ActionKeys = $actionKeys
                 $entry.ActionKeysMultiSelection = $actionKeys
                 $entry.Preview = $_ | Format-List | Out-String
