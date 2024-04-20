@@ -148,6 +148,7 @@ class WinGetRegistry : EntryRegistry {
 
                 $actionKeys = @(
                     [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Install with winget')
+                    [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Show information on the source')
                     [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
                 )
 
@@ -186,6 +187,10 @@ class WinGetRegistry : EntryRegistry {
                 if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                     $installPackages | ForEach-Object {
                         Install-WinGetPackage -Id $_.Id
+                    }
+                } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+                    $installPackages | ForEach-Object {
+                        & winget show --id $_.Id
                     }
                 } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                     $command = @()
@@ -229,6 +234,7 @@ class WinGetRegistry : EntryRegistry {
 
             $actionKeys = @(
                 [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Upgrade with winget')
+                [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Show information on the source')
                 [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy upgrade command to Clipboard')
             )
 
@@ -258,6 +264,10 @@ class WinGetRegistry : EntryRegistry {
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 $upgradePackages | ForEach-Object {
                     Update-WinGetPackage -Id $_.Id
+                }
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+                $upgradePackages | ForEach-Object {
+                    & winget show --id $_.Id
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $command = @()
@@ -297,14 +307,24 @@ class WinGetRegistry : EntryRegistry {
                 return
             }
 
-            $actionKeys = @(
+            $actionKeysNoSource = @(
                 [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Uninstall with winget')
+                [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy uninstall command to Clipboard')
+            )
+
+            $actionKeysWithSource = @(
+                [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Uninstall with winget')
+                [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Show information on the source')
                 [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy uninstall command to Clipboard')
             )
 
             $result = $packages | ForEach-Object {
                 $entry = $thisClass.CreatePackageEntry($_)
-                $entry.ActionKeys = $actionKeys
+                $entry.ActionKeys = if ($_.Source) {
+                    $actionKeysWithSource
+                } else {
+                    $actionKeysNoSource
+                }
                 $entry.ActionKeysMultiSelection = $actionKeys
                 $entry.Preview = $_ | Format-List | Out-String
                 $entry
@@ -332,6 +352,10 @@ class WinGetRegistry : EntryRegistry {
                     } else {
                         Uninstall-WinGetPackage -Id $_.Id -Confirm
                     }
+                }
+            } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+                $uninstallPackages | ForEach-Object {
+                    & winget show --id $_.Id
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $command = @()
