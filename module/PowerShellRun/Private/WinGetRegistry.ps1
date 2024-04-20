@@ -94,6 +94,7 @@ class WinGetRegistry : EntryRegistry {
 
         $this.subMenuEntries.Clear()
         $this.subMenuEntries.Add($this.CreateInstallEntry())
+        $this.subMenuEntries.Add($this.CreateUpgradeEntry())
     }
 
     [PowerShellRun.SelectorEntry] CreateInstallEntry() {
@@ -177,11 +178,11 @@ class WinGetRegistry : EntryRegistry {
                         Install-WinGetPackage -Id $_.Id
                     }
                 } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
-                    $installCommand = @()
+                    $command = @()
                     $installPackages | ForEach-Object {
-                        $installCommand += 'winget install --id {0}' -f $_.Id
+                        $command += 'winget install --id {0}' -f $_.Id
                     }
-                    $installCommand | Set-Clipboard
+                    $command | Set-Clipboard
                 }
                 return
             }
@@ -193,6 +194,86 @@ class WinGetRegistry : EntryRegistry {
         $entry.Description = 'Open Install menu'
         $entry.ActionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Open Install menu')
+        )
+        $entry.UserData = @{
+            ScriptBlock = $callback
+            ArgumentList = $this
+        }
+
+        return $entry
+    }
+
+    [PowerShellRun.SelectorEntry] CreateUpgradeEntry() {
+
+        $callback = {
+            param ($thisClass)
+
+            $option = Get-PSRunDefaultSelectorOption
+            $option.QuitWithBackspaceOnEmptyQuery = $true
+
+            $packages = Get-WinGetPackage | Where-Object { $_.IsUpdateAvailable }
+            if (-not $packages) {
+                Write-Warning -Message 'No upgradable application found.'
+                return
+            }
+
+            $actionKeys = @(
+                [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Upgrade with winget')
+                [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy upgrade command to Clipboard')
+            )
+
+            $result = $packages | ForEach-Object {
+                $entry = [PowerShellRun.SelectorEntry]::new()
+                $entry.UserData = $_
+                $entry.Icon = if ($_.Source -eq 'winget') {
+                    '📦'
+                } elseif ($_.Source -eq 'msstore') {
+                    '🛒'
+                } else {
+                    '🔧'
+                }
+                $entry.Name = $_.Name
+                $entry.Description = '[{0}] {1}' -f $_.Source, $_.Id
+                $entry.ActionKeys = $actionKeys
+                $entry.ActionKeysMultiSelection = $actionKeys
+                $entry.Preview = $_ | Format-List | Out-String
+                $entry
+            } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
+
+            if ($result.KeyCombination -eq 'Backspace') {
+                $thisClass.restoreParentMenu = $true
+                return
+            }
+
+            if ($result.MarkedEntries) {
+                $upgradePackages = $result.MarkedEntries.UserData
+            } else {
+                $upgradePackages = $result.FocusedEntry.UserData
+            }
+
+            if (-not $upgradePackages) {
+                return
+            }
+
+            if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
+                $upgradePackages | ForEach-Object {
+                    Update-WinGetPackage -Id $_.Id
+                }
+            } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+                $command = @()
+                $upgradePackages | ForEach-Object {
+                    $command += 'winget upgrade --id {0}' -f $_.Id
+                }
+                $command | Set-Clipboard
+            }
+        }
+
+        $entry = [PowerShellRun.SelectorEntry]::new()
+        $entry.Icon = '💫'
+        $entry.Name = 'Upgrade'
+        $entry.Description = 'Open Upgrade menu'
+        $entry.ActionKeys = @(
+            [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Open Upgrade menu')
         )
         $entry.UserData = @{
             ScriptBlock = $callback
