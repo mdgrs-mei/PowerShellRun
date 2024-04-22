@@ -8,6 +8,7 @@ class GlobalStore {
     $registryClassNames = @(
         'FunctionRegistry'
         'FileSystemRegistry'
+        'WinGetRegistry'
         'ApplicationRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
