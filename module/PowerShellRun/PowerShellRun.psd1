@@ -4,7 +4,7 @@
     RootModule = 'PowerShellRun.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.3.0'
+    ModuleVersion = '0.4.0'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core'
@@ -25,7 +25,7 @@
     Description = 'App, Utility and Function Launcher for PowerShell'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.2'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
