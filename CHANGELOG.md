@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0] - 2024-04-22
+
+### Added
+
+- Added `Invoke-PSRunPrompt`
+- Added `WinGet (PSRun)` utility entry
+
 ## [0.3.0] - 2024-04-01
 
 ### Added
@@ -21,8 +28,8 @@
 - Added `PageDownKeys` property to `KeyBinding`
 - Added `PreviewPageUpKeys` property to `KeyBinding`
 - Added `PreviewPageDownKeys` property to `KeyBinding`
-- Added parent folder entries to File Manager (PSRun)
-- Added an indicator that shows distance from the root folder in File Manager (PSRun)
+- Added parent folder entries to `File Manager (PSRun)`
+- Added an indicator that shows distance from the root folder in `File Manager (PSRun)`
 
 ### Changed
 
