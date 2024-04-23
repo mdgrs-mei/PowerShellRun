@@ -69,7 +69,7 @@ Executable files under the PATH are listed by `Executable` category. You can inv
 
 ### ・🔎 Utility
 
-Currently, we have only one utility entry defined by *PowerShellRun*.
+#### File Manager (PSRun)
 
 `File Manager (PSRun)` navigates the folder hierarchy from the current directory using the PowerShellRun TUI.
 
@@ -83,6 +83,12 @@ Set-PSRunDefaultEditorScript -ScriptBlock {
     & code $path
 }
 ```
+
+#### WinGet (PSRun)
+
+`WinGet (PSRun)` helps you install, upgrade and uninstall applications using winget. You need [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) and [Microsoft.WinGet.Client](https://github.com/microsoft/winget-cli) module installed to use this utility entry.
+
+![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/225a5e71-cdd7-48ca-ba65-ee0af0dc0dba)
 
 ### ・📁 Favorite
 
