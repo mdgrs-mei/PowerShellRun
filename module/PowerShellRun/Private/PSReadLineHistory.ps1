@@ -22,9 +22,14 @@ function SearchPSReadLineHistory() {
         [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy command to Clipboard')
     )
 
+    $maxNameLength = 128
     $result = $historySet | ForEach-Object {
         $entry = [PowerShellRun.SelectorEntry]::new()
-        $entry.Name = $_
+        $entry.Name = if ($_.Length -gt $maxNameLength) {
+            $_.Substring(0, $maxNameLength)
+        } else {
+            $_
+        }
         $entry.Preview = $_
         $entry.ActionKeys = $actionKeys
         $entry
