@@ -582,7 +582,7 @@ internal class ResultWindow
 
                 _nameBox.AddWord(
                     i,
-                    selectorEntry.Name,
+                    internalEntry.Name,
                     theme.NameFocusForegroundColor,
                     theme.NameFocusBackgroundColor,
                     theme.NameFocusStyle,
@@ -591,11 +591,11 @@ internal class ResultWindow
                     theme.NameFocusHighlightBackgroundColor,
                     theme.NameFocusHighlightStyle);
 
-                if (selectorEntry.Description is not null)
+                if (_descriptionBox.Active)
                 {
                     _descriptionBox.AddWord(
                         i,
-                        selectorEntry.Description,
+                        internalEntry.Description,
                         theme.DescriptionFocusForegroundColor,
                         theme.DescriptionFocusBackgroundColor,
                         theme.DescriptionFocusStyle,
@@ -623,7 +623,7 @@ internal class ResultWindow
 
                 _nameBox.AddWord(
                     i,
-                    selectorEntry.Name,
+                    internalEntry.Name,
                     theme.NameForegroundColor,
                     theme.NameBackgroundColor,
                     theme.NameStyle,
@@ -632,11 +632,11 @@ internal class ResultWindow
                     theme.NameHighlightBackgroundColor,
                     theme.NameHighlightStyle);
 
-                if (selectorEntry.Description is not null && theme.DescriptionEnable)
+                if (_descriptionBox.Active)
                 {
                     _descriptionBox.AddWord(
                         i,
-                        selectorEntry.Description,
+                        internalEntry.Description,
                         theme.DescriptionForegroundColor,
                         theme.DescriptionBackgroundColor,
                         theme.DescriptionStyle,
