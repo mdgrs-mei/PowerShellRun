@@ -9,6 +9,7 @@ Enter-RSSession -OnStart {
     & $build Debug
     Import-Module "$root/module/PowerShellRun"
     Enable-PSRunEntry -Category All
+    Set-PSRunPSReadLineKeyHandler -InvokePSRunChord 'Ctrl+Spacebar' -PSReadLineHistoryChord 'Ctrl+r'
 
     function Restart {
         Restart-RSSession
