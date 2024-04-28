@@ -18,7 +18,8 @@ class GlobalStore {
     $isReadLineReplaced = $false
     $invokePsRunRequest = $false
     $invokePsRunRequestQuery = ''
-    $psReadLineChord = $null
+    $invokePsRunChord = $null
+    $psReadLineHistoryChord = $null
 
     $firstActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
     $secondActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
@@ -38,7 +39,8 @@ class GlobalStore {
         # Wait for async entry initializations
         $this.UpdateEntries()
 
-        $this.RemovePSReadLineKeyHandler()
+        $this.RemoveInvokePsRunChord()
+        $this.RemovePSReadLineHistoryChord()
         $this.RestorePSConsoleHostReadLine()
     }
 
@@ -163,10 +165,11 @@ class GlobalStore {
         $this.invokePsRunRequestQuery = $query
     }
 
-    [void] SetPSReadLineKeyHandler($chord) {
-        $this.RemovePSReadLineKeyHandler()
+    [void] SetInvokePsRunChord($chord) {
+        $this.ReplacePSConsoleHostReadLine()
+        $this.RemoveInvokePsRunChord()
 
-        $this.psReadLineChord = $chord
+        $this.invokePsRunChord = $chord
         Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
             $line = $null
             $cursor = $null
@@ -178,10 +181,26 @@ class GlobalStore {
         }
     }
 
-    [void] RemovePSReadLineKeyHandler() {
-        if ($this.psReadLineChord) {
-            Remove-PSReadLineKeyHandler -Chord $this.psReadLineChord
-            $this.psReadLineChord = $null
+    [void] RemoveInvokePsRunChord() {
+        if ($this.invokePsRunChord) {
+            Remove-PSReadLineKeyHandler -Chord $this.invokePsRunChord
+            $this.invokePsRunChord = $null
+        }
+    }
+
+    [void] SetPSReadLineHistoryChord($chord) {
+        $this.RemovePSReadLineHistoryChord()
+
+        $this.psReadLineHistoryChord = $chord
+        Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
+            SearchPSReadLineHistory
+        }
+    }
+
+    [void] RemovePSReadLineHistoryChord() {
+        if ($this.psReadLineHistoryChord) {
+            Remove-PSReadLineKeyHandler -Chord $this.psReadLineHistoryChord
+            $this.psReadLineHistoryChord = $null
         }
     }
 
