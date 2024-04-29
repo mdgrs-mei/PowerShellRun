@@ -29,7 +29,8 @@ function SearchPSReadLineHistory() {
             }
 
             $startTime = if ($item.StartTime -ne [DateTime]::MinValue) {
-                '{0} {1}' -f $item.StartTime.ToShortDateString(), $item.StartTime.ToShortTimeString()
+                $localTime = $item.StartTime.ToLocalTime()
+                '{0} {1}' -f $localTime.ToShortDateString(), $localTime.ToShortTimeString()
             } else {
                 '-'
             }
