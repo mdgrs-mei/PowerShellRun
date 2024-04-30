@@ -48,7 +48,7 @@ Type characters to search entries and hit `Enter` to launch the selected item. T
 You can assign a shortcut key to quickly launch *PowerShellRun*.
 
 ```powershell
-Set-PSRunPSReadLineKeyHandler -Chord 'Ctrl+j'
+Set-PSRunPSReadLineKeyHandler -InvokePsRunChord 'Ctrl+j'
 ```
 
 ## Entry Categories
@@ -164,6 +164,16 @@ function global:OpenNestedMenu() {
     # ... Other key handlings here
 }
 ```
+
+## History Search
+
+History search functionality is provided outside the *PowerShellRun* menu using PSReadLineKeyHandler. It searches PSReadLine history. Multi-line entries are also supported. You can enable it with the following command:
+
+```powershell
+Set-PSRunPSReadLineKeyHandler -PSReadLineHistoryChord 'Ctrl+r'
+```
+
+![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/350afb04-4862-408b-b6b5-3e3c86d90264)
 
 ## Options
 
