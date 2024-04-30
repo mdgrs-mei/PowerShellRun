@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0] - 2024-04-30
+
+### Added
+
+- Added `PSReadLineHistoryChord` parameter to `Set-PSRunPSReadLineKeyHandler`
+
+### Changed
+
+- `Chord` parameter of `Set-PSRunPSReadLineKeyHandler` is now an alias to `InvokePsRunChord` parameter
+
+### Fixed
+
+- Fixed wrong match highlights when the line has new line characters
+
 ## [0.4.0] - 2024-04-22
 
 ### Added
