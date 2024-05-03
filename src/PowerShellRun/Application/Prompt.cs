@@ -1,4 +1,5 @@
 ﻿namespace PowerShellRun;
+using System.Diagnostics;
 
 public static class Prompt
 {
@@ -20,11 +21,20 @@ public static class Prompt
             promptString: option.Prompt,
             processQuitAcceptKeys: true);
 
+        var canvasLayout = new StackLayout();
+        canvasLayout.LayoutSizeHeight.Set(LayoutSizeType.Content);
+        canvasLayout.BorderFlags = theme.CanvasBorderFlags;
+        canvasLayout.BorderSymbol = theme.CanvasBorderSymbol;
+        canvasLayout.BorderForegroundColor = theme.CanvasBorderForegroundColor;
+        canvasLayout.BorderBackgroundColor = theme.CanvasBorderBackgroundColor;
+        canvasLayout.AddChild(searchBar.RootLayout);
+        var canvasHeight = canvasLayout.GetLayoutSize().Height;
+        Debug.Assert(canvasHeight.Type == LayoutSizeType.Absolute);
+
         var canvas = Canvas.GetInstance();
-        canvas.Init(new LayoutSize(LayoutSizeType.Absolute, searchBar.GetHeight()));
+        canvas.Init(new LayoutSize(LayoutSizeType.Absolute, canvasHeight.Value));
 
         var pacemaker = new Pacemaker(16);
-        var canvasLayout = searchBar.RootLayout;
 
         if (context is not null)
         {

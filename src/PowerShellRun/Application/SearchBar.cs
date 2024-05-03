@@ -79,12 +79,6 @@ internal class SearchBar
         return (x, y);
     }
 
-    public int GetHeight()
-    {
-        Debug.Assert(RootLayout.LayoutSizeHeight.Type == LayoutSizeType.Absolute);
-        return RootLayout.LayoutSizeHeight.Value;
-    }
-
     public void Update()
     {
         ReadKeys();
