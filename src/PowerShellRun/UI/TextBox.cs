@@ -135,7 +135,7 @@ internal class TextBox : LayoutItem
                     fontStyle,
                     option);
 
-                cell.HeadEscapeSequence = escape.EscapeSequence;
+                cell.EscapeSequence = escape.EscapeSequence;
                 Cells.Add(cell);
 
                 ++cellIndex;

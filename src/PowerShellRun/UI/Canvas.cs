@@ -161,8 +161,7 @@ internal sealed class Canvas : Singleton<Canvas>
 
         var cell = _cells[index];
         cell.SetCharacter(character, foregroundColor, backgroundColor, fontStyle, optionFlags);
-        cell.HeadEscapeSequence = escapeSequence;
-        cell.TailEscapeSequence = null;
+        cell.EscapeSequence = escapeSequence;
     }
 
     public void SetCell(
@@ -244,9 +243,9 @@ internal sealed class Canvas : Singleton<Canvas>
                 {
                     escapeSequence = null;
                 }
-                if (cell.HeadEscapeSequence is not null)
+                if (cell.EscapeSequence is not null)
                 {
-                    escapeSequence = cell.HeadEscapeSequence;
+                    escapeSequence = cell.EscapeSequence;
                     shouldSetEscapeSequence = true;
                     forceResetFont = true;
                 }

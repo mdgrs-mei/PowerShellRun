@@ -15,8 +15,7 @@ internal class CanvasCell
     }
 
     public char Character { get; set; }
-    public string? HeadEscapeSequence { get; set; }
-    public string? TailEscapeSequence { get; set; }
+    public string? EscapeSequence { get; set; }
     public FontColor? ForegroundColor { get; set; }
     public FontColor? BackgroundColor { get; set; }
     public FontStyle FontStyle { get; set; }
@@ -30,8 +29,7 @@ internal class CanvasCell
     public void Clear()
     {
         Character = ' ';
-        HeadEscapeSequence = null;
-        TailEscapeSequence = null;
+        EscapeSequence = null;
         ForegroundColor = null;
         BackgroundColor = null;
         FontStyle = FontStyle.Default;
@@ -41,8 +39,7 @@ internal class CanvasCell
     public void CopyTo(CanvasCell cell)
     {
         cell.Character = Character;
-        cell.HeadEscapeSequence = HeadEscapeSequence;
-        cell.TailEscapeSequence = TailEscapeSequence;
+        cell.EscapeSequence = EscapeSequence;
         cell.ForegroundColor = ForegroundColor;
         cell.BackgroundColor = BackgroundColor;
         cell.FontStyle = FontStyle;
