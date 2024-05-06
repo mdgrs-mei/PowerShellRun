@@ -10,6 +10,8 @@ internal class CanvasCell
     {
         None = 0,
         ForceResetColor = 1 << 0,
+        ForceResetFontNext = 1 << 1,
+        EscapeSequenceLowPriority = 1 << 2,
     }
 
     public char Character { get; set; }

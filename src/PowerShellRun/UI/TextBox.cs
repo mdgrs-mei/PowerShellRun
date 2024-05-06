@@ -57,6 +57,9 @@ internal class TextBox : LayoutItem
             int tabSize = SelectorOptionHolder.GetInstance().Option.Theme.TabSize;
             int cellIndex = 0;
             StringBuilder? escapeSequenceBuilder = null;
+            bool isEscapeSequenceUpdated = false;
+            const string resetSequence = "\x1b[0m";
+            const int resetSequenceLength = 4;
 
             void AddEscapeSequence(char character)
             {
@@ -65,17 +68,35 @@ internal class TextBox : LayoutItem
                     escapeSequenceBuilder = new StringBuilder();
                 }
                 escapeSequenceBuilder.Append(character);
+                isEscapeSequenceUpdated = true;
             }
 
-            string? GetEscapeSequence()
+            (string? EscapeSequence, bool ShouldReset) GetEscapeSequence()
             {
-                if (escapeSequenceBuilder is not null && escapeSequenceBuilder.Length > 0)
+                if (isEscapeSequenceUpdated && escapeSequenceBuilder is not null)
                 {
-                    string escapeSequence = escapeSequenceBuilder.ToString();
-                    escapeSequenceBuilder.Clear();
-                    return escapeSequence;
+                    string? escapeSequence = escapeSequenceBuilder.ToString();
+
+                    bool shouldReset = false;
+                    int lastResetIndex = escapeSequence.LastIndexOf(resetSequence, StringComparison.Ordinal);
+                    if (lastResetIndex >= 0)
+                    {
+                        shouldReset = true;
+                        escapeSequenceBuilder.Clear();
+                        if (lastResetIndex + resetSequenceLength == escapeSequence.Length)
+                        {
+                            escapeSequence = null;
+                        }
+                        else
+                        {
+                            escapeSequence = escapeSequence.Substring(lastResetIndex + resetSequenceLength);
+                        }
+                    }
+                    isEscapeSequenceUpdated = false;
+
+                    return (escapeSequence, shouldReset);
                 }
-                return null;
+                return (null, false);
             }
 
             void SetCell(Word word, int charIndex, char character)
@@ -83,6 +104,7 @@ internal class TextBox : LayoutItem
                 FontColor? foregroundColor = word.ForegroundColor;
                 FontColor? backgroundColor = word.BackgroundColor;
                 FontStyle fontStyle = word.FontStyle;
+                bool isHighlight = false;
                 if (word.HighlightFlags is not null && charIndex < word.HighlightFlags.Length)
                 {
                     if (word.HighlightFlags[charIndex])
@@ -90,10 +112,20 @@ internal class TextBox : LayoutItem
                         foregroundColor = word.HighlightForegroundColor;
                         backgroundColor = word.HighlightBackgroundColor;
                         fontStyle = word.HighlightFontStyle;
+                        isHighlight = true;
                     }
                 }
 
-                string? escapeSequence = GetEscapeSequence();
+                var escape = GetEscapeSequence();
+                CanvasCell.Option option = CanvasCell.Option.None;
+                if (escape.ShouldReset)
+                {
+                    option |= CanvasCell.Option.ForceResetColor;
+                }
+                if (isHighlight)
+                {
+                    option |= CanvasCell.Option.EscapeSequenceLowPriority;
+                }
 
                 var cell = new CanvasCell();
                 cell.SetCharacter(
@@ -101,9 +133,9 @@ internal class TextBox : LayoutItem
                     foregroundColor,
                     backgroundColor,
                     fontStyle,
-                    CanvasCell.Option.None);
+                    option);
 
-                cell.HeadEscapeSequence = escapeSequence;
+                cell.HeadEscapeSequence = escape.EscapeSequence;
                 Cells.Add(cell);
 
                 ++cellIndex;
@@ -162,7 +194,12 @@ internal class TextBox : LayoutItem
 
                 if (cellIndex > 0)
                 {
-                    Cells[cellIndex - 1].TailEscapeSequence = GetEscapeSequence();
+                    var escape = GetEscapeSequence();
+                    if (escape.ShouldReset)
+                    {
+                        // Only accept reset sequence at the end of a word.
+                        Cells[cellIndex - 1].OptionFlags |= CanvasCell.Option.ForceResetFontNext;
+                    }
                 }
             }
         }
