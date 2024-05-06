@@ -234,7 +234,7 @@ internal sealed class Canvas : Singleton<Canvas>
                 bool shouldSetBackgroundColor = false;
                 bool shouldSetStyle = false;
 
-                bool forceResetFont = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetColor);
+                bool forceResetFont = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetFont);
                 forceResetFont = forceResetFont || forceResetFontNext;
                 forceResetFontNext = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetFontNext);
                 bool escapeSequenceLowPriority = cell.OptionFlags.HasFlag(CanvasCell.Option.EscapeSequenceLowPriority);

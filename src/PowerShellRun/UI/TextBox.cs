@@ -120,7 +120,7 @@ internal class TextBox : LayoutItem
                 CanvasCell.Option option = CanvasCell.Option.None;
                 if (escape.ShouldReset)
                 {
-                    option |= CanvasCell.Option.ForceResetColor;
+                    option |= CanvasCell.Option.ForceResetFont;
                 }
                 if (isHighlight)
                 {
@@ -672,7 +672,7 @@ internal class TextBox : LayoutItem
                 canvas.SetCellOption(
                     leftEnd,
                     y,
-                    CanvasCell.Option.ForceResetColor);
+                    CanvasCell.Option.ForceResetFont);
                 ++y;
             }
         }
@@ -727,7 +727,7 @@ internal class TextBox : LayoutItem
                         ScrollBarBackgroundColor,
                         FontStyle.Default,
                         null,
-                        CanvasCell.Option.ForceResetColor);
+                        CanvasCell.Option.ForceResetFont);
                 }
             }
         }

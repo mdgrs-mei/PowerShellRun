@@ -9,7 +9,7 @@ internal class CanvasCell
     public enum Option
     {
         None = 0,
-        ForceResetColor = 1 << 0,
+        ForceResetFont = 1 << 0,
         ForceResetFontNext = 1 << 1,
         EscapeSequenceLowPriority = 1 << 2,
     }

@@ -137,7 +137,7 @@ internal abstract class LayoutItem
                 {
                     character = BorderSymbol.BottomLeft;
                 }
-                canvas.SetCell(X, Y + i, character, BorderForegroundColor, BorderBackgroundColor, FontStyle.Default, null, CanvasCell.Option.ForceResetColor);
+                canvas.SetCell(X, Y + i, character, BorderForegroundColor, BorderBackgroundColor, FontStyle.Default, null, CanvasCell.Option.ForceResetFont);
             }
         }
         if (BorderFlags.HasFlag(BorderFlag.Right))
@@ -154,14 +154,14 @@ internal abstract class LayoutItem
                 {
                     character = BorderSymbol.BottomRight;
                 }
-                canvas.SetCell(rightEnd, Y + i, character, BorderForegroundColor, BorderBackgroundColor, FontStyle.Default, null, CanvasCell.Option.ForceResetColor);
+                canvas.SetCell(rightEnd, Y + i, character, BorderForegroundColor, BorderBackgroundColor, FontStyle.Default, null, CanvasCell.Option.ForceResetFont);
             }
         }
         if (BorderFlags.HasFlag(BorderFlag.Top))
         {
             for (int i = 0; i < Width; ++i)
             {
-                var option = i == 0 ? CanvasCell.Option.ForceResetColor : CanvasCell.Option.None;
+                var option = i == 0 ? CanvasCell.Option.ForceResetFont : CanvasCell.Option.None;
                 if (i == 0 && BorderFlags.HasFlag(BorderFlag.Left))
                     continue;
                 if (i == Width - 1 && BorderFlags.HasFlag(BorderFlag.Right))
@@ -173,7 +173,7 @@ internal abstract class LayoutItem
         {
             for (int i = 0; i < Width; ++i)
             {
-                var option = i == 0 ? CanvasCell.Option.ForceResetColor : CanvasCell.Option.None;
+                var option = i == 0 ? CanvasCell.Option.ForceResetFont : CanvasCell.Option.None;
                 if (i == 0 && BorderFlags.HasFlag(BorderFlag.Left))
                     continue;
                 if (i == Width - 1 && BorderFlags.HasFlag(BorderFlag.Right))
