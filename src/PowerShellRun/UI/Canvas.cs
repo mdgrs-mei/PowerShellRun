@@ -161,8 +161,7 @@ internal sealed class Canvas : Singleton<Canvas>
 
         var cell = _cells[index];
         cell.SetCharacter(character, foregroundColor, backgroundColor, fontStyle, optionFlags);
-        cell.HeadEscapeSequence = escapeSequence;
-        cell.TailEscapeSequence = null;
+        cell.EscapeSequence = escapeSequence;
     }
 
     public void SetCell(
@@ -209,6 +208,9 @@ internal sealed class Canvas : Singleton<Canvas>
         FontColor? currentBackgroundColor = null;
         FontColor? currentForegroundColor = null;
         FontStyle currentFontStyle = FontStyle.Default;
+        bool currentEscapeSequenceLowPriority = false;
+        bool forceResetFontNext = false;
+        string? escapeSequence = null;
 
         for (int i = 0; i < theme.CanvasTopMargin; ++i)
         {
@@ -227,10 +229,61 @@ internal sealed class Canvas : Singleton<Canvas>
                 if (cell.Character == '\0')
                     continue;
 
-                bool forceResetColor = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetColor);
+                bool shouldSetEscapeSequence = false;
+                bool shouldSetForegroundColor = false;
+                bool shouldSetBackgroundColor = false;
+                bool shouldSetStyle = false;
 
-                if (forceResetColor ||
+                bool forceResetFont = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetFont);
+                forceResetFont = forceResetFont || forceResetFontNext;
+                forceResetFontNext = cell.OptionFlags.HasFlag(CanvasCell.Option.ForceResetFontNext);
+                bool escapeSequenceLowPriority = cell.OptionFlags.HasFlag(CanvasCell.Option.EscapeSequenceLowPriority);
+
+                if (forceResetFont)
+                {
+                    escapeSequence = null;
+                }
+                if (cell.EscapeSequence is not null)
+                {
+                    escapeSequence = cell.EscapeSequence;
+                    shouldSetEscapeSequence = true;
+                    forceResetFont = true;
+                }
+                if (currentEscapeSequenceLowPriority != escapeSequenceLowPriority)
+                {
+                    currentEscapeSequenceLowPriority = escapeSequenceLowPriority;
+                    shouldSetEscapeSequence = true;
+                    forceResetFont = true;
+                }
+
+                if (forceResetFont ||
                     cell.ForegroundColor != currentForegroundColor)
+                {
+                    currentForegroundColor = cell.ForegroundColor;
+                    shouldSetForegroundColor = true;
+                    shouldSetEscapeSequence = true;
+                }
+                if (forceResetFont ||
+                    cell.BackgroundColor != currentBackgroundColor)
+                {
+                    currentBackgroundColor = cell.BackgroundColor;
+                    shouldSetBackgroundColor = true;
+                    shouldSetEscapeSequence = true;
+                }
+                if (forceResetFont ||
+                    cell.FontStyle != currentFontStyle)
+                {
+                    currentFontStyle = cell.FontStyle;
+                    shouldSetStyle = true;
+                    shouldSetEscapeSequence = true;
+                }
+
+                if (escapeSequence is not null && shouldSetEscapeSequence && escapeSequenceLowPriority)
+                {
+                    builder.Append(escapeSequence);
+                }
+
+                if (shouldSetForegroundColor)
                 {
                     if (cell.ForegroundColor is null)
                     {
@@ -240,11 +293,9 @@ internal sealed class Canvas : Singleton<Canvas>
                     {
                         builder.Append(cell.ForegroundColor.ForegroundEscapeCode);
                     }
-                    currentForegroundColor = cell.ForegroundColor;
                 }
 
-                if (forceResetColor ||
-                    cell.BackgroundColor != currentBackgroundColor)
+                if (shouldSetBackgroundColor)
                 {
                     if (cell.BackgroundColor is null)
                     {
@@ -254,31 +305,21 @@ internal sealed class Canvas : Singleton<Canvas>
                     {
                         builder.Append(cell.BackgroundColor.BackgroundEscapeCode);
                     }
-                    currentBackgroundColor = cell.BackgroundColor;
                 }
 
-                if (forceResetColor ||
-                    cell.FontStyle != currentFontStyle)
+                if (shouldSetStyle)
                 {
                     builder.Append(FontStyleTable.GetEscapeCode(cell.FontStyle));
-                    currentFontStyle = cell.FontStyle;
                 }
 
-                if (cell.HeadEscapeSequence is not null)
+                if (escapeSequence is not null && shouldSetEscapeSequence && !escapeSequenceLowPriority)
                 {
-                    builder.Append(cell.HeadEscapeSequence);
+                    builder.Append(escapeSequence);
                 }
+
                 builder.Append(cell.Character);
-                if (cell.TailEscapeSequence is not null)
-                {
-                    builder.Append(cell.TailEscapeSequence);
-                }
-
-                if (x == Width - 1)
-                {
-                    builder.Append('\n');
-                }
             }
+            builder.Append('\n');
         }
         builder.Append("\x1b[0m");
         Console.Write(builder.ToString());
