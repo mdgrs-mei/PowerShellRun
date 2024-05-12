@@ -179,7 +179,7 @@ internal sealed class Canvas : Singleton<Canvas>
         cell.CopyTo(_cells[index]);
     }
 
-    public void SetCellOption(
+    public void AddCellOption(
         int x,
         int y,
         CanvasCell.Option optionFlags)
@@ -192,7 +192,7 @@ internal sealed class Canvas : Singleton<Canvas>
             return;
 
         var cell = _cells[index];
-        cell.OptionFlags = optionFlags;
+        cell.OptionFlags |= optionFlags;
     }
 
     public void Write()

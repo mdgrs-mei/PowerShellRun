@@ -59,6 +59,12 @@
         $match | Should -Be 'aあ'
     }
 
+    It 'should not match with escape sequences' {
+        $context.Query = '0m'
+        $match = $PSStyle.Foreground.Red + 'abc' + $PSStyle.Reset | Invoke-PSRunSelector -Option $option -Context $context
+        $match | Should -BeNullOrEmpty
+    }
+
     It 'should not throw an exception with multi selection' {
         $match = 'a' | Invoke-PSRunSelector -Option $option -MultiSelection
         $match | Should -Be 'a'
