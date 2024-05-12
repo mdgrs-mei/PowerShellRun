@@ -669,7 +669,7 @@ internal class TextBox : LayoutItem
             y = innerLayout.Y;
             for (int i = lineIndexStart; i <= lineIndexEnd; ++i)
             {
-                canvas.SetCellOption(
+                canvas.AddCellOption(
                     leftEnd,
                     y,
                     CanvasCell.Option.ForceResetFont);
