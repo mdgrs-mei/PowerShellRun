@@ -13,9 +13,13 @@ internal class InternalEntry
     public string Name { get; set; } = "";
     public string SearchName { get; private set; } = "";
     public string SearchNameLowerCase { get; private set; } = "";
+    public int SearchNameStartIndex { get; private set; } = 0;
+    public int SearchNameLength { get; private set; } = 0;
     public string Description { get; set; } = "";
     public string SearchDescription { get; set; } = "";
     public string SearchDescriptionLowerCase { get; private set; } = "";
+    public int SearchDescriptionStartIndex { get; private set; } = 0;
+    public int SearchDescriptionLength { get; private set; } = 0;
 
     public bool[] NameMatches { get; set; }
     public bool[] DescriptionMatches { get; set; }
@@ -33,13 +37,21 @@ internal class InternalEntry
     public InternalEntry(SelectorEntry selectorEntry)
     {
         SelectorEntry = selectorEntry;
+
         Name = FormatWord(selectorEntry.Name);
-        SearchName = GenerateSearchWord(Name, SelectorEntry.NameSearchablePattern);
+        var nameSearchWord = GenerateSearchWord(Name, SelectorEntry.NameSearchablePattern);
+        SearchName = nameSearchWord.Word;
+        SearchNameStartIndex = nameSearchWord.StartIndex;
+        SearchNameLength = nameSearchWord.Length;
         NameMatches = new bool[Name.Length];
+
         if (selectorEntry.Description is not null)
         {
             Description = FormatWord(selectorEntry.Description);
-            SearchDescription = GenerateSearchWord(Description, SelectorEntry.DescriptionSearchablePattern);
+            var descriptionSearchWord = GenerateSearchWord(Description, SelectorEntry.DescriptionSearchablePattern);
+            SearchDescription = descriptionSearchWord.Word;
+            SearchDescriptionStartIndex = descriptionSearchWord.StartIndex;
+            SearchDescriptionLength = descriptionSearchWord.Length;
             DescriptionMatches = new bool[Description.Length];
         }
         else
@@ -133,11 +145,11 @@ internal class InternalEntry
         return word;
     }
 
-    private static string GenerateSearchWord(string word, Regex? searchablePattern)
+    private static (string Word, int StartIndex, int Length) GenerateSearchWord(string word, Regex? searchablePattern)
     {
         bool containsEscapeSequence = word.Contains('\x1b', StringComparison.Ordinal);
         if (!containsEscapeSequence && searchablePattern is null)
-            return word;
+            return (word, 0, word.Length);
 
         // Enable all characters.
         var characters = word.ToCharArray();
@@ -157,7 +169,7 @@ internal class InternalEntry
             }
         }
 
-        // Disable escape seqnece characters.
+        // Disable escape sequence characters.
         if (containsEscapeSequence)
         {
             bool escaped = false;
@@ -181,7 +193,21 @@ internal class InternalEntry
             }
         }
 
-        return new string(characters);
+        int startIndex = -1;
+        int length = 0;
+        for (int i = 0; i < characters.Length; ++i)
+        {
+            if (characters[i] != '\0')
+            {
+                ++length;
+                if (startIndex < 0)
+                {
+                    startIndex = i;
+                }
+            }
+        }
+
+        return (new string(characters), startIndex, length);
     }
 
     private static string[] FormatLines(IEnumerable objs)
