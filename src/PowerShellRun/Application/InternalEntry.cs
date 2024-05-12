@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
 
 namespace PowerShellRun;
 
@@ -33,12 +34,12 @@ internal class InternalEntry
     {
         SelectorEntry = selectorEntry;
         Name = FormatWord(selectorEntry.Name);
-        SearchName = GenerateSearchWord(Name);
+        SearchName = GenerateSearchWord(Name, SelectorEntry.NameSearchablePattern);
         NameMatches = new bool[Name.Length];
         if (selectorEntry.Description is not null)
         {
             Description = FormatWord(selectorEntry.Description);
-            SearchDescription = GenerateSearchWord(Description);
+            SearchDescription = GenerateSearchWord(Description, SelectorEntry.DescriptionSearchablePattern);
             DescriptionMatches = new bool[Description.Length];
         }
         else
@@ -132,12 +133,34 @@ internal class InternalEntry
         return word;
     }
 
-    private static string GenerateSearchWord(string word)
+    private static string GenerateSearchWord(string word, Regex? searchablePattern)
     {
-        if (word.Contains('\x1b'))
+        bool containsEscapeSequence = word.Contains('\x1b', StringComparison.Ordinal);
+        if (!containsEscapeSequence && searchablePattern is null)
+            return word;
+
+        // Enable all characters.
+        var characters = word.ToCharArray();
+
+        // Only enable parts that are matched by regex if provided.
+        if (searchablePattern is not null)
+        {
+            Array.Fill(characters, '\0');
+            var matches = searchablePattern.Matches(word);
+            foreach (Match match in matches)
+            {
+                for (int i = 0; i < match.Length; ++i)
+                {
+                    int charIndex = match.Index + i;
+                    characters[charIndex] = word[charIndex];
+                }
+            }
+        }
+
+        // Disable escape seqnece characters.
+        if (containsEscapeSequence)
         {
             bool escaped = false;
-            var characters = word.ToCharArray();
             for (int i = 0; i < characters.Length; ++i)
             {
                 char character = characters[i];
@@ -155,17 +178,10 @@ internal class InternalEntry
                     escaped = true;
                     characters[i] = '\0';
                 }
-                else
-                {
-                    characters[i] = character;
-                }
             }
-            return new string(characters);
         }
-        else
-        {
-            return word;
-        }
+
+        return new string(characters);
     }
 
     private static string[] FormatLines(IEnumerable objs)
