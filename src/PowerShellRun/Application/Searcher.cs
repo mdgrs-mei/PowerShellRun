@@ -66,8 +66,8 @@ internal class Searcher
             if (operation == ScoreOperation.And && entry.Score == 0)
                 continue;
 
-            string nameEntry = useLowerCase ? entry.NameLowerCase : entry.Name;
-            string descriptionEntry = useLowerCase ? entry.DescriptionLowerCase : entry.Description;
+            string nameEntry = useLowerCase ? entry.SearchNameLowerCase : entry.SearchName;
+            string descriptionEntry = useLowerCase ? entry.SearchDescriptionLowerCase : entry.SearchDescription;
 
             int nameScore = CalculateScore(nameEntry, entry.NameMatches, query);
             int descriptionScore = CalculateScore(descriptionEntry, entry.DescriptionMatches, query);

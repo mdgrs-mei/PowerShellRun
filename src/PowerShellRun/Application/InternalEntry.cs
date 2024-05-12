@@ -10,9 +10,11 @@ internal class InternalEntry
 {
     public SelectorEntry SelectorEntry { get; set; }
     public string Name { get; set; } = "";
-    public string NameLowerCase { get; private set; } = "";
+    public string SearchName { get; private set; } = "";
+    public string SearchNameLowerCase { get; private set; } = "";
     public string Description { get; set; } = "";
-    public string DescriptionLowerCase { get; private set; } = "";
+    public string SearchDescription { get; set; } = "";
+    public string SearchDescriptionLowerCase { get; private set; } = "";
 
     public bool[] NameMatches { get; set; }
     public bool[] DescriptionMatches { get; set; }
@@ -31,10 +33,12 @@ internal class InternalEntry
     {
         SelectorEntry = selectorEntry;
         Name = FormatWord(selectorEntry.Name);
+        SearchName = GenerateSearchWord(Name);
         NameMatches = new bool[Name.Length];
         if (selectorEntry.Description is not null)
         {
             Description = FormatWord(selectorEntry.Description);
+            SearchDescription = GenerateSearchWord(Description);
             DescriptionMatches = new bool[Description.Length];
         }
         else
@@ -44,8 +48,8 @@ internal class InternalEntry
         Array.Fill(NameMatches, false);
         Array.Fill(DescriptionMatches, false);
 
-        NameLowerCase = Name.ToLower();
-        DescriptionLowerCase = Description.ToLower();
+        SearchNameLowerCase = SearchName.ToLower();
+        SearchDescriptionLowerCase = SearchDescription.ToLower();
 
         if (selectorEntry.Preview is not null)
         {
@@ -126,6 +130,42 @@ internal class InternalEntry
         word = word.Replace("\r", "");
         word = word.Replace("\n", "");
         return word;
+    }
+
+    private static string GenerateSearchWord(string word)
+    {
+        if (word.Contains('\x1b'))
+        {
+            bool escaped = false;
+            var characters = word.ToCharArray();
+            for (int i = 0; i < characters.Length; ++i)
+            {
+                char character = characters[i];
+                if (escaped)
+                {
+                    if (character == 'm')
+                    {
+                        escaped = false;
+                    }
+                    characters[i] = '\0';
+                }
+                else
+                if (character == '\x1b')
+                {
+                    escaped = true;
+                    characters[i] = '\0';
+                }
+                else
+                {
+                    characters[i] = character;
+                }
+            }
+            return new string(characters);
+        }
+        else
+        {
+            return word;
+        }
     }
 
     private static string[] FormatLines(IEnumerable objs)
