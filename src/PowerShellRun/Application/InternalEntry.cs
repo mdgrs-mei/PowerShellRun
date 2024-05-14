@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
 
 namespace PowerShellRun;
 
@@ -12,9 +13,13 @@ internal class InternalEntry
     public string Name { get; set; } = "";
     public string SearchName { get; private set; } = "";
     public string SearchNameLowerCase { get; private set; } = "";
+    public int SearchNameStartIndex { get; private set; } = 0;
+    public int SearchNameLength { get; private set; } = 0;
     public string Description { get; set; } = "";
     public string SearchDescription { get; set; } = "";
     public string SearchDescriptionLowerCase { get; private set; } = "";
+    public int SearchDescriptionStartIndex { get; private set; } = 0;
+    public int SearchDescriptionLength { get; private set; } = 0;
 
     public bool[] NameMatches { get; set; }
     public bool[] DescriptionMatches { get; set; }
@@ -32,13 +37,21 @@ internal class InternalEntry
     public InternalEntry(SelectorEntry selectorEntry)
     {
         SelectorEntry = selectorEntry;
+
         Name = FormatWord(selectorEntry.Name);
-        SearchName = GenerateSearchWord(Name);
+        var nameSearchWord = GenerateSearchWord(Name, SelectorEntry.NameSearchablePattern);
+        SearchName = nameSearchWord.Word;
+        SearchNameStartIndex = nameSearchWord.StartIndex;
+        SearchNameLength = nameSearchWord.Length;
         NameMatches = new bool[Name.Length];
+
         if (selectorEntry.Description is not null)
         {
             Description = FormatWord(selectorEntry.Description);
-            SearchDescription = GenerateSearchWord(Description);
+            var descriptionSearchWord = GenerateSearchWord(Description, SelectorEntry.DescriptionSearchablePattern);
+            SearchDescription = descriptionSearchWord.Word;
+            SearchDescriptionStartIndex = descriptionSearchWord.StartIndex;
+            SearchDescriptionLength = descriptionSearchWord.Length;
             DescriptionMatches = new bool[Description.Length];
         }
         else
@@ -132,12 +145,34 @@ internal class InternalEntry
         return word;
     }
 
-    private static string GenerateSearchWord(string word)
+    private static (string Word, int StartIndex, int Length) GenerateSearchWord(string word, Regex? searchablePattern)
     {
-        if (word.Contains('\x1b'))
+        bool containsEscapeSequence = word.Contains('\x1b', StringComparison.Ordinal);
+        if (!containsEscapeSequence && searchablePattern is null)
+            return (word, 0, word.Length);
+
+        // Enable all characters.
+        var characters = word.ToCharArray();
+
+        // Only enable parts that are matched by regex if provided.
+        if (searchablePattern is not null)
+        {
+            Array.Fill(characters, '\0');
+            var matches = searchablePattern.Matches(word);
+            foreach (Match match in matches)
+            {
+                for (int i = 0; i < match.Length; ++i)
+                {
+                    int charIndex = match.Index + i;
+                    characters[charIndex] = word[charIndex];
+                }
+            }
+        }
+
+        // Disable escape sequence characters.
+        if (containsEscapeSequence)
         {
             bool escaped = false;
-            var characters = word.ToCharArray();
             for (int i = 0; i < characters.Length; ++i)
             {
                 char character = characters[i];
@@ -155,17 +190,24 @@ internal class InternalEntry
                     escaped = true;
                     characters[i] = '\0';
                 }
-                else
+            }
+        }
+
+        int startIndex = -1;
+        int length = 0;
+        for (int i = 0; i < characters.Length; ++i)
+        {
+            if (characters[i] != '\0')
+            {
+                ++length;
+                if (startIndex < 0)
                 {
-                    characters[i] = character;
+                    startIndex = i;
                 }
             }
-            return new string(characters);
         }
-        else
-        {
-            return word;
-        }
+
+        return (new string(characters), startIndex, length);
     }
 
     private static string[] FormatLines(IEnumerable objs)

@@ -69,8 +69,19 @@ internal class Searcher
             string nameEntry = useLowerCase ? entry.SearchNameLowerCase : entry.SearchName;
             string descriptionEntry = useLowerCase ? entry.SearchDescriptionLowerCase : entry.SearchDescription;
 
-            int nameScore = CalculateScore(nameEntry, entry.NameMatches, query);
-            int descriptionScore = CalculateScore(descriptionEntry, entry.DescriptionMatches, query);
+            int nameScore = CalculateScore(
+                nameEntry,
+                entry.SearchNameStartIndex,
+                entry.SearchNameLength,
+                entry.NameMatches,
+                query);
+
+            int descriptionScore = CalculateScore(
+                descriptionEntry,
+                entry.SearchDescriptionStartIndex,
+                entry.SearchDescriptionLength,
+                entry.DescriptionMatches,
+                query);
 
             int score = Math.Max(nameScore, descriptionScore);
             if (operation == ScoreOperation.And && score == 0)
@@ -84,7 +95,7 @@ internal class Searcher
         }
     }
 
-    private int CalculateScore(string searchEntry, bool[] matches, string query)
+    private int CalculateScore(string searchEntry, int startIndex, int length, bool[] matches, string query)
     {
         int score = 0;
         if (string.IsNullOrEmpty(searchEntry) || string.IsNullOrEmpty(query))
@@ -109,14 +120,14 @@ internal class Searcher
         if (score > 0)
         {
             // Short name entires get higher score
-            score += Math.Max(50 - searchEntry.Length, 1);
+            score += Math.Max(50 - length, 1);
         }
 
         {
             if (matchIndexes.MatchStartIndex is int matchStartIndex)
             {
                 // First character match gets higher score
-                if (matchStartIndex == 0)
+                if (matchStartIndex == startIndex)
                 {
                     score += 10;
                 }

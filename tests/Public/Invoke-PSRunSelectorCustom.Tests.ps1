@@ -44,6 +44,31 @@
         $result.FocusedEntry.UserData | Should -Be $items[0]
     }
 
+    It 'should process searchable pattern for Name' {
+        $context.Query = 'abc'
+        $result = 'abc def', 'def abc' | ForEach-Object {
+            $entry = [PowerShellRun.SelectorEntry]::new()
+            $entry.UserData = $_
+            $entry.Name = $_
+            $entry.NameSearchablePattern = '(?<=^\S*\s).*'
+            $entry
+        } | Invoke-PSRunSelectorCustom -Option $option -Context $context
+        $result.FocusedEntry.UserData | Should -Be 'def abc'
+    }
+
+    It 'should process searchable pattern for Name' {
+        $context.Query = 'abc'
+        $result = 'abc def', 'def abc' | ForEach-Object {
+            $entry = [PowerShellRun.SelectorEntry]::new()
+            $entry.UserData = $_
+            $entry.Name = 'name'
+            $entry.Description = $_
+            $entry.DescriptionSearchablePattern = '(?<=^\S*\s).*'
+            $entry
+        } | Invoke-PSRunSelectorCustom -Option $option -Context $context
+        $result.FocusedEntry.UserData | Should -Be 'def abc'
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }

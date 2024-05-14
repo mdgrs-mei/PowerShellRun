@@ -47,6 +47,12 @@
         $match | Should -Be 'acb'
     }
 
+    It 'should prioritize shorter entry' {
+        $context.Query = 'ab'
+        $match = 'abc', 'abcd', 'ab' | Invoke-PSRunSelector -Option $option -Context $context
+        $match | Should -Be 'ab'
+    }
+
     It 'should prioritize the first character match' {
         $context.Query = 'ab'
         $match = 'cab', 'abc' | Invoke-PSRunSelector -Option $option -Context $context
@@ -63,6 +69,18 @@
         $context.Query = '0m'
         $match = $PSStyle.Foreground.Red + 'abc' + $PSStyle.Reset | Invoke-PSRunSelector -Option $option -Context $context
         $match | Should -BeNullOrEmpty
+    }
+
+    It 'should prioritize shorter entry even with escape sequences' {
+        $context.Query = 'ab'
+        $match = 'abc', 'abcd', ($PSStyle.Foreground.Red + 'ab' + $PSStyle.Reset) | Invoke-PSRunSelector -Option $option -Context $context
+        $match | Should -Be ($PSStyle.Foreground.Red + 'ab' + $PSStyle.Reset)
+    }
+
+    It 'should prioritize the first character match even with escape sequences' {
+        $context.Query = 'ab'
+        $match = 'cab', ($PSStyle.Foreground.Red + 'abc' + $PSStyle.Reset) | Invoke-PSRunSelector -Option $option -Context $context
+        $match | Should -Be ($PSStyle.Foreground.Red + 'abc' + $PSStyle.Reset)
     }
 
     It 'should not throw an exception with multi selection' {
