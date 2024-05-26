@@ -209,6 +209,24 @@ $keyBinding.QuitKeys = @(
 $keyBinding.MarkerKeys = 'Ctrl+f'
 ```
 
+#### Key Remap Mode
+
+There are two key binding modes, `Normal Mode` and `Key Remap Mode`. You can toggle the remap mode by pressing `RemapModeEnterKeys` and `RemapModeExitKeys`. In Key Remap mode, the keys you specify are remapped to other keys. This is useful if you'd like to achieve something like Vim Normal mode and Insert mode. Vim style `hjkl` navigation is set up like this:
+
+```powershell
+$keyBinding.InitialRemapMode = $true
+$keyBinding.RemapModeEnterKeys = 'Escape'
+$keyBinding.RemapModeExitKeys = 'i'
+$keyBinding.RemapKeys = @(
+    [PowerShellRun.RemapKey]::new('h', 'LeftArrow')
+    [PowerShellRun.RemapKey]::new('j', 'DownArrow')
+    [PowerShellRun.RemapKey]::new('k', 'UpArrow')
+    [PowerShellRun.RemapKey]::new('l', 'RightArrow')
+)
+```
+
+It starts in Key Remap mode, and `hjkl` keys are remapped to arrow keys. `i` key enables typing, and you can go back to the `hjkl` navigation by `Escape` key.
+
 ### ・Theme
 
 The theme can be customized with `$option.Theme` property. We hope someone creates a cool theme library for *PowerShellRun*🙏.
