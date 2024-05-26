@@ -69,7 +69,7 @@ public static class Prompt
                 canvas.ClearCells();
                 canvasLayout.Render();
             }
-            if (searchBar.IsQueryUpdated || searchBar.IsCursorUpdated)
+            if (searchBar.IsQueryUpdated || searchBar.IsCursorUpdated || canvas.NeedsFlush)
             {
                 canvas.Write();
             }

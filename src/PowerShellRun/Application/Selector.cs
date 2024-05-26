@@ -96,7 +96,7 @@ public static class Selector
                 canvas.ClearCells();
                 canvasLayout.Render();
             }
-            if (searchBar.IsQueryUpdated || searchBar.IsCursorUpdated || resultWindow.IsUpdated)
+            if (searchBar.IsQueryUpdated || searchBar.IsCursorUpdated || resultWindow.IsUpdated || canvas.NeedsFlush)
             {
                 canvas.Write();
             }

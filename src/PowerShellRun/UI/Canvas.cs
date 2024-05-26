@@ -25,6 +25,7 @@ internal sealed class Canvas : Singleton<Canvas>
 
     public int Width { get; private set; } = 0;
     public int Height { get; private set; } = 0;
+    public bool NeedsFlush { get; private set; } = false;
 
     public void Init(LayoutSize height)
     {
@@ -334,6 +335,7 @@ internal sealed class Canvas : Singleton<Canvas>
         ResetCursorPosition();
 
         Console.CursorVisible = true;
+        NeedsFlush = false;
     }
 
     public void SetCursorOffset(int x, int y)
@@ -386,6 +388,8 @@ internal sealed class Canvas : Singleton<Canvas>
                 _streamWriter.Flush();
             }
             _cursorShape = shape;
+
+            NeedsFlush = true;
         }
     }
 }
