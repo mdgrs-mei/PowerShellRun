@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.6.0] - 2024-05-26
+
+### Added
+
+- Added support for CanvasBorder settings in `Invoke-PSRunPrompt`
+- Added `NameSearchablePattern` and `DescriptionSearchablePattern` properties to `SelectorEntry`
+- Added `InitialRemapMode` property to `KeyBinding`
+- Added `EnableTextInputInRemapMode` property to `KeyBinding`
+- Added `RemapModeEnterKeys` and `RemapModeExitKeys` properties to `KeyBinding`
+- Added `RemapKeys` property to `KeyBinding`
+- Added `ConsoleCursorShape` and `KeyRemapModeConsoleCursorShape` properties to `Theme`
+- Added `Subtract` and `Divide` to `Key`
+
+### Changed
+
+- The reset escape sequence `\x1b[0m` resets the color and style to PowerShellRun's settings, not terminal's default
+- The color and style of match highlights have higher priority than the ones set by escape sequences
+
+### Fixed
+
+- Escape sequence characters are now excluded from search
+
 ## [0.5.0] - 2024-04-30
 
 ### Added
