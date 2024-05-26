@@ -225,6 +225,7 @@ public enum Key
     Y,
     Z,
 
+    Subtract,
     Divide,
 
     F1,

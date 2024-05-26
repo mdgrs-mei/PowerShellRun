@@ -238,6 +238,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
         (Key.Y, ConsoleKey.Y),
         (Key.Z, ConsoleKey.Z),
 
+        (Key.Subtract, ConsoleKey.Subtract),
         (Key.Divide, ConsoleKey.Divide),
 
         (Key.F1, ConsoleKey.F1),
