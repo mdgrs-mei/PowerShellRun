@@ -296,6 +296,8 @@ FocusedEntry                MarkedEntries KeyCombination Context
 PowerShellRun.SelectorEntry               Enter          PowerShellRun.SelectorContext
 ```
 
+### ・PreviewAsyncScript
+
 By using `PreviewAsyncScript`, it's even possible to show information that takes some time to generate without blocking the UI. If you have [bat](https://github.com/sharkdp/bat) installed for syntax highlighting, you can build a Select-String viewer with this script:
 
 ```powershell
@@ -328,6 +330,36 @@ if ($match -and ($result.KeyCombination -eq 'Enter')) {
 ```
 
 ![Invoke-PSRunSelectorCustom](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/c963be6f-88cb-457b-a966-a94def3f057a)
+
+### ・SearchablePattern
+
+You can set Regex pattern to `NameSearchablePattern` and `DescriptionSearchablePattern` properties to define which parts of a string are hit by query.
+
+#### Example1: The second word split by space is searchable
+
+```powershell
+# 'bbb' and 'eee' are searchable.
+$pattern = [Regex]::new('(?<=^\S*\s).*?(?=\s|$)')
+'aaa bbb ccc', 'ddd eee fff' | ForEach-Object {
+    $entry = [PowerShellRun.SelectorEntry]::new()
+    $entry.Name = $_
+    $entry.NameSearchablePattern = $pattern
+    $entry
+} | Invoke-PSRunSelectorCustom
+```
+
+#### Example2: All words inside [] are searchable
+
+```powershell
+# 'bbb', 'ccc' and 'ddd' are searchable.
+$pattern = [Regex]::new('(?<=\[).*?(?=\])')
+'aaa [bbb] [ccc]', '[ddd] eee fff' | ForEach-Object {
+    $entry = [PowerShellRun.SelectorEntry]::new()
+    $entry.Name = $_
+    $entry.NameSearchablePattern = $pattern
+    $entry
+} | Invoke-PSRunSelectorCustom
+```
 
 ## Major Limitations
 
