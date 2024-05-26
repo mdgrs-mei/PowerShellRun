@@ -214,7 +214,9 @@ $keyBinding.MarkerKeys = 'Ctrl+f'
 There are two key binding modes, `Normal Mode` and `Key Remap Mode`. You can toggle the remap mode by pressing `RemapModeEnterKeys` and `RemapModeExitKeys`. In Key Remap mode, the keys you specify are remapped to other keys. This is useful if you'd like to achieve something like Vim Normal mode and Insert mode. Vim style `hjkl` navigation is set up like this:
 
 ```powershell
+$theme.KeyRemapModeConsoleCursorShape = 'BlinkingBlock'
 $keyBinding.InitialRemapMode = $true
+$keyBinding.EnableTextInputInRemapMode = $false
 $keyBinding.RemapModeEnterKeys = 'Escape'
 $keyBinding.RemapModeExitKeys = 'i'
 $keyBinding.RemapKeys = @(
@@ -222,6 +224,8 @@ $keyBinding.RemapKeys = @(
     [PowerShellRun.RemapKey]::new('j', 'DownArrow')
     [PowerShellRun.RemapKey]::new('k', 'UpArrow')
     [PowerShellRun.RemapKey]::new('l', 'RightArrow')
+    [PowerShellRun.RemapKey]::new('Shift+j', 'Shift+DownArrow')
+    [PowerShellRun.RemapKey]::new('Shift+k', 'Shift+UpArrow')
 )
 ```
 
