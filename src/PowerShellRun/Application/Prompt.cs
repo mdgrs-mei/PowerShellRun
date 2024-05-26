@@ -14,9 +14,6 @@ public static class Prompt
         option = SelectorOptionHolder.GetInstance().Option;
         var theme = option.Theme;
 
-        var keyInput = KeyInput.GetInstance();
-        keyInput.Init();
-
         var searchBar = new SearchBar(
             promptString: option.Prompt,
             processQuitAcceptKeys: true);
@@ -33,6 +30,9 @@ public static class Prompt
 
         var canvas = Canvas.GetInstance();
         canvas.Init(new LayoutSize(LayoutSizeType.Absolute, canvasHeight.Value));
+
+        var keyInput = KeyInput.GetInstance();
+        keyInput.Init();
 
         var pacemaker = new Pacemaker(16);
 

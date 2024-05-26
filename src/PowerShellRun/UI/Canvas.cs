@@ -19,6 +19,7 @@ internal sealed class Canvas : Singleton<Canvas>
     private int _cursorOffsetX = 0;
     private int _cursorOffsetY = 0;
     private int _cursorOffsetYFromRoot = 0;
+    private ConsoleCursorShape _cursorShape = ConsoleCursorShape.Default;
     FontColor _defaultForegroundColor = FontColor.Default;
     FontColor _defaultBackgroundColor = FontColor.Default;
 
@@ -59,6 +60,8 @@ internal sealed class Canvas : Singleton<Canvas>
         {
             _defaultBackgroundColor = theme.DefaultBackgroundColor;
         }
+
+        SetCursorShape(theme.ConsoleCursorShape);
     }
 
     public void Term()
@@ -67,6 +70,7 @@ internal sealed class Canvas : Singleton<Canvas>
         if (option.AutoReturnBestMatch)
             return;
 
+        SetCursorShape(ConsoleCursorShape.Default);
         ClearCells();
         SetCursorOffset(0, -option.Theme.CanvasTopMargin);
         _defaultForegroundColor = FontColor.Default;
@@ -369,5 +373,19 @@ internal sealed class Canvas : Singleton<Canvas>
         cursorY = Math.Clamp(cursorY, 0, Console.WindowHeight - 1);
 
         Console.SetCursorPosition(cursorX, cursorY);
+    }
+
+    public void SetCursorShape(ConsoleCursorShape shape)
+    {
+        if (_cursorShape != shape)
+        {
+            var escapeCode = ConsoleCursorShapeTable.GetEscapeCode(shape);
+            Console.Write(escapeCode);
+            if (_streamWriter is not null)
+            {
+                _streamWriter.Flush();
+            }
+            _cursorShape = shape;
+        }
     }
 }

@@ -116,6 +116,7 @@ internal class SearchBar
     {
         IsQueryUpdated = false;
         IsCursorUpdated = false;
+        var isRemapMode = KeyInput.GetInstance().IsRemapMode;
         var inputKeys = KeyInput.GetInstance().GetFrameInputs();
         var option = SelectorOptionHolder.GetInstance().Option;
         var keyBinding = option.KeyBinding;
@@ -197,6 +198,13 @@ internal class SearchBar
                 }
                 continue;
             }
+
+            if (isRemapMode && !keyBinding.EnableTextInputInRemapMode)
+                continue;
+
+            // Skip text input since KeyChar cannot be reproduced if the key is remapped.
+            if (key.IsRemapped)
+                continue;
 
             if (Unicode.GetDisplayWidth(key.ConsoleKeyInfo.KeyChar) <= 0)
                 continue;
