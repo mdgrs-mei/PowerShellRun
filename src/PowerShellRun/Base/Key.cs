@@ -225,6 +225,8 @@ public enum Key
     Y,
     Z,
 
+    Divide,
+
     F1,
     F2,
     F3,

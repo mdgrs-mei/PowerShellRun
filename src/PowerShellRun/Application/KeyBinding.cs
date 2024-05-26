@@ -16,6 +16,11 @@ public class KeyBinding
     public ActionKey[] DefaultActionKeysMultiSelection { get; set; }
     public KeyCombination[] ActionWindowOpenKeys { get; set; }
     public KeyCombination[] ActionWindowAcceptKeys { get; set; }
+    public bool InitialRemapMode { get; set; } = false;
+    public bool EnableTextInputInRemapMode { get; set; } = false;
+    public KeyCombination[]? RemapModeEnterKeys { get; set; } = null;
+    public KeyCombination[]? RemapModeExitKeys { get; set; } = null;
+    public RemapKey[]? RemapKeys { get; set; } = null;
 
     public KeyBinding()
     {

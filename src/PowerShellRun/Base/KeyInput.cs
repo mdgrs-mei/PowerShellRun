@@ -9,11 +9,16 @@ internal sealed class KeyInput : Singleton<KeyInput>
     {
         public KeyCombination KeyCombination { get; set; }
         public ConsoleKeyInfo ConsoleKeyInfo { get; set; }
+        public bool IsRemapped { get; set; }
 
-        public KeyInfo(KeyCombination keyCombination, ConsoleKeyInfo consoleKeyInfo)
+        public KeyInfo(
+            KeyCombination keyCombination,
+            ConsoleKeyInfo consoleKeyInfo,
+            bool isRemapped)
         {
             KeyCombination = keyCombination;
             ConsoleKeyInfo = consoleKeyInfo;
+            IsRemapped = isRemapped;
         }
     }
 
@@ -21,6 +26,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
     private static KeyInfo[] _emptyInputs = new KeyInfo[0];
     private bool _isEmptied = false;
     private bool _originalControlCAsInput = false;
+    public bool IsRemapMode = false;
 
     public void Init()
     {
@@ -30,6 +36,8 @@ internal sealed class KeyInput : Singleton<KeyInput>
 
         _originalControlCAsInput = Console.TreatControlCAsInput;
         Console.TreatControlCAsInput = true;
+
+        IsRemapMode = option.KeyBinding.InitialRemapMode;
     }
 
     public void Term()
@@ -54,7 +62,13 @@ internal sealed class KeyInput : Singleton<KeyInput>
         {
             var keyInfo = Console.ReadKey(true);
             var keyCombination = ConvertToKeyCombination(keyInfo.Modifiers, keyInfo.Key);
-            _frameInputs.Add(new KeyInfo(keyCombination, keyInfo));
+
+            bool remapModeUpdated = UpdateRemapMode(keyCombination);
+            if (remapModeUpdated)
+                continue;
+            var remap = RemapKey(keyCombination);
+
+            _frameInputs.Add(new KeyInfo(remap.KeyCombination, keyInfo, remap.IsRemapped));
         }
     }
 
@@ -100,6 +114,64 @@ internal sealed class KeyInput : Singleton<KeyInput>
 
         consoleModifiers.HasFlag(ConsoleModifiers.Control);
         return new KeyCombination(modifier, key);
+    }
+
+    private bool UpdateRemapMode(KeyCombination keyCombination)
+    {
+        var keyBinding = SelectorOptionHolder.GetInstance().Option.KeyBinding;
+        if (IsRemapMode)
+        {
+            if (keyBinding.RemapModeExitKeys is not null)
+            {
+                foreach (var key in keyBinding.RemapModeExitKeys)
+                {
+                    if (keyCombination.Equals(key))
+                    {
+                        IsRemapMode = false;
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (keyBinding.RemapModeEnterKeys is not null)
+            {
+                foreach (var key in keyBinding.RemapModeEnterKeys)
+                {
+                    if (keyCombination.Equals(key))
+                    {
+                        IsRemapMode = true;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private (KeyCombination KeyCombination, bool IsRemapped) RemapKey(KeyCombination keyCombination)
+    {
+        var noRemap = (keyCombination, false);
+        if (!IsRemapMode)
+        {
+            return noRemap;
+        }
+
+        var keyBinding = SelectorOptionHolder.GetInstance().Option.KeyBinding;
+        if (keyBinding.RemapKeys is null)
+        {
+            return noRemap;
+        }
+
+        foreach (var remapKey in keyBinding.RemapKeys)
+        {
+            if (keyCombination.Equals(remapKey.Source))
+            {
+                return (remapKey.Destination, true);
+            }
+        }
+        return noRemap;
     }
 
     private static (Key Key, ConsoleKey ConsoleKey)[] _keyConsoleKeyTable =
@@ -156,6 +228,8 @@ internal sealed class KeyInput : Singleton<KeyInput>
         (Key.X, ConsoleKey.X),
         (Key.Y, ConsoleKey.Y),
         (Key.Z, ConsoleKey.Z),
+
+        (Key.Divide, ConsoleKey.Divide),
 
         (Key.F1, ConsoleKey.F1),
         (Key.F2, ConsoleKey.F2),
