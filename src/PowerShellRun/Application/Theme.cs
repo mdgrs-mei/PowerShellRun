@@ -2,6 +2,9 @@
 
 public class Theme
 {
+    public ConsoleCursorShape ConsoleCursorShape = ConsoleCursorShape.Default;
+    public ConsoleCursorShape KeyRemapModeConsoleCursorShape = ConsoleCursorShape.SteadyBar;
+
     public int CanvasHeightPercentage { get; set; } = 60;
     public int PreviewSizePercentage { get; set; } = 60;
     public int NameWidthPercentage { get; set; } = 30;

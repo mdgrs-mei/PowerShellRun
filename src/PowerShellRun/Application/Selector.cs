@@ -24,11 +24,11 @@ public static class Selector
         }
         bgRunspace.Start();
 
-        var keyInput = KeyInput.GetInstance();
-        keyInput.Init();
-
         var canvas = Canvas.GetInstance();
         canvas.Init(new LayoutSize(LayoutSizeType.Percentage, theme.CanvasHeightPercentage));
+
+        var keyInput = KeyInput.GetInstance();
+        keyInput.Init();
 
         var searchBar = new SearchBar(
             promptString: option.Prompt,

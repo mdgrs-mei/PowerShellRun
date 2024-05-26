@@ -37,7 +37,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
         _originalControlCAsInput = Console.TreatControlCAsInput;
         Console.TreatControlCAsInput = true;
 
-        IsRemapMode = option.KeyBinding.InitialRemapMode;
+        SetRemapMode(option.KeyBinding.InitialRemapMode);
     }
 
     public void Term()
@@ -127,7 +127,7 @@ internal sealed class KeyInput : Singleton<KeyInput>
                 {
                     if (keyCombination.Equals(key))
                     {
-                        IsRemapMode = false;
+                        SetRemapMode(false);
                         return true;
                     }
                 }
@@ -141,13 +141,22 @@ internal sealed class KeyInput : Singleton<KeyInput>
                 {
                     if (keyCombination.Equals(key))
                     {
-                        IsRemapMode = true;
+                        SetRemapMode(true);
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private void SetRemapMode(bool isRemapMode)
+    {
+        var theme = SelectorOptionHolder.GetInstance().Option.Theme;
+
+        IsRemapMode = isRemapMode;
+        Canvas.GetInstance().SetCursorShape(
+            IsRemapMode ? theme.KeyRemapModeConsoleCursorShape : theme.ConsoleCursorShape);
     }
 
     private (KeyCombination KeyCombination, bool IsRemapped) RemapKey(KeyCombination keyCombination)
