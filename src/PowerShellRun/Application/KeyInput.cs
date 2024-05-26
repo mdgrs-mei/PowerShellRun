@@ -112,7 +112,6 @@ internal sealed class KeyInput : Singleton<KeyInput>
             }
         }
 
-        consoleModifiers.HasFlag(ConsoleModifiers.Control);
         return new KeyCombination(modifier, key);
     }
 
