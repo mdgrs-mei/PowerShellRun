@@ -7,6 +7,7 @@ class GlobalStore {
 
     $registryClassNames = @(
         'FunctionRegistry'
+        'ScriptRegistry'
         'FileSystemRegistry'
         'WinGetRegistry'
         'ApplicationRegistry'
