@@ -7,15 +7,9 @@ class FileSystemRegistry : EntryRegistry {
     $isFileManagerEnabled = $false
     $isEntryUpdated = $false
 
-    [ScriptBlock]$defaultEditorScript
     $fileManagerArguments
 
     FileSystemRegistry() {
-        $this.defaultEditorScript = {
-            param ($path)
-            Invoke-Item $path
-        }
-
         $this.fileManagerArguments = @{
             This = $this
             FolderActionKeys = @(
@@ -70,10 +64,6 @@ class FileSystemRegistry : EntryRegistry {
         if ($this.isFileManagerEnabled) {
             $this.RegisterFileManagerEntry()
         }
-    }
-
-    [void] SetDefaultEditorScript([ScriptBlock]$scriptBlock) {
-        $this.defaultEditorScript = $scriptBlock
     }
 
     [void] RegisterFileManagerEntry() {
@@ -151,7 +141,7 @@ class FileSystemRegistry : EntryRegistry {
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
-                & $arguments.This.defaultEditorScript $path
+                & $script:globalStore.defaultEditorScript $path
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $arguments.This.OpenContainingFolder($path)
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
@@ -257,7 +247,7 @@ class FileSystemRegistry : EntryRegistry {
                 if ($item.PSIsContainer) {
                     Set-Location $item.FullName
                 } else {
-                    & $arguments.This.defaultEditorScript $item.FullName
+                    & $script:globalStore.defaultEditorScript $item.FullName
                 }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {

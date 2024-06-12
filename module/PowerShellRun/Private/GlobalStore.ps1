@@ -27,8 +27,15 @@ class GlobalStore {
     $thirdActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
     $copyActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
 
+    [ScriptBlock]$defaultEditorScript
+
     [void] Initialize() {
         $this.InitializeActionKeys()
+
+        $this.defaultEditorScript = {
+            param ($path)
+            Invoke-Item $path
+        }
 
         foreach ($className in $this.registryClassNames) {
             $registry = New-Object $className
@@ -203,6 +210,10 @@ class GlobalStore {
             Remove-PSReadLineKeyHandler -Chord $this.psReadLineHistoryChord
             $this.psReadLineHistoryChord = $null
         }
+    }
+
+    [void] SetDefaultEditorScript([ScriptBlock]$scriptBlock) {
+        $this.defaultEditorScript = $scriptBlock
     }
 
     # Class methods cannot pass through the output of invoked command line apps in realtime so we use ScriptBlock.
