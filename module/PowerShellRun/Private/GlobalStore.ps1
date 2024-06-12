@@ -216,6 +216,15 @@ class GlobalStore {
         $this.defaultEditorScript = $scriptBlock
     }
 
+    [void] OpenContainingFolder($path) {
+        if ($script:isWindows) {
+            & explorer.exe (('/select,{0}' -f $path).Split())
+        } else {
+            $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
+            Invoke-Item $parentDir
+        }
+    }
+
     # Class methods cannot pass through the output of invoked command line apps in realtime so we use ScriptBlock.
     $invokeFile = {
         param($path)

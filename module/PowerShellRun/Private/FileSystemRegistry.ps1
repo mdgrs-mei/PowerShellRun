@@ -143,7 +143,7 @@ class FileSystemRegistry : EntryRegistry {
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 & $script:globalStore.defaultEditorScript $path
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
-                $arguments.This.OpenContainingFolder($path)
+                $script:globalStore.OpenContainingFolder($path)
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $path | Set-Clipboard
             }
@@ -254,7 +254,7 @@ class FileSystemRegistry : EntryRegistry {
                 if ($item.PSIsContainer) {
                     Invoke-Item $item.FullName
                 } else {
-                    $arguments.This.OpenContainingFolder($item.FullName)
+                    $script:globalStore.OpenContainingFolder($item.FullName)
                 }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
@@ -263,15 +263,6 @@ class FileSystemRegistry : EntryRegistry {
             } else {
                 break
             }
-        }
-    }
-
-    [void] OpenContainingFolder($path) {
-        if ($script:isWindows) {
-            & explorer.exe (('/select,{0}' -f $path).Split())
-        } else {
-            $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
-            Invoke-Item $parentDir
         }
     }
 
