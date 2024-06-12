@@ -59,7 +59,9 @@ class ScriptRegistry : EntryRegistry {
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $filePath
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
+                & $script:globalStore.defaultEditorScript $filePath
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+                $script:globalStore.OpenContainingFolder($filePath)
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $filePath | Set-Clipboard
             }
