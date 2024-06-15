@@ -143,7 +143,7 @@ function global:GitPullRebase() {
 
 ![Function](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/162b90dd-b51a-4b92-ab75-c8c29b3a385d)
 
-It's even possible to open *PowerShellRun*'s TUI inside a registered function entry using the commands described in the following [section](#powershellrun-as-a-generic-selector). To create a pseudo nested menu, we recommend that you use `Restore-PSRunFunctionParentSelector` command to restore the parent menu with `Backspace` key. `File Manager (PSRun)` is a good example of the nested menu.
+It's even possible to open *PowerShellRun*'s TUI inside a registered function entry using the commands described in the following [section](#powershellrun-as-a-generic-selector). To create a pseudo nested menu, we recommend that you use `Restore-PSRunParentSelector` command to restore the parent menu with `Backspace` key. `File Manager (PSRun)` is a good example of the nested menu.
 
 ```powershell
 function global:OpenNestedMenu() {
@@ -158,12 +158,26 @@ function global:OpenNestedMenu() {
     } | Invoke-PSRunSelectorCustom -Option $option
 
     if ($result.KeyCombination -eq 'Backspace') {
-        Restore-PSRunFunctionParentSelector
+        Restore-PSRunParentSelector
         return
     }
     # ... Other key handlings here
 }
 ```
+
+### ・📘 Script
+
+If you don't want to use the global scope to define function entries, you can use script entries. `Add-PSRunScriptBlock` adds a ScriptBlock and `Add-PSRunScriptFile` adds a `.ps1` file as an entry. They are invoked by pressing `Enter`.
+
+```powershell
+Add-PSRunScriptBlock -Name 'Test ScriptBlock' -ScriptBlock {
+    'This is a test ScriptBlock'
+}
+
+Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '💎'
+```
+
+![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
 
 ## History Search
 
