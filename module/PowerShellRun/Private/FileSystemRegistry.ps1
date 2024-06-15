@@ -136,7 +136,7 @@ class FileSystemRegistry : EntryRegistry {
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {
         $callback = {
             $result = $args[0].Result
-            $arguments, $path = $args[0].ArgumentList
+            $path = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
@@ -163,7 +163,7 @@ class FileSystemRegistry : EntryRegistry {
 
         $entry.UserData = @{
             ScriptBlock = $callback
-            ArgumentList = $this.fileManagerArguments, $filePath
+            ArgumentList = $filePath
         }
 
         $this.favoritesEntries.Add($entry)
@@ -186,7 +186,7 @@ class FileSystemRegistry : EntryRegistry {
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {
-                param($item, $name, $icon)
+                param($arguments, $item, $name, $icon)
                 $entry = [PowerShellRun.SelectorEntry]::new()
                 $entry.UserData = $item
                 $entry.Name = $name
@@ -204,12 +204,12 @@ class FileSystemRegistry : EntryRegistry {
             }
 
             Get-ChildItem -Path $currentDir.path | ForEach-Object {
-                $addEntry.Invoke($_, $_.Name)
+                $addEntry.Invoke($arguments, $_, $_.Name)
             }
 
             $parentItem = (Get-Item $currentDir.path).Parent
             if ($parentItem) {
-                $addEntry.Invoke((Get-Item $parentItem.FullName), '../', '🔼')
+                $addEntry.Invoke($arguments, (Get-Item $parentItem.FullName), '../', '🔼')
             }
 
             $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
