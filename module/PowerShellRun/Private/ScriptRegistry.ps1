@@ -69,7 +69,7 @@ class ScriptRegistry : EntryRegistry {
 
         $this.scriptFilePreviewScript = {
             param ($path)
-            Get-Item $path | Out-String
+            Get-Content $path
         }
     }
 
