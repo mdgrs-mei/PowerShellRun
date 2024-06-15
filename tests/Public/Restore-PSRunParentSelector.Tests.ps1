@@ -1,4 +1,4 @@
-﻿Describe 'Restore-PSRunFunctionParentSelector' {
+﻿Describe 'Restore-PSRunParentSelector' {
     BeforeEach {
         Import-Module $PSScriptRoot/../../module/PowerShellRun -Force
     }
@@ -8,7 +8,7 @@
             $script:globalStore.IsParentSelectorRestoreRequested() | Should -Be $false
         }
 
-        Restore-PSRunFunctionParentSelector
+        Restore-PSRunParentSelector
 
         InModuleScope 'PowerShellRun' {
             $script:globalStore.IsParentSelectorRestoreRequested() | Should -Be $true

@@ -216,7 +216,7 @@ class FileSystemRegistry : EntryRegistry {
 
             if ($result.KeyCombination -eq 'Backspace') {
                 if ($distance -eq 0) {
-                    Restore-PSRunFunctionParentSelector
+                    Restore-PSRunParentSelector
                     break
                 } else {
                     $distance--

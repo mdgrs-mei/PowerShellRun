@@ -58,7 +58,7 @@ class WinGetRegistry : EntryRegistry {
                 $context = $result.Context
 
                 if ($result.KeyCombination -eq 'Backspace') {
-                    Restore-PSRunFunctionParentSelector
+                    Restore-PSRunParentSelector
                     return
                 }
 
