@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0] - 2024-06-15
+
+### Added
+
+- Added `Add-PSRunScriptBlock`
+- Added `Add-PSRunScriptFile`
+
+### Changed
+
+- Renamed `Restore-PSRunFunctionParentSelector` `Restore-PSRunParentSelector`
+- `Restore-PSRunFunctionParentSelector` is now an alias to `Restore-PSRunParentSelector`
+
+### Deprecated
+
+- `Restore-PSRunFunctionParentSelector` alias will be removed in the next release
+
 ## [0.6.0] - 2024-05-26
 
 ### Added
