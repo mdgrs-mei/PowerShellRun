@@ -7,6 +7,7 @@ class GlobalStore {
 
     $registryClassNames = @(
         'FunctionRegistry'
+        'ScriptRegistry'
         'FileSystemRegistry'
         'WinGetRegistry'
         'ApplicationRegistry'
@@ -26,8 +27,15 @@ class GlobalStore {
     $thirdActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
     $copyActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
 
+    [ScriptBlock]$defaultEditorScript
+
     [void] Initialize() {
         $this.InitializeActionKeys()
+
+        $this.defaultEditorScript = {
+            param ($path)
+            Invoke-Item $path
+        }
 
         foreach ($className in $this.registryClassNames) {
             $registry = New-Object $className
@@ -201,6 +209,19 @@ class GlobalStore {
         if ($this.psReadLineHistoryChord) {
             Remove-PSReadLineKeyHandler -Chord $this.psReadLineHistoryChord
             $this.psReadLineHistoryChord = $null
+        }
+    }
+
+    [void] SetDefaultEditorScript([ScriptBlock]$scriptBlock) {
+        $this.defaultEditorScript = $scriptBlock
+    }
+
+    [void] OpenContainingFolder($path) {
+        if ($script:isWindows) {
+            & explorer.exe (('/select,{0}' -f $path).Split())
+        } else {
+            $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
+            Invoke-Item $parentDir
         }
     }
 

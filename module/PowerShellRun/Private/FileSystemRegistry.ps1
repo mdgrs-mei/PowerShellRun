@@ -7,15 +7,9 @@ class FileSystemRegistry : EntryRegistry {
     $isFileManagerEnabled = $false
     $isEntryUpdated = $false
 
-    [ScriptBlock]$defaultEditorScript
     $fileManagerArguments
 
     FileSystemRegistry() {
-        $this.defaultEditorScript = {
-            param ($path)
-            Invoke-Item $path
-        }
-
         $this.fileManagerArguments = @{
             This = $this
             FolderActionKeys = @(
@@ -70,10 +64,6 @@ class FileSystemRegistry : EntryRegistry {
         if ($this.isFileManagerEnabled) {
             $this.RegisterFileManagerEntry()
         }
-    }
-
-    [void] SetDefaultEditorScript([ScriptBlock]$scriptBlock) {
-        $this.defaultEditorScript = $scriptBlock
     }
 
     [void] RegisterFileManagerEntry() {
@@ -146,14 +136,14 @@ class FileSystemRegistry : EntryRegistry {
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {
         $callback = {
             $result = $args[0].Result
-            $arguments, $path = $args[0].ArgumentList
+            $path = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
-                & $arguments.This.defaultEditorScript $path
+                & $script:globalStore.defaultEditorScript $path
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
-                $arguments.This.OpenContainingFolder($path)
+                $script:globalStore.OpenContainingFolder($path)
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $path | Set-Clipboard
             }
@@ -173,7 +163,7 @@ class FileSystemRegistry : EntryRegistry {
 
         $entry.UserData = @{
             ScriptBlock = $callback
-            ArgumentList = $this.fileManagerArguments, $filePath
+            ArgumentList = $filePath
         }
 
         $this.favoritesEntries.Add($entry)
@@ -196,7 +186,7 @@ class FileSystemRegistry : EntryRegistry {
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {
-                param($item, $name, $icon)
+                param($arguments, $item, $name, $icon)
                 $entry = [PowerShellRun.SelectorEntry]::new()
                 $entry.UserData = $item
                 $entry.Name = $name
@@ -214,12 +204,12 @@ class FileSystemRegistry : EntryRegistry {
             }
 
             Get-ChildItem -Path $currentDir.path | ForEach-Object {
-                $addEntry.Invoke($_, $_.Name)
+                $addEntry.Invoke($arguments, $_, $_.Name)
             }
 
             $parentItem = (Get-Item $currentDir.path).Parent
             if ($parentItem) {
-                $addEntry.Invoke((Get-Item $parentItem.FullName), '../', '🔼')
+                $addEntry.Invoke($arguments, (Get-Item $parentItem.FullName), '../', '🔼')
             }
 
             $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
@@ -257,14 +247,14 @@ class FileSystemRegistry : EntryRegistry {
                 if ($item.PSIsContainer) {
                     Set-Location $item.FullName
                 } else {
-                    & $arguments.This.defaultEditorScript $item.FullName
+                    & $script:globalStore.defaultEditorScript $item.FullName
                 }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 if ($item.PSIsContainer) {
                     Invoke-Item $item.FullName
                 } else {
-                    $arguments.This.OpenContainingFolder($item.FullName)
+                    $script:globalStore.OpenContainingFolder($item.FullName)
                 }
                 break
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
@@ -273,15 +263,6 @@ class FileSystemRegistry : EntryRegistry {
             } else {
                 break
             }
-        }
-    }
-
-    [void] OpenContainingFolder($path) {
-        if ($script:isWindows) {
-            & explorer.exe (('/select,{0}' -f $path).Split())
-        } else {
-            $parentDir = ([System.IO.Directory]::GetParent($path)).FullName
-            Invoke-Item $parentDir
         }
     }
 

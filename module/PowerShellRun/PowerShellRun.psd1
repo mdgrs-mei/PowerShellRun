@@ -64,6 +64,8 @@
     FunctionsToExport = @(
         'Add-PSRunFavoriteFile'
         'Add-PSRunFavoriteFolder'
+        'Add-PSRunScriptBlock'
+        'Add-PSRunScriptFile'
         'Enable-PSRunEntry'
         'Get-PSRunDefaultSelectorOption'
         'Invoke-PSRun'
