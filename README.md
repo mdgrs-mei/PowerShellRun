@@ -397,6 +397,22 @@ $pattern = [Regex]::new('(?<=\[).*?(?=\])')
 } | Invoke-PSRunSelectorCustom
 ```
 
+## Invoke-PSRunPrompt
+
+`Invoke-PSRunPrompt` can be used to get user input in the same style as `Invoke-PSRunSelectorCustom` but without any entries. It reflects `SelectorOption` and returns the input, `KeyCombination` and the context. `WinGet (PSRun)` is a practical example.
+
+```powershell
+Invoke-PSRunPrompt
+```
+
+![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/90a9537f-afbd-4256-8ebb-af3d8e940d76)
+
+```powershell
+Input KeyCombination Context
+----- -------------- -------
+hello Enter          PowerShellRun.PromptContext
+```
+
 ## Major Limitations
 
 - No history support
