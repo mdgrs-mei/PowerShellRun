@@ -1,3 +1,54 @@
+<#
+.SYNOPSIS
+Opens a PowerShellRun selector.
+
+.DESCRIPTION
+Opens a PowerShellRun selector that takes an array of objects and returns the selected object(s).
+
+.PARAMETER InputObject
+An array of objects to be filtered.
+
+.PARAMETER NameProperty
+Specifies the property name of the input object that is used as the entry name.
+
+.PARAMETER DescriptionProperty
+Specifies the property name of the input object that is used as the entry description.
+
+.PARAMETER PreviewProperty
+Specifies the property name of the input object that is used as the entry preview.
+
+.PARAMETER Expression
+Specifies the ScriptBlock that returns a hashtable. The hashtable needs to have Name, Description and Preview keys which are used as entry properties respectively.
+
+.PARAMETER MultiSelection
+Specifies if the selector accepts multiple selections.
+
+.PARAMETER Option
+Specifies an PowerShellRun.SelectorOption that is only effective for this invocation.
+By default, the selector option that is set by Set-PSRunDefaultSelectorOption is used.
+
+.PARAMETER Context
+Specifies the initial state of the selector.
+
+.INPUTS
+An array of objects to be filtered.
+
+.OUTPUTS
+The selected object(s).
+
+.EXAMPLE
+Get-Process | Invoke-PSRunSelector
+
+.EXAMPLE
+Get-ChildItem | Invoke-PSRunSelector -DescriptionProperty FullName
+
+.EXAMPLE
+Get-ChildItem | Invoke-PSRunSelector -Expression {@{
+    Name = $_.Name
+    Description = '[{0}] {1}' -f $_.Mode, $_.LastAccessTime
+    Preview = Get-Item $_ | Out-String
+}}
+#>
 function Invoke-PSRunSelector {
     [CmdletBinding()]
     param (

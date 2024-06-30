@@ -22,6 +22,8 @@ Returns the result of the selected entry.
 Invoke-PSRun
 
 .EXAMPLE
+$option = Get-PSRunDefaultSelectorOption
+$option.Prompt = 'Filter: '
 Invoke-PSRun -Option $option -InitialQuery 'code'
 #>
 function Invoke-PSRun {
