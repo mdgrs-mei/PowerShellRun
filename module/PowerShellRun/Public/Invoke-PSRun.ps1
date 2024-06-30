@@ -1,3 +1,29 @@
+<#
+.SYNOPSIS
+Opens a launcher.
+
+.DESCRIPTION
+Opens a launcher that has entries enabled by Enable-PSRunEntry.
+
+.PARAMETER Option
+Specifies an PowerShellRun.SelectorOption that is only effective for this invocation.
+By default, the selector option that is set by Set-PSRunDefaultSelectorOption is used.
+
+.PARAMETER InitialQuery
+The initial query string inputted to the search bar.
+
+.INPUTS
+None.
+
+.OUTPUTS
+Returns the result of the selected entry.
+
+.EXAMPLE
+Invoke-PSRun
+
+.EXAMPLE
+Invoke-PSRun -Option $option -InitialQuery 'code'
+#>
 function Invoke-PSRun {
     [CmdletBinding()]
     param (
