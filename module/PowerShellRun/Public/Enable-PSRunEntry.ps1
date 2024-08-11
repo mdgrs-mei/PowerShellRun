@@ -24,12 +24,12 @@ Enable-PSRunEntry -Category Application, Function, Utility
 function Enable-PSRunEntry {
     [CmdletBinding()]
     param (
-        [ValidateSet('All', 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script')]
+        [ValidateSet('All', 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script', 'EntryGroup')]
         [String[]]$Category = 'All'
     )
 
     if ($Category -contains 'All') {
-        $Category = 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script'
+        $Category = 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script', 'EntryGroup'
     }
     $script:globalStore.EnableEntries($Category)
 }

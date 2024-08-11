@@ -1,4 +1,5 @@
 using module ./_EntryRegistry.psm1
+using module ./_EntryGroup.psm1
 
 class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
@@ -11,6 +12,7 @@ class GlobalStore {
         'FileSystemRegistry'
         'WinGetRegistry'
         'ApplicationRegistry'
+        'EntryGroupRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
 
@@ -119,6 +121,11 @@ class GlobalStore {
                 }
             }
         }
+    }
+
+    [EntryGroup] GetCategoryGroup([string]$category) {
+        $registry = $this.GetRegistry('EntryGroupRegistry')
+        return $registry.GetCategoryGroup($category)
     }
 
     [void] RequestParentSelectorRestore() {

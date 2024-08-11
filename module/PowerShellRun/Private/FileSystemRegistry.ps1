@@ -131,6 +131,11 @@ class FileSystemRegistry : EntryRegistry {
 
         $this.favoritesEntries.Add($entry)
         $this.isEntryUpdated = $true
+
+        $group = $script:globalStore.GetCategoryGroup('Favorite')
+        if ($group) {
+            $group.AddEntry($entry)
+        }
     }
 
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {
