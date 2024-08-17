@@ -29,7 +29,7 @@ function Enable-PSRunEntry {
     )
 
     if ($Category -contains 'All') {
-        $Category = 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script', 'EntryGroup'
+        $Category = $script:globalStore.allCategoryNames
     }
     $script:globalStore.EnableEntries($Category)
 }

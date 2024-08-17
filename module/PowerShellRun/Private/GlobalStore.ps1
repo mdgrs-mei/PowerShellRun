@@ -6,6 +6,16 @@ class GlobalStore {
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
 
+    # When you add a new category, you also need to add to the ValidateSet of Enable-PSRunEntry.
+    $allCategoryNames = @(
+        'Application'
+        'Executable'
+        'Function'
+        'Utility'
+        'Favorite'
+        'Script'
+        'EntryGroup'
+    )
     $registryClassNames = @(
         'FunctionRegistry'
         'ScriptRegistry'
@@ -15,6 +25,7 @@ class GlobalStore {
         'EntryGroupRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
+    $entryGroupRegistry = $null
 
     $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
@@ -43,6 +54,7 @@ class GlobalStore {
             $registry = New-Object $className
             $this.registries.Add($registry)
         }
+        $this.entryGroupRegistry = $this.GetRegistry('EntryGroupRegistry')
     }
 
     [void] Terminate() {
@@ -115,17 +127,28 @@ class GlobalStore {
 
         if ($updated) {
             $this.entries.Clear()
+            $categoryGroups = $this.entryGroupRegistry.GetCategoryGroups()
+            $ungroupedCategories = $this.allCategoryNames
+
+            foreach ($categoryGroup in $categoryGroups) {
+                $categoryGroup.ClearEntries()
+                foreach ($registry in $this.registries) {
+                    if ($_entries = $registry.GetEntries($categoryGroup.Categories)) {
+                        $categoryGroup.AddEntries($_entries)
+                    }
+
+                    foreach ($groupCategory in $categoryGroup.Categories) {
+                        $ungroupedCategories = $ungroupedCategories -ne $groupCategory
+                    }
+                }
+            }
+
             foreach ($registry in $this.registries) {
-                if ($_entries = $registry.GetEntries()) {
+                if ($_entries = $registry.GetEntries($ungroupedCategories)) {
                     $this.entries.AddRange($_entries)
                 }
             }
         }
-    }
-
-    [EntryGroup] GetCategoryGroup([string]$category) {
-        $registry = $this.GetRegistry('EntryGroupRegistry')
-        return $registry.GetCategoryGroup($category)
     }
 
     [void] RequestParentSelectorRestore() {

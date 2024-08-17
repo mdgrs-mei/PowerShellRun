@@ -3,8 +3,15 @@ class ApplicationRegistry : EntryRegistry {
     $sync = [System.Collections.Hashtable]::Synchronized(@{})
     $registerEntryJob = $null
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        return $this.sync.entries
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+        if ($this.sync.applicationEntries -and ($categories -contains 'Application')) {
+            $entries.AddRange($this.sync.applicationEntries)
+        }
+        if ($this.sync.executableEntries -and ($categories -contains 'Executable')) {
+            $entries.AddRange($this.sync.executableEntries)
+        }
+        return $entries
     }
 
     [void] EnableEntries([String[]]$categories) {
@@ -36,7 +43,8 @@ class ApplicationRegistry : EntryRegistry {
         $this.registerEntryJob = Start-ThreadJob {
             param ($categories, $actionKeys, $callback, $sync)
 
-            $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+            $applicationEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+            $executableEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
             if ($categories -contains 'Application') {
                 # Start Menu shortcuts
@@ -63,7 +71,7 @@ class ApplicationRegistry : EntryRegistry {
                             ArgumentList = $link.FullName
                         }
 
-                        $entries.Add($entry)
+                        $applicationEntries.Add($entry)
                     }
                 }
 
@@ -87,9 +95,10 @@ class ApplicationRegistry : EntryRegistry {
                         ArgumentList = $path
                     }
 
-                    $entries.Add($entry)
+                    $applicationEntries.Add($entry)
                 }
             }
+            $sync.applicationEntries = $applicationEntries
 
             # Executables in Path
             if ($categories -contains 'Executable') {
@@ -106,11 +115,11 @@ class ApplicationRegistry : EntryRegistry {
                         ArgumentList = $app.Source
                     }
 
-                    $entries.Add($entry)
+                    $executableEntries.Add($entry)
                 }
             }
+            $sync.executableEntries = $executableEntries
 
-            $sync.entries = $entries
         } -ArgumentList $categories, $actionKeys, $callback, $this.sync
     }
 
@@ -129,7 +138,8 @@ class ApplicationRegistry : EntryRegistry {
         $this.registerEntryJob = Start-ThreadJob {
             param ($categories, $actionKeys, $callback, $sync)
 
-            $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+            $applicationEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+            $executableEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
 
             if ($categories -contains 'Application' ) {
                 $folders = @(
@@ -154,10 +164,11 @@ class ApplicationRegistry : EntryRegistry {
                             ArgumentList = $app.FullName
                         }
 
-                        $entries.Add($entry)
+                        $applicationEntries.Add($entry)
                     }
                 }
             }
+            $sync.applicationEntries = $applicationEntries
 
             # Executables in Path
             if ($categories -contains 'Executable') {
@@ -174,11 +185,11 @@ class ApplicationRegistry : EntryRegistry {
                         ArgumentList = $app.Source
                     }
 
-                    $entries.Add($entry)
+                    $executableEntries.Add($entry)
                 }
             }
+            $sync.executableEntries = $executableEntries
 
-            $sync.entries = $entries
         } -ArgumentList $categories, $actionKeys, $callback, $this.sync
     }
 

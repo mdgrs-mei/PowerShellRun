@@ -10,8 +10,8 @@ class EntryGroupRegistry : EntryRegistry {
     $actionKeys
     $callback
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($this.isEnabled -and ($categories -contains 'EntryGroup')) {
             return $this.entries
         }
         return $null
@@ -39,6 +39,11 @@ class EntryGroupRegistry : EntryRegistry {
         $this.callback = {
             $result = $args[0].Result
             $group = $args[0].ArgumentList
+
+            if (-not $group.ChildEntries.Count) {
+                Write-Error -Message 'There is no entry.' -Category InvalidOperation
+                return
+            }
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 $option = $script:globalStore.psRunSelectorOption.DeepClone()
@@ -101,15 +106,12 @@ class EntryGroupRegistry : EntryRegistry {
         return $group
     }
 
-    [EntryGroup] GetCategoryGroup([String]$category) {
-        foreach ($group in $this.categoryGroups) {
-            foreach ($groupCategory in $group.Categories) {
-                if ($groupCategory -eq $category) {
-                    return $group
-                }
-            }
+    [System.Collections.Generic.List[EntryGroup]] GetCategoryGroups() {
+        if ($this.isEnabled) {
+            return $this.categoryGroups
+        } else {
+            return $null
         }
-        return $null
     }
 }
 

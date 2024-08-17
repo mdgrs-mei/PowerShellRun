@@ -10,8 +10,8 @@ class ScriptRegistry : EntryRegistry {
     $scriptFileCallback
     $scriptFilePreviewScript
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($this.isEnabled -and ($categories -contains 'Script')) {
             return $this.entries
         }
         return $null

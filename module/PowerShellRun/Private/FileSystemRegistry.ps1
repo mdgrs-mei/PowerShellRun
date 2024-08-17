@@ -43,12 +43,12 @@ class FileSystemRegistry : EntryRegistry {
         }
     }
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
         $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
-        if ($this.isFavoritesEnabled) {
+        if ($this.isFavoritesEnabled -and ($categories -contains 'Favorite')) {
             $entries.AddRange($this.favoritesEntries)
         }
-        if ($this.isFileManagerEnabled) {
+        if ($this.isFileManagerEnabled -and ($categories -contains 'Utility')) {
             $entries.AddRange($this.fileManagerEntry)
         }
         return $entries
@@ -131,11 +131,6 @@ class FileSystemRegistry : EntryRegistry {
 
         $this.favoritesEntries.Add($entry)
         $this.isEntryUpdated = $true
-
-        $group = $script:globalStore.GetCategoryGroup('Favorite')
-        if ($group) {
-            $group.AddEntry($entry)
-        }
     }
 
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {

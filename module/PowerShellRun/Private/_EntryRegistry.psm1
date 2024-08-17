@@ -1,5 +1,5 @@
 class EntryRegistry {
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
         Write-Error -Message 'This method needs to be overridden.' -Category NotImplemented
         return $null
     }

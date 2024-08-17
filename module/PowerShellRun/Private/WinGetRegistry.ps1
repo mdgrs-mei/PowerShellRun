@@ -9,8 +9,8 @@ class WinGetRegistry : EntryRegistry {
     WinGetRegistry() {
     }
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($this.isEnabled -and ($categories -contains 'Utility')) {
             return $this.entries
         }
         return $null

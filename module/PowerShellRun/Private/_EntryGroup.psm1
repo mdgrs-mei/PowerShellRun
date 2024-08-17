@@ -11,5 +11,12 @@ class EntryGroup {
     [void] AddEntry([PowerShellRun.SelectorEntry]$entry) {
         $this.ChildEntries.Add($entry)
     }
-}
 
+    [void] AddEntries([System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$entries) {
+        $this.ChildEntries.AddRange($entries)
+    }
+
+    [void] ClearEntries() {
+        $this.ChildEntries.Clear()
+    }
+}

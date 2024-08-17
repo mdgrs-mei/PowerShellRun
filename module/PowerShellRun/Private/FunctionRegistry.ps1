@@ -7,8 +7,8 @@ class FunctionRegistry : EntryRegistry {
     $callback
     $actionKeys
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($this.isEnabled -and ($categories -contains 'Function')) {
             return $this.entries
         }
         return $null
