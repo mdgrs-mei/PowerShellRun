@@ -17,7 +17,7 @@ class ScriptRegistry : EntryRegistry {
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $enabled = $categories -contains 'Script'
         if ($this.isEnabled -ne $enabled) {
             $this.isEntryUpdated = $true

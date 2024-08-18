@@ -31,5 +31,5 @@ function Enable-PSRunEntry {
     if ($Category -contains 'All') {
         $Category = $script:globalStore.allCategoryNames
     }
-    $script:globalStore.EnableEntries($Category)
+    $script:globalStore.InitializeEntries($Category)
 }

@@ -14,7 +14,7 @@ class FunctionRegistry : EntryRegistry {
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $enabled = $categories -contains 'Function'
         if ($this.isEnabled -ne $enabled) {
             $this.isEntryUpdated = $true

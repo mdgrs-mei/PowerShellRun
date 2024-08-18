@@ -113,9 +113,9 @@ class GlobalStore {
         return $null
     }
 
-    [void] EnableEntries([String[]]$entryCategories) {
+    [void] InitializeEntries([String[]]$entryCategories) {
         foreach ($registry in $this.registries) {
-            $registry.EnableEntries($entryCategories)
+            $registry.InitializeEntries($entryCategories)
         }
     }
 

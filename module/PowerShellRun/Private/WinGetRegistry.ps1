@@ -16,7 +16,7 @@ class WinGetRegistry : EntryRegistry {
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $enabled = $categories -contains 'Utility'
         $enabled = $enabled -and $this.IsWinGetInstalled()
 

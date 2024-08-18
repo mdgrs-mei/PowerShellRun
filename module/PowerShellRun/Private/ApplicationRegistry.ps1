@@ -14,7 +14,7 @@ class ApplicationRegistry : EntryRegistry {
         return $entries
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         # Wait for the previous job if exists
         $this.UpdateEntries()
 

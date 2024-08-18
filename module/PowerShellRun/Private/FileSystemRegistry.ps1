@@ -54,7 +54,7 @@ class FileSystemRegistry : EntryRegistry {
         return $entries
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $this.isEntryUpdated = $true
 
         $this.isFavoritesEnabled = $categories -contains 'Favorite'

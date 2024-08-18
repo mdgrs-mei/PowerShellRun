@@ -4,7 +4,7 @@ class EntryRegistry {
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         Write-Error -Message 'This method needs to be overridden.' -Category NotImplemented
     }
 
