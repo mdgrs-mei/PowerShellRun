@@ -45,10 +45,10 @@ class FileSystemRegistry : EntryRegistry {
 
     [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
         $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
-        if ($this.isFavoritesEnabled -and ($categories -contains 'Favorite')) {
+        if ($categories -contains 'Favorite') {
             $entries.AddRange($this.favoritesEntries)
         }
-        if ($this.isFileManagerEnabled -and ($categories -contains 'Utility')) {
+        if ($categories -contains 'Utility') {
             $entries.AddRange($this.fileManagerEntry)
         }
         return $entries
@@ -97,6 +97,10 @@ class FileSystemRegistry : EntryRegistry {
     }
 
     [void] AddFavoriteFolder($folderPath, $icon, $name, $description, $preview) {
+        if (-not $this.isFavoritesEnabled) {
+            return
+        }
+
         $callback = {
             $result = $args[0].Result
             $arguments, $path = $args[0].ArgumentList
@@ -134,6 +138,10 @@ class FileSystemRegistry : EntryRegistry {
     }
 
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {
+        if (-not $this.isFavoritesEnabled) {
+            return
+        }
+
         $callback = {
             $result = $args[0].Result
             $path = $args[0].ArgumentList

@@ -28,6 +28,11 @@ function Enable-PSRunEntry {
         [String[]]$Category = 'All'
     )
 
+    if ($script:globalStore.IsEntriesInitialized()) {
+        Write-Error -Message 'Entries already initialized. This function must be called only once.' -Category InvalidOperation
+        return
+    }
+
     if ($Category -contains 'All') {
         $Category = $script:globalStore.allCategoryNames
     }

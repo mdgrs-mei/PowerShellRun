@@ -11,18 +11,14 @@ class ScriptRegistry : EntryRegistry {
     $scriptFilePreviewScript
 
     [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
-        if ($this.isEnabled -and ($categories -contains 'Script')) {
+        if ($categories -contains 'Script') {
             return $this.entries
         }
         return $null
     }
 
     [void] InitializeEntries([String[]]$categories) {
-        $enabled = $categories -contains 'Script'
-        if ($this.isEnabled -ne $enabled) {
-            $this.isEntryUpdated = $true
-        }
-        $this.isEnabled = $enabled
+        $this.isEnabled = $categories -contains 'Script'
     }
 
     ScriptRegistry() {
@@ -74,6 +70,10 @@ class ScriptRegistry : EntryRegistry {
     }
 
     [void] AddScriptBlock($scriptBlock, $icon, $name, $description, $preview) {
+        if (-not $this.isEnabled) {
+            return
+        }
+
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = if ($icon) { $icon } else { '{}' }
         $entry.Name = $name
@@ -95,6 +95,10 @@ class ScriptRegistry : EntryRegistry {
     }
 
     [void] AddScriptFile($filePath, $icon, $name, $description, $preview) {
+        if (-not $this.isEnabled) {
+            return
+        }
+
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = if ($icon) { $icon } else { '📘' }
         $entry.Name = if ($name) { $name } else { Split-Path $filePath -Leaf }

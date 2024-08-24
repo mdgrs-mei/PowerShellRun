@@ -3,6 +3,7 @@ using module ./_EntryGroup.psm1
 
 class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    $isEntryInitialized = $false
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
 
@@ -114,9 +115,17 @@ class GlobalStore {
     }
 
     [void] InitializeEntries([String[]]$entryCategories) {
+        if ($this.isEntryInitialized) {
+            return
+        }
         foreach ($registry in $this.registries) {
             $registry.InitializeEntries($entryCategories)
         }
+        $this.isEntryInitialized = $true
+    }
+
+    [bool] IsEntriesInitialized() {
+        return $this.isEntryInitialized
     }
 
     [void] UpdateEntries() {

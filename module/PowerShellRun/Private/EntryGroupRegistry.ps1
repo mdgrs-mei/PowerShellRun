@@ -11,18 +11,14 @@ class EntryGroupRegistry : EntryRegistry {
     $callback
 
     [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
-        if ($this.isEnabled -and ($categories -contains 'EntryGroup')) {
+        if ($categories -contains 'EntryGroup') {
             return $this.entries
         }
         return $null
     }
 
     [void] InitializeEntries([String[]]$categories) {
-        $enabled = $categories -contains 'EntryGroup'
-        if ($this.isEnabled -ne $enabled) {
-            $this.isEntryUpdated = $true
-        }
-        $this.isEnabled = $enabled
+        $this.isEnabled = $categories -contains 'EntryGroup'
     }
 
     [bool] UpdateEntries() {
@@ -80,6 +76,10 @@ class EntryGroupRegistry : EntryRegistry {
     }
 
     [EntryGroup] AddEntryGroup($icon, $name, $description, $preview, [String[]]$categories) {
+        if (-not $this.isEnabled) {
+            return $null
+        }
+
         $group = [EntryGroup]::new($name, $categories)
 
         $entry = [PowerShellRun.SelectorEntry]::new()
@@ -107,11 +107,7 @@ class EntryGroupRegistry : EntryRegistry {
     }
 
     [System.Collections.Generic.List[EntryGroup]] GetCategoryGroups() {
-        if ($this.isEnabled) {
-            return $this.categoryGroups
-        } else {
-            return $null
-        }
+        return $this.categoryGroups
     }
 }
 

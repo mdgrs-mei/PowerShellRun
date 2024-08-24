@@ -15,9 +15,6 @@ class ApplicationRegistry : EntryRegistry {
     }
 
     [void] InitializeEntries([String[]]$categories) {
-        # Wait for the previous job if exists
-        $this.UpdateEntries()
-
         if ($script:isWindows) {
             $this.StartRegisterEntriesWindows($categories)
         } elseif ($script:isMacOs) {
