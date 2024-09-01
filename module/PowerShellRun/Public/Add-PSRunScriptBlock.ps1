@@ -50,11 +50,14 @@ function Add-PSRunScriptBlock {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Preview
+        [String[]]$Preview,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object]$EntryGroup
     )
 
     process {
         $registry = $script:globalStore.GetRegistry('ScriptRegistry')
-        $registry.AddScriptBlock($ScriptBlock, $Icon, $Name, $Description, $Preview)
+        $registry.AddScriptBlock($ScriptBlock, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

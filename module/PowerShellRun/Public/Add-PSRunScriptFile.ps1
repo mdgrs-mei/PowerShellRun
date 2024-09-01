@@ -48,11 +48,14 @@ function Add-PSRunScriptFile {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Preview
+        [String[]]$Preview,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object]$EntryGroup
     )
 
     process {
         $registry = $script:globalStore.GetRegistry('ScriptRegistry')
-        $registry.AddScriptFile($Path, $Icon, $Name, $Description, $Preview)
+        $registry.AddScriptFile($Path, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

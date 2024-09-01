@@ -48,11 +48,14 @@ function Add-PSRunFavoriteFile {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Preview
+        [String[]]$Preview,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object]$EntryGroup
     )
 
     process {
         $fileSystemRegistry = $script:globalStore.GetRegistry('FileSystemRegistry')
-        $fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview)
+        $fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

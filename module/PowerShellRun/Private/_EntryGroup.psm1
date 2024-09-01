@@ -35,8 +35,8 @@ class EntryGroup {
         }
 
         $this.Entries.Clear()
-        $this.Entries.AddRange($this.DirectChildEntries)
         $this.Entries.AddRange($this.CategoryEntries)
+        $this.Entries.AddRange($this.DirectChildEntries)
         $this.IsEntryUpdated = $false
     }
 }

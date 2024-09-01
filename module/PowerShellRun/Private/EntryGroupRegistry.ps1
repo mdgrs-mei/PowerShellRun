@@ -3,6 +3,7 @@ using module ./_EntryRegistry.psm1
 
 class EntryGroupRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    $normalGroups = [System.Collections.Generic.List[EntryGroup]]::new()
     $categoryGroups = [System.Collections.Generic.List[EntryGroup]]::new()
     $isEntryUpdated = $false
     $isEnabled = $false
@@ -27,6 +28,13 @@ class EntryGroupRegistry : EntryRegistry {
 
     [bool] UpdateEntries() {
         $updated = $this.isEntryUpdated
+        if ($updated) {
+            #category groups are always updated by GlobalStore so only update normal groups here.
+            foreach ($group in $this.normalGroups) {
+                $group.UpdateEntries()
+            }
+        }
+
         $this.isEntryUpdated = $false
         return $updated
     }
@@ -79,7 +87,7 @@ class EntryGroupRegistry : EntryRegistry {
         }
     }
 
-    [EntryGroup] AddEntryGroup($icon, $name, $description, $preview, [String[]]$categories) {
+    [EntryGroup] AddEntryGroup($icon, $name, $description, $preview, [String[]]$categories, [EntryGroup]$parentGroup) {
         if (-not $this.isEnabled) {
             return $null
         }
@@ -100,11 +108,17 @@ class EntryGroupRegistry : EntryRegistry {
             ArgumentList = $group
         }
 
-        $this.entries.Add($entry)
-        $this.SetEntriesDirty()
+        if ($parentGroup) {
+            $parentGroup.AddEntry($entry)
+        } else {
+            $this.entries.Add($entry)
+            $this.SetEntriesDirty()
+        }
 
         if ($categories) {
             $this.categoryGroups.Add($group)
+        } else {
+            $this.normalGroups.Add($group)
         }
 
         return $group
