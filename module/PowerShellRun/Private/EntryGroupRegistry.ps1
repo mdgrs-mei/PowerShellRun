@@ -21,6 +21,10 @@ class EntryGroupRegistry : EntryRegistry {
         $this.isEnabled = $categories -contains 'EntryGroup'
     }
 
+    [void] SetEntriesDirty() {
+        $this.isEntryUpdated = $true
+    }
+
     [bool] UpdateEntries() {
         $updated = $this.isEntryUpdated
         $this.isEntryUpdated = $false
@@ -36,7 +40,7 @@ class EntryGroupRegistry : EntryRegistry {
             $result = $args[0].Result
             $group = $args[0].ArgumentList
 
-            if (-not $group.ChildEntries.Count) {
+            if (-not $group.Entries.Count) {
                 Write-Error -Message 'There is no entry.' -Category InvalidOperation
                 return
             }
@@ -50,7 +54,7 @@ class EntryGroupRegistry : EntryRegistry {
                 while ($true) {
                     $script:globalStore.ClearParentSelectorRestoreRequest()
 
-                    $result = Invoke-PSRunSelectorCustom -Entry $group.ChildEntries -Option $option -Context $prevContext
+                    $result = Invoke-PSRunSelectorCustom -Entry $group.Entries -Option $option -Context $prevContext
                     $prevContext = $result.Context
 
                     if ($result.KeyCombination -eq 'Backspace') {
@@ -80,7 +84,7 @@ class EntryGroupRegistry : EntryRegistry {
             return $null
         }
 
-        $group = [EntryGroup]::new($name, $categories)
+        $group = [EntryGroup]::new($this, $name, $categories)
 
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = if ($icon) { $icon } else { '📂' }
@@ -97,7 +101,7 @@ class EntryGroupRegistry : EntryRegistry {
         }
 
         $this.entries.Add($entry)
-        $this.isEntryUpdated = $true
+        $this.SetEntriesDirty()
 
         if ($categories) {
             $this.categoryGroups.Add($group)

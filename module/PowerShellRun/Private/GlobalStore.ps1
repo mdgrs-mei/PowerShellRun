@@ -140,16 +140,17 @@ class GlobalStore {
             $ungroupedCategories = $this.allCategoryNames
 
             foreach ($categoryGroup in $categoryGroups) {
-                $categoryGroup.ClearEntries()
+                $categoryGroup.ClearCategoryEntries()
                 foreach ($registry in $this.registries) {
                     if ($_entries = $registry.GetEntries($categoryGroup.Categories)) {
-                        $categoryGroup.AddEntries($_entries)
+                        $categoryGroup.AddCategoryEntries($_entries)
                     }
 
                     foreach ($groupCategory in $categoryGroup.Categories) {
                         $ungroupedCategories = $ungroupedCategories -ne $groupCategory
                     }
                 }
+                $categoryGroup.UpdateEntries()
             }
 
             foreach ($registry in $this.registries) {

@@ -1,22 +1,42 @@
 class EntryGroup {
+    [Object]$Registry
     [String]$Name
     [String[]]$Categories
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$ChildEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$CategoryEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$DirectChildEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$Entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    [bool]$IsEntryUpdated = $false
 
-    EntryGroup([String]$name, [String[]]$categories) {
+    EntryGroup([Object]$registry, [String]$name, [String[]]$categories) {
+        $this.Registry = $registry
         $this.Name = $name
         $this.Categories = $categories
     }
 
     [void] AddEntry([PowerShellRun.SelectorEntry]$entry) {
-        $this.ChildEntries.Add($entry)
+        $this.DirectChildEntries.Add($entry)
+        $this.IsEntryUpdated = $true
+        $this.registry.SetEntriesDirty()
     }
 
-    [void] AddEntries([System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$entries) {
-        $this.ChildEntries.AddRange($entries)
+    [void] AddCategoryEntries([System.Collections.Generic.List[PowerShellRun.SelectorEntry]]$entries) {
+        $this.CategoryEntries.AddRange($entries)
+        $this.IsEntryUpdated = $true
     }
 
-    [void] ClearEntries() {
-        $this.ChildEntries.Clear()
+    [void] ClearCategoryEntries() {
+        $this.CategoryEntries.Clear()
+        $this.IsEntryUpdated = $true
+    }
+
+    [void] UpdateEntries() {
+        if (-not $this.IsEntryUpdated) {
+            return
+        }
+
+        $this.Entries.Clear()
+        $this.Entries.AddRange($this.DirectChildEntries)
+        $this.Entries.AddRange($this.CategoryEntries)
+        $this.IsEntryUpdated = $false
     }
 }
