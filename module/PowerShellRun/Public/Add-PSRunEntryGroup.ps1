@@ -18,6 +18,7 @@ function Add-PSRunEntryGroup {
         [String[]]$Preview,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script')]
         [String[]]$Category,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
