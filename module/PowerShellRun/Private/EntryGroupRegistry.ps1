@@ -10,6 +10,7 @@ class EntryGroupRegistry : EntryRegistry {
 
     $actionKeys
     $callback
+    $previewScript
 
     [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
         if ($categories -contains 'EntryGroup') {
@@ -85,6 +86,13 @@ class EntryGroupRegistry : EntryRegistry {
                 }
             }
         }
+
+        $this.previewScript = {
+            param($group)
+            $group.Entries | ForEach-Object {
+                $_.Icon + ' ' + $_.Name
+            }
+        }
     }
 
     [EntryGroup] AddEntryGroup($icon, $name, $description, $preview, [String[]]$categories, [EntryGroup]$parentGroup) {
@@ -100,6 +108,9 @@ class EntryGroupRegistry : EntryRegistry {
         $entry.Description = $description
         if ($preview) {
             $entry.Preview = $preview
+        } else {
+            $entry.PreviewAsyncScript = $this.previewScript
+            $entry.PreviewAsyncScriptArgumentList = $group
         }
         $entry.ActionKeys = $this.actionKeys
 
