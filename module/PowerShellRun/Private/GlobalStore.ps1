@@ -7,7 +7,7 @@ class GlobalStore {
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
 
-    # When you add a new category, you also need to add to the ValidateSet of Enable-PSRunEntry.
+    # When you add a new category, you also need to add to the ValidateSet of Enable-PSRunEntry and Add-PSRunEntryGroup.
     $allCategoryNames = @(
         'Application'
         'Executable'
@@ -18,12 +18,12 @@ class GlobalStore {
         'EntryGroup'
     )
     $registryClassNames = @(
+        'EntryGroupRegistry'
         'FunctionRegistry'
         'ScriptRegistry'
         'FileSystemRegistry'
         'WinGetRegistry'
         'ApplicationRegistry'
-        'EntryGroupRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
     $entryGroupRegistry = $null
