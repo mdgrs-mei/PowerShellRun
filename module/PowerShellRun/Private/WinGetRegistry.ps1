@@ -3,29 +3,22 @@ class WinGetRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $subMenuEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryUpdated = $false
-    $isEnabled = $false
     $restoreParentMenu = $false
 
     WinGetRegistry() {
     }
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($categories -contains 'Utility') {
             return $this.entries
         }
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $enabled = $categories -contains 'Utility'
         $enabled = $enabled -and $this.IsWinGetInstalled()
 
-        if ($this.isEnabled -ne $enabled) {
-            $this.isEntryUpdated = $true
-        }
-        $this.isEnabled = $enabled
-
-        $this.entries.Clear()
         if ($enabled) {
             $this.RegisterEntries()
         }
@@ -96,6 +89,8 @@ class WinGetRegistry : EntryRegistry {
         $this.subMenuEntries.Add($this.CreateInstallEntry())
         $this.subMenuEntries.Add($this.CreateUpgradeEntry())
         $this.subMenuEntries.Add($this.CreateUninstallEntry())
+
+        $this.isEntryUpdated = $true
     }
 
     [PowerShellRun.SelectorEntry] CreatePackageEntry($package) {

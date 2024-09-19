@@ -1,11 +1,24 @@
 using module ./_EntryRegistry.psm1
+using module ./_EntryGroup.psm1
 
 class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
+    $isEntryInitialized = $false
     $defaultSelectorOption = [PowerShellRun.SelectorOption]::new()
     $psRunSelectorOption = [PowerShellRun.SelectorOption]::new()
 
+    # When you add a new category, you also need to add to the ValidateSet of Enable-PSRunEntry and Add-PSRunEntryGroup.
+    $allCategoryNames = @(
+        'Application'
+        'Executable'
+        'Function'
+        'Utility'
+        'Favorite'
+        'Script'
+        'EntryGroup'
+    )
     $registryClassNames = @(
+        'EntryGroupRegistry'
         'FunctionRegistry'
         'ScriptRegistry'
         'FileSystemRegistry'
@@ -13,6 +26,7 @@ class GlobalStore {
         'ApplicationRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
+    $entryGroupRegistry = $null
 
     $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
@@ -41,6 +55,7 @@ class GlobalStore {
             $registry = New-Object $className
             $this.registries.Add($registry)
         }
+        $this.entryGroupRegistry = $this.GetRegistry('EntryGroupRegistry')
     }
 
     [void] Terminate() {
@@ -99,10 +114,18 @@ class GlobalStore {
         return $null
     }
 
-    [void] EnableEntries([String[]]$entryCategories) {
-        foreach ($registry in $this.registries) {
-            $registry.EnableEntries($entryCategories)
+    [void] InitializeEntries([String[]]$entryCategories) {
+        if ($this.isEntryInitialized) {
+            return
         }
+        foreach ($registry in $this.registries) {
+            $registry.InitializeEntries($entryCategories)
+        }
+        $this.isEntryInitialized = $true
+    }
+
+    [bool] IsEntriesInitialized() {
+        return $this.isEntryInitialized
     }
 
     [void] UpdateEntries() {
@@ -113,8 +136,25 @@ class GlobalStore {
 
         if ($updated) {
             $this.entries.Clear()
+            $categoryGroups = $this.entryGroupRegistry.GetCategoryGroups()
+            $ungroupedCategories = $this.allCategoryNames
+
+            foreach ($categoryGroup in $categoryGroups) {
+                $categoryGroup.ClearCategoryEntries()
+                foreach ($registry in $this.registries) {
+                    if ($_entries = $registry.GetEntries($categoryGroup.Categories)) {
+                        $categoryGroup.AddCategoryEntries($_entries)
+                    }
+
+                    foreach ($groupCategory in $categoryGroup.Categories) {
+                        $ungroupedCategories = $ungroupedCategories -ne $groupCategory
+                    }
+                }
+                $categoryGroup.UpdateEntries()
+            }
+
             foreach ($registry in $this.registries) {
-                if ($_entries = $registry.GetEntries()) {
+                if ($_entries = $registry.GetEntries($ungroupedCategories)) {
                     $this.entries.AddRange($_entries)
                 }
             }

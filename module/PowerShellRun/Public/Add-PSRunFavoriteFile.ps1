@@ -20,6 +20,9 @@ The description string. The filepath is used by default.
 .PARAMETER Preview
 The custom preview string.
 
+.PARAMETER EntryGroup
+The parent entry group object where this new entry is added.
+
 .INPUTS
 None.
 
@@ -48,11 +51,14 @@ function Add-PSRunFavoriteFile {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Preview
+        [String[]]$Preview,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object]$EntryGroup
     )
 
     process {
         $fileSystemRegistry = $script:globalStore.GetRegistry('FileSystemRegistry')
-        $fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview)
+        $fileSystemRegistry.AddFavoriteFile($Path, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

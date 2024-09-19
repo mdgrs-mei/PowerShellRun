@@ -7,19 +7,15 @@ class FunctionRegistry : EntryRegistry {
     $callback
     $actionKeys
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($categories -contains 'Function') {
             return $this.entries
         }
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
-        $enabled = $categories -contains 'Function'
-        if ($this.isEnabled -ne $enabled) {
-            $this.isEntryUpdated = $true
-        }
-        $this.isEnabled = $enabled
+    [void] InitializeEntries([String[]]$categories) {
+        $this.isEnabled = $categories -contains 'Function'
     }
 
     FunctionRegistry() {
@@ -56,6 +52,10 @@ class FunctionRegistry : EntryRegistry {
     [void] StopRegistration($errorAction) {
         if ($null -eq $this.functionsAtRegisterStart) {
             Write-Error -Message 'Function registration has not started yet.' -Category InvalidOperation -ErrorAction $errorAction
+            return
+        }
+        if (-not $this.isEnabled) {
+            $this.functionsAtRegisterStart = $null
             return
         }
 

@@ -20,6 +20,9 @@ The description string.
 .PARAMETER Preview
 The custom preview string. The definition of the ScriptBlock is used by default.
 
+.PARAMETER EntryGroup
+The parent entry group object where this new entry is added.
+
 .INPUTS
 None.
 
@@ -50,11 +53,14 @@ function Add-PSRunScriptBlock {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Preview
+        [String[]]$Preview,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object]$EntryGroup
     )
 
     process {
         $registry = $script:globalStore.GetRegistry('ScriptRegistry')
-        $registry.AddScriptBlock($ScriptBlock, $Icon, $Name, $Description, $Preview)
+        $registry.AddScriptBlock($ScriptBlock, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

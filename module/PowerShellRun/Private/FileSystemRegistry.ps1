@@ -1,4 +1,6 @@
+using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
+
 class FileSystemRegistry : EntryRegistry {
     $favoritesEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $fileManagerEntry = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
@@ -43,18 +45,18 @@ class FileSystemRegistry : EntryRegistry {
         }
     }
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
         $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
-        if ($this.isFavoritesEnabled) {
+        if ($categories -contains 'Favorite') {
             $entries.AddRange($this.favoritesEntries)
         }
-        if ($this.isFileManagerEnabled) {
+        if ($categories -contains 'Utility') {
             $entries.AddRange($this.fileManagerEntry)
         }
         return $entries
     }
 
-    [void] EnableEntries([String[]]$categories) {
+    [void] InitializeEntries([String[]]$categories) {
         $this.isEntryUpdated = $true
 
         $this.isFavoritesEnabled = $categories -contains 'Favorite'
@@ -96,7 +98,11 @@ class FileSystemRegistry : EntryRegistry {
         $this.fileManagerEntry.Add($entry)
     }
 
-    [void] AddFavoriteFolder($folderPath, $icon, $name, $description, $preview) {
+    [void] AddFavoriteFolder($folderPath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+        if (-not $this.isFavoritesEnabled) {
+            return
+        }
+
         $callback = {
             $result = $args[0].Result
             $arguments, $path = $args[0].ArgumentList
@@ -129,11 +135,19 @@ class FileSystemRegistry : EntryRegistry {
             ArgumentList = $this.fileManagerArguments, $folderPath
         }
 
-        $this.favoritesEntries.Add($entry)
-        $this.isEntryUpdated = $true
+        if ($entryGroup) {
+            $entryGroup.AddEntry($entry)
+        } else {
+            $this.favoritesEntries.Add($entry)
+            $this.isEntryUpdated = $true
+        }
     }
 
-    [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview) {
+    [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+        if (-not $this.isFavoritesEnabled) {
+            return
+        }
+
         $callback = {
             $result = $args[0].Result
             $path = $args[0].ArgumentList
@@ -166,8 +180,12 @@ class FileSystemRegistry : EntryRegistry {
             ArgumentList = $filePath
         }
 
-        $this.favoritesEntries.Add($entry)
-        $this.isEntryUpdated = $true
+        if ($entryGroup) {
+            $entryGroup.AddEntry($entry)
+        } else {
+            $this.favoritesEntries.Add($entry)
+            $this.isEntryUpdated = $true
+        }
     }
 
     $fileManagerLoop = {

@@ -1,4 +1,6 @@
+using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
+
 class ScriptRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryUpdated = $false
@@ -10,19 +12,15 @@ class ScriptRegistry : EntryRegistry {
     $scriptFileCallback
     $scriptFilePreviewScript
 
-    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries() {
-        if ($this.isEnabled) {
+    [System.Collections.Generic.List[PowerShellRun.SelectorEntry]] GetEntries([String[]]$categories) {
+        if ($categories -contains 'Script') {
             return $this.entries
         }
         return $null
     }
 
-    [void] EnableEntries([String[]]$categories) {
-        $enabled = $categories -contains 'Script'
-        if ($this.isEnabled -ne $enabled) {
-            $this.isEntryUpdated = $true
-        }
-        $this.isEnabled = $enabled
+    [void] InitializeEntries([String[]]$categories) {
+        $this.isEnabled = $categories -contains 'Script'
     }
 
     ScriptRegistry() {
@@ -73,7 +71,11 @@ class ScriptRegistry : EntryRegistry {
         }
     }
 
-    [void] AddScriptBlock($scriptBlock, $icon, $name, $description, $preview) {
+    [void] AddScriptBlock($scriptBlock, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+        if (-not $this.isEnabled) {
+            return
+        }
+
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = if ($icon) { $icon } else { '{}' }
         $entry.Name = $name
@@ -90,11 +92,19 @@ class ScriptRegistry : EntryRegistry {
             ArgumentList = $scriptBlock
         }
 
-        $this.entries.Add($entry)
-        $this.isEntryUpdated = $true
+        if ($entryGroup) {
+            $entryGroup.AddEntry($entry)
+        } else {
+            $this.entries.Add($entry)
+            $this.isEntryUpdated = $true
+        }
     }
 
-    [void] AddScriptFile($filePath, $icon, $name, $description, $preview) {
+    [void] AddScriptFile($filePath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+        if (-not $this.isEnabled) {
+            return
+        }
+
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = if ($icon) { $icon } else { '📘' }
         $entry.Name = if ($name) { $name } else { Split-Path $filePath -Leaf }
@@ -112,8 +122,12 @@ class ScriptRegistry : EntryRegistry {
             ArgumentList = $filePath
         }
 
-        $this.entries.Add($entry)
-        $this.isEntryUpdated = $true
+        if ($entryGroup) {
+            $entryGroup.AddEntry($entry)
+        } else {
+            $this.entries.Add($entry)
+            $this.isEntryUpdated = $true
+        }
     }
 
     [bool] UpdateEntries() {
