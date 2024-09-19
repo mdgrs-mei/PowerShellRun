@@ -26,14 +26,22 @@ class ApplicationRegistry : EntryRegistry {
         $actionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
             [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Launch App as Admin')
+            [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Launch App with arguments')
         )
         $callback = {
             $result = $args[0].Result
-            $path = $args[0].ArgumentList
+            $path, $name = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $path
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 Start-Process $path -Verb runAs
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+                $argumentList = $script:globalStore.GetArgumentListFor($name)
+                if ($null -eq $argumentList) {
+                    Restore-PSRunParentSelector
+                } else {
+                    & $script:globalStore.invokeFile $path $argumentList
+                }
             }
         }
 
@@ -65,7 +73,7 @@ class ApplicationRegistry : EntryRegistry {
 
                         $entry.UserData = @{
                             ScriptBlock = $callback
-                            ArgumentList = $link.FullName
+                            ArgumentList = $link.FullName, $entry.Name
                         }
 
                         $applicationEntries.Add($entry)
@@ -85,11 +93,11 @@ class ApplicationRegistry : EntryRegistry {
                     $entry.Name = $item.Name
                     $entry.Preview = $path
                     # Store Apps don't run as admin
-                    $entry.ActionKeys = $actionKeys[0]
+                    $entry.ActionKeys = $actionKeys[0], $actionKeys[2]
 
                     $entry.UserData = @{
                         ScriptBlock = $callback
-                        ArgumentList = $path
+                        ArgumentList = $path, $entry.Name
                     }
 
                     $applicationEntries.Add($entry)
@@ -109,7 +117,7 @@ class ApplicationRegistry : EntryRegistry {
 
                     $entry.UserData = @{
                         ScriptBlock = $callback
-                        ArgumentList = $app.Source
+                        ArgumentList = $app.Source, $entry.Name
                     }
 
                     $executableEntries.Add($entry)
@@ -123,12 +131,20 @@ class ApplicationRegistry : EntryRegistry {
     [void] StartRegisterEntriesMacOs($categories) {
         $actionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
+            [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Launch App with arguments')
         )
         $callback = {
             $result = $args[0].Result
-            $fullName = $args[0].ArgumentList
+            $fullName, $name = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $fullName
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+                $argumentList = $script:globalStore.GetArgumentListFor($name)
+                if ($null -eq $argumentList) {
+                    Restore-PSRunParentSelector
+                } else {
+                    & $script:globalStore.invokeFile $fullName $argumentList
+                }
             }
         }
 
@@ -158,7 +174,7 @@ class ApplicationRegistry : EntryRegistry {
 
                         $entry.UserData = @{
                             ScriptBlock = $callback
-                            ArgumentList = $app.FullName
+                            ArgumentList = $app.FullName, $entry.Name
                         }
 
                         $applicationEntries.Add($entry)
@@ -179,7 +195,7 @@ class ApplicationRegistry : EntryRegistry {
 
                     $entry.UserData = @{
                         ScriptBlock = $callback
-                        ArgumentList = $app.Source
+                        ArgumentList = $app.Source, $entry.Name
                     }
 
                     $executableEntries.Add($entry)

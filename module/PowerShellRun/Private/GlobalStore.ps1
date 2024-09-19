@@ -267,17 +267,31 @@ class GlobalStore {
 
     # Class methods cannot pass through the output of invoked command line apps in realtime so we use ScriptBlock.
     $invokeFile = {
-        param($path)
+        param($path, $argumentList)
         $command = Get-Command $path -ErrorAction SilentlyContinue
         if ($command -and ($command.CommandType -eq 'Application')) {
             # do not open new window when this is a command line app.
-            & $path
+            & $path $argumentList
         } elseif ($path.Contains('shell:', 'OrdinalIgnoreCase')) {
             # On Windows, Invoke-Item cannot open special folders.
-            Start-Process $path
+            Start-Process $path -ArgumentList $argumentList
         } else {
             # .ps1 files or .app files on macOS come here.
             Invoke-Item $path
+        }
+    }
+
+    [Object] GetArgumentListFor([String]$name) {
+        $option = Get-PSRunDefaultSelectorOption
+        $option.Prompt = 'Type arguments for {0}> ' -f $name
+        $option.QuitWithBackspaceOnEmptyQuery = $true
+        $promptResult = Invoke-PSRunPrompt -Option $option
+
+        if ($promptResult.KeyCombination -eq 'Backspace') {
+            return $null
+        } else {
+            $argumentList = $promptResult.Input -split '\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+            return $argumentList
         }
     }
 }
