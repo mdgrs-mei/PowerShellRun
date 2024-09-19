@@ -12,6 +12,14 @@
         }
     }
 
+    It 'should add the entry under an entry group' {
+        Enable-PSRunEntry -Category Script, EntryGroup
+        $parentGroup = Add-PSRunEntryGroup -Name 'Parent Group' -PassThru
+        Add-PSRunScriptFile -Path 'D:/test.ps1' -EntryGroup $parentGroup
+
+        $parentGroup.DirectChildEntries.Count | Should -Be 1
+    }
+
     It 'should not add an entry if category is disabled' {
         Enable-PSRunEntry -Category Function
         Add-PSRunScriptFile -Path 'D:/test.ps1' -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview'
