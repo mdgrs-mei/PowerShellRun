@@ -20,6 +20,9 @@ The description string. The filepath is used by default.
 .PARAMETER Preview
 The custom preview string. The content of the script file is used by default.
 
+.PARAMETER EntryGroup
+The parent entry group object where this new entry is added.
+
 .INPUTS
 None.
 

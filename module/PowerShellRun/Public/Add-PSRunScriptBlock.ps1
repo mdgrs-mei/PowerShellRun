@@ -20,6 +20,9 @@ The description string.
 .PARAMETER Preview
 The custom preview string. The definition of the ScriptBlock is used by default.
 
+.PARAMETER EntryGroup
+The parent entry group object where this new entry is added.
+
 .INPUTS
 None.
 
