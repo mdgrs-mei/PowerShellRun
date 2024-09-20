@@ -294,4 +294,36 @@ class GlobalStore {
             return $argumentList
         }
     }
+
+    [Object] GetParameterList($astParameters) {
+        if (-not $astParameters) {
+            return @{}
+        }
+
+        $option = Get-PSRunDefaultSelectorOption
+        $option.QuitWithBackspaceOnEmptyQuery = $true
+
+        $parameters = @{}
+        $promptContexts = @{}
+        for ($i = 0; $i -lt $astParameters.Count; ) {
+            $parameterName = $astParameters[$i].Name.VariablePath.UserPath.Replace('$', '')
+            $option.Prompt = '{0}> ' -f $parameterName
+            $promptContext = $promptContexts[$parameterName]
+            $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
+
+            if ($null -eq $promptResult.Input) {
+                $promptContexts[$parameterName] = $null
+                if ($i -eq 0) {
+                    return $null
+                } else {
+                    --$i
+                }
+            } else {
+                $parameters[$parameterName] = $promptResult.Input
+                $promptContexts[$parameterName] = $promptResult.Context
+                ++$i
+            }
+        }
+        return $parameters
+    }
 }

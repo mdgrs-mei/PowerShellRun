@@ -22,6 +22,7 @@ class FunctionRegistry : EntryRegistry {
         $this.actionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Invoke function')
             [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Get definition')
+            [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Invoke with arguments')
             [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy definition to Clipboard')
         )
 
@@ -34,6 +35,20 @@ class FunctionRegistry : EntryRegistry {
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $function = Get-Command $functionName
                 $function.Definition
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+                $function = Get-Command $functionName
+                $astParameters = if ($function.ScriptBlock.Ast.Parameters) {
+                    $function.ScriptBlock.Ast.Parameters
+                } else {
+                    $function.ScriptBlock.Ast.Body.ParamBlock.Parameters
+                }
+
+                $parameters = $script:globalStore.GetParameterList($astParameters)
+                if ($null -eq $parameters) {
+                    Restore-PSRunParentSelector
+                } else {
+                    & $functionName @parameters
+                }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $function = Get-Command $functionName
                 $function.Definition | Set-Clipboard
