@@ -281,23 +281,23 @@ class GlobalStore {
         }
     }
 
-    [Object] GetArgumentListFor([String]$name) {
+    [Object[]] GetArgumentListFor([String]$name) {
         $option = Get-PSRunDefaultSelectorOption
         $option.Prompt = 'Type arguments for {0}> ' -f $name
         $option.QuitWithBackspaceOnEmptyQuery = $true
         $promptResult = Invoke-PSRunPrompt -Option $option
 
-        if ($promptResult.KeyCombination -eq 'Backspace') {
-            return $null
+        if ($null -eq $promptResult.Input) {
+            return $null, $promptResult.KeyCombination
         } else {
             $argumentList = $promptResult.Input -split '\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
-            return $argumentList
+            return $argumentList, $promptResult.KeyCombination
         }
     }
 
-    [Object] GetParameterList($astParameters) {
+    [Object[]] GetParameterList($astParameters) {
         if (-not $astParameters) {
-            return @{}
+            return @{}, $null
         }
 
         $option = Get-PSRunDefaultSelectorOption
@@ -311,19 +311,21 @@ class GlobalStore {
             $promptContext = $promptContexts[$parameterName]
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
-            if ($null -eq $promptResult.Input) {
+            if ($promptResult.KeyCombination -eq 'Backspace') {
                 $promptContexts[$parameterName] = $null
                 if ($i -eq 0) {
-                    return $null
+                    return $null, $promptResult.KeyCombination
                 } else {
                     --$i
                 }
+            } elseif ($null -eq $promptResult.Input) {
+                return $null, $promptResult.KeyCombination
             } else {
                 $parameters[$parameterName] = $promptResult.Input
                 $promptContexts[$parameterName] = $promptResult.Context
                 ++$i
             }
         }
-        return $parameters
+        return $parameters, $null
     }
 }
