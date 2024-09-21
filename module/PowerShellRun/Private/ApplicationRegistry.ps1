@@ -141,7 +141,6 @@ class ApplicationRegistry : EntryRegistry {
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 & $script:globalStore.invokeFile $fullName
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
-                $argumentList = $script:globalStore.GetArgumentListFor($name)
                 $argumentList, $keyCombination = $script:globalStore.GetArgumentListFor($name)
                 if ($keyCombination -eq 'Backspace') {
                     Restore-PSRunParentSelector
@@ -175,7 +174,8 @@ class ApplicationRegistry : EntryRegistry {
                         $entry.Icon = '🚀'
                         $entry.Name = [System.IO.Path]::GetFileNameWithoutExtension($app.BaseName)
                         $entry.Preview = $app.FullName
-                        $entry.ActionKeys = $actionKeys
+                        # Not sure how to pass aruments to apps so only supports Launch action key.
+                        $entry.ActionKeys = $actionKeys[0]
 
                         $entry.UserData = @{
                             ScriptBlock = $callback
