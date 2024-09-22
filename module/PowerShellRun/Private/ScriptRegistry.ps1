@@ -27,6 +27,7 @@ class ScriptRegistry : EntryRegistry {
         $this.scriptBlockActionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Invoke script')
             [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Get definition')
+            [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Invoke with arguments')
             [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy definition to Clipboard')
         )
 
@@ -38,6 +39,16 @@ class ScriptRegistry : EntryRegistry {
                 & $scriptBlock
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $scriptBlock.ToString()
+            } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
+                $astParameters = $scriptBlock.Ast.ParamBlock.Parameters
+                $parameters, $keyCombination = $script:globalStore.GetParameterList($astParameters)
+                if ($keyCombination -eq 'Backspace') {
+                    Restore-PSRunParentSelector
+                } elseif ($null -eq $parameters) {
+                    return
+                } else {
+                    & $scriptBlock @parameters
+                }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $scriptBlock.ToString() | Set-Clipboard
             }

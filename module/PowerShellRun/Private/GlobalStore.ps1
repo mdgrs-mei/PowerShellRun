@@ -267,17 +267,90 @@ class GlobalStore {
 
     # Class methods cannot pass through the output of invoked command line apps in realtime so we use ScriptBlock.
     $invokeFile = {
-        param($path)
+        param($path, $argumentList)
         $command = Get-Command $path -ErrorAction SilentlyContinue
         if ($command -and ($command.CommandType -eq 'Application')) {
             # do not open new window when this is a command line app.
-            & $path
+            & $path $argumentList
         } elseif ($path.Contains('shell:', 'OrdinalIgnoreCase')) {
             # On Windows, Invoke-Item cannot open special folders.
-            Start-Process $path
+            Start-Process $path -ArgumentList $argumentList
         } else {
             # .ps1 files or .app files on macOS come here.
             Invoke-Item $path
         }
+    }
+
+    [Object[]] GetArgumentListFor([String]$name) {
+        $option = Get-PSRunDefaultSelectorOption
+        $option.Prompt = 'Type arguments for {0}> ' -f $name
+        $option.QuitWithBackspaceOnEmptyQuery = $true
+        $promptResult = Invoke-PSRunPrompt -Option $option
+
+        if ($null -eq $promptResult.Input) {
+            return $null, $promptResult.KeyCombination
+        } else {
+            $literalQuoteRegex = "(?<=^(?:[^`"]*`"[^`"]*`")*[^`"]*`"[^`"]*)'"
+            $literalDoubleQuoteRegex = "(?<=^(?:[^']*'[^']*')*[^']*'[^']*)`""
+            $nonQuotedSpaceRegex = "(?<=^(?:[^`"]*`"[^`"]*`")*[^`"]*)(?<=^(?:[^']*'[^']*')*[^']*)\s+"
+
+            # Replace quote enclosed by double quotes and double quote enclosed by quotes to simplify the splitting.
+            $inputString = $promptResult.Input
+            $inputString = $inputString -replace $literalQuoteRegex, "`u{0}"
+            $inputString = $inputString -replace $literalDoubleQuoteRegex, "`u{1}"
+
+            $argumentList = $inputString -split $nonQuotedSpaceRegex
+            for ($i = 0; $i -lt $argumentList.Count; ++$i) {
+                $argument = $argumentList[$i]
+                $argument = $argument -replace "`u{0}", "'"
+                $argument = $argument -replace "`u{1}", '"'
+
+                # Remove enclosing quotes
+                if ($argument.Length -ge 2) {
+                    if ((($argument[0] -eq "'") -and ($argument[$argument.Length - 1] -eq "'")) -or
+                        (($argument[0] -eq '"') -and ($argument[$argument.Length - 1] -eq '"'))) {
+                        $argument = $argument.Substring(1, $argument.Length - 2)
+                    }
+                }
+
+                $argumentList[$i] = $argument
+            }
+
+            return $argumentList, $promptResult.KeyCombination
+        }
+    }
+
+    [Object[]] GetParameterList($astParameters) {
+        if (-not $astParameters) {
+            return @{}, $null
+        }
+
+        $option = Get-PSRunDefaultSelectorOption
+        $option.QuitWithBackspaceOnEmptyQuery = $true
+
+        $parameters = @{}
+        $promptContexts = @{}
+        for ($i = 0; $i -lt $astParameters.Count; ) {
+            $parameterName = $astParameters[$i].Name.VariablePath.UserPath.Replace('$', '')
+            $option.Prompt = '{0}> ' -f $parameterName
+            $promptContext = $promptContexts[$parameterName]
+            $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
+
+            if ($promptResult.KeyCombination -eq 'Backspace') {
+                $promptContexts[$parameterName] = $null
+                if ($i -eq 0) {
+                    return $null, $promptResult.KeyCombination
+                } else {
+                    --$i
+                }
+            } elseif ($null -eq $promptResult.Input) {
+                return $null, $promptResult.KeyCombination
+            } else {
+                $parameters[$parameterName] = $promptResult.Input
+                $promptContexts[$parameterName] = $promptResult.Context
+                ++$i
+            }
+        }
+        return $parameters, $null
     }
 }
