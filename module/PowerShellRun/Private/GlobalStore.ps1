@@ -290,7 +290,32 @@ class GlobalStore {
         if ($null -eq $promptResult.Input) {
             return $null, $promptResult.KeyCombination
         } else {
-            $argumentList = $promptResult.Input -split '\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+            $literalQuoteRegex = "(?<=^(?:[^`"]*`"[^`"]*`")*[^`"]*`"[^`"]*)'"
+            $literalDoubleQuoteRegex = "(?<=^(?:[^']*'[^']*')*[^']*'[^']*)`""
+            $nonQuotedSpaceRegex = "(?<=^(?:[^`"]*`"[^`"]*`")*[^`"]*)(?<=^(?:[^']*'[^']*')*[^']*)\s+"
+
+            # Replace quote enclosed by double quotes and double quote enclosed by quotes to simplify the splitting.
+            $inputString = $promptResult.Input
+            $inputString = $inputString -replace $literalQuoteRegex, "`u{0}"
+            $inputString = $inputString -replace $literalDoubleQuoteRegex, "`u{1}"
+
+            $argumentList = $inputString -split $nonQuotedSpaceRegex
+            for ($i = 0; $i -lt $argumentList.Count; ++$i) {
+                $argument = $argumentList[$i]
+                $argument = $argument -replace "`u{0}", "'"
+                $argument = $argument -replace "`u{1}", '"'
+
+                # Remove enclosing quotes
+                if ($argument.Length -ge 2) {
+                    if ((($argument[0] -eq "'") -and ($argument[$argument.Length - 1] -eq "'")) -or
+                        (($argument[0] -eq '"') -and ($argument[$argument.Length - 1] -eq '"'))) {
+                        $argument = $argument.Substring(1, $argument.Length - 2)
+                    }
+                }
+
+                $argumentList[$i] = $argument
+            }
+
             return $argumentList, $promptResult.KeyCombination
         }
     }
