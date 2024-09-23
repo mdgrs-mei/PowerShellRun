@@ -32,12 +32,17 @@ Install-Module -Name PowerShellRun -Scope CurrentUser
 
 ## Quick Start
 
+First, call `Enable-PSRunEntry` to set up entries. You can control which entries are shown by passing the `-Category` parameter. Let's enable all for now:
+
 ```powershell
 Enable-PSRunEntry -Category All
-Invoke-PSRun
 ```
 
-This code enables entries of all categories and opens up this TUI:
+`Invoke-PSRun` function opens up the launcher TUI:
+
+```powershell
+Invoke-PSRun
+```
 
 ![Invoke-PSRun](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/f923bc43-c76b-433a-ada1-c2f49fdaba4e)
 
@@ -45,19 +50,51 @@ Type characters to search entries and hit `Enter` to launch the selected item. T
 
 ![ActionWindow](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/7abc7a2b-7252-4fc7-9753-796186fcb2ec)
 
-You can assign a shortcut key to quickly launch *PowerShellRun*.
+Instead of typing `Invoke-PSRun` every time, you can assign a shortcut key to quickly launch *PowerShellRun*:
 
 ```powershell
 Set-PSRunPSReadLineKeyHandler -InvokePsRunChord 'Ctrl+j'
 ```
 
+## PowerShell Profile
+
+The configurations of *PowerShellRun* are only persistent in a session so you need to add them to your [profile](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles) script to make them set up automatically in every PowerShell session. The typical profile script will look like this:
+
+```powershell
+# profile.ps1
+
+# Set up entries.
+Enable-PSRunEntry -Category All
+
+# Set options.
+Set-PSRunPSReadLineKeyHandler -InvokePsRunChord 'Ctrl+j'
+Set-PSRunDefaultEditorScript -ScriptBlock {
+    param($path)
+    & code $path
+}
+$option = [PowerSHellRun.SelectorOption]::new()
+$option.KeyBinding.QuitKeys = @(
+    'Escape'
+    'Ctrl+j'
+)
+Set-PSRunDefaultSelectorOption $option
+
+# Add custom entries.
+Add-PSRunFavoriteFolder -Path 'D:/PowerShellRun' -Icon '✨'
+Add-PSRunScriptBlock -Name 'GitPullRebase' -ScriptBlock {
+    git pull --rebase --prune
+}
+```
+
 ## Entry Categories
 
-There are some entry categories that you can selectively enable by passing an array of the category names to `Enable-PSRunEntry`.
+The entries listed in the launcher menu are grouped by `Category` internally. By passing an array of the category names to `Enable-PSRunEntry`, you can control which entries to show:
 
 ```powershell
 Enable-PSRunEntry -Category Function, Favorite
 ```
+
+In the following sections, we'll see what categories are available.
 
 ### ・🚀 Application
 
@@ -68,6 +105,8 @@ Installed applications are listed by the `Application` category. You can launch 
 Executable files under the PATH are listed by `Executable` category. You can invoke them on the same console where *PowerShellRun* is running.
 
 ### ・🔎 Utility
+
+PowerShellRun's built in utilities are listed by `Utility` category.
 
 #### File Manager (PSRun)
 
@@ -181,7 +220,7 @@ Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '�
 
 ### ・📂 EntryGroup
 
-EntryGroups can have other entries as their children. You can use them to organize the launcher menu. EntryGroups are created by `Add-PSRunEntryGroup` function, and `Add-PSRun*` functions take `-EntryGroup` parameter to specify the parent group. This example creates an EntryGroup for ProjectA and adds scripts for the project under that group:
+EntryGroups can have other entries as their children. You can use them to organize the launcher menu. EntryGroups are created by `Add-PSRunEntryGroup` function, and `Add-PSRun*` functions take `-EntryGroup` parameter to specify the parent group. The following example creates an EntryGroup for `ProjectA` and adds scripts for the project under that group:
 
 ```powershell
 $projectA = Add-PSRunEntryGroup -Name 'ProjectA' -Icon '🍎' -PassThru
