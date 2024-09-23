@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0] - 2024-09-23
+
+### Added
+
+- Added comment based help to all public functions
+- Added `Add-PSRunEntryGroup`
+- Added `EntryGroup` parameter to `Add-*` functions
+- Added `Launch/Invoke with arguments` actions to Application, Executable, ScriptBlock and Function entries
+
+### Changed
+
+- Enable-PSRunEntry must be called only once at the beginning of the module usage
+- `Restore-PSRunFunctionParentSelector` alias has been removed
+
 ## [0.7.0] - 2024-06-15
 
 ### Added
