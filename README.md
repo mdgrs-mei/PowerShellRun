@@ -179,6 +179,26 @@ Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '�
 
 ![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
 
+### ・📂 EntryGroup
+
+EntryGroups can have other entries as their children. You can use them to organize the launcher menu. EntryGroups are created by `Add-PSRunEntryGroup` function, and `Add-PSRun*` functions take `-EntryGroup` parameter to specify the parent group. This example creates an EntryGroup for ProjectA and adds scripts for the project under that group:
+
+```powershell
+$projectA = Add-PSRunEntryGroup -Name 'ProjectA' -Icon '🍎' -PassThru
+Add-PSRunScriptFile -EntryGroup $projectA -Path 'D:\PowerShellRun\Build.ps1' -Icon '🔁'
+Add-PSRunScriptBlock -EntryGroup $projectA -Name 'Hello' -Icon '👋' -ScriptBlock {
+    'Hello from ProjectA'
+}
+```
+
+If you add `-Category` parameter to `Add-PSRunEntryGroup`, all the entries that belong to the specified categories are added as children of the group instead of being listed in the top menu.
+
+```powershell
+Add-PSRunEntryGroup -Name 'Functions' -Category Script, Function
+```
+
+![EntryGroup](https://github.com/user-attachments/assets/14685437-18f1-4363-b3b0-c5061dcc7fed)
+
 ## History Search
 
 History search functionality is provided outside the *PowerShellRun* menu using PSReadLineKeyHandler. It searches PSReadLine history. Multi-line entries are also supported. You can enable it with the following command:
