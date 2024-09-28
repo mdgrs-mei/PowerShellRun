@@ -63,7 +63,12 @@ class FunctionRegistry : EntryRegistry {
             Write-Error -Message 'Function registration already started.' -Category InvalidOperation -ErrorAction $errorAction
             return
         }
-        $this.functionsAtRegisterStart = (Get-Command -Type Function).Name
+
+        $this.functionsAtRegisterStart = @{}
+        $functions = Get-Command -Type Function -ListImported
+        $functions | ForEach-Object {
+            $this.functionsAtRegisterStart[$_.Name] = $_.ScriptBlock
+        }
     }
 
     [void] StopRegistration($errorAction) {
@@ -76,9 +81,10 @@ class FunctionRegistry : EntryRegistry {
             return
         }
 
-        $functionsAtStop = Get-Command -Type Function
+        $functionsAtStop = Get-Command -Type Function -ListImported
         foreach ($function in $functionsAtStop) {
-            if ($function.Name -in $this.functionsAtRegisterStart) {
+            $functionAtStart = $this.functionsAtRegisterStart[$function.Name]
+            if ($functionAtStart -eq $function.ScriptBlock) {
                 continue
             }
             $this.isEntryUpdated = $true
