@@ -56,7 +56,7 @@ class EntryGroupRegistry : EntryRegistry {
             }
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                $option = $script:globalStore.psRunSelectorOption.DeepClone()
+                $option = $script:globalStore.GetPSRunSelectorOption()
                 $option.QuitWithBackspaceOnEmptyQuery = $true
                 $option.Prompt = "$($group.Name)> "
                 $prevContext = $null

@@ -106,6 +106,10 @@ class GlobalStore {
         $psRunKeyBinding.DefaultActionKeys[0].Description = 'Quit'
     }
 
+    [PowerShellRun.SelectorOption] GetPSRunSelectorOption() {
+        return $this.psRunSelectorOption.DeepClone()
+    }
+
     [EntryRegistry] GetRegistry($typeName) {
         foreach ($registry in $this.registries) {
             if ($registry.GetType().Name -eq $typeName) {
@@ -283,7 +287,7 @@ class GlobalStore {
     }
 
     [Object[]] GetArgumentListFor([String]$name) {
-        $option = Get-PSRunDefaultSelectorOption
+        $option = $this.GetPSRunSelectorOption()
         $option.Prompt = 'Type arguments for {0}> ' -f $name
         $option.QuitWithBackspaceOnEmptyQuery = $true
         $promptResult = Invoke-PSRunPrompt -Option $option
@@ -326,7 +330,7 @@ class GlobalStore {
             return @{}, $null
         }
 
-        $option = Get-PSRunDefaultSelectorOption
+        $option = $this.GetPSRunSelectorOption()
         $option.QuitWithBackspaceOnEmptyQuery = $true
 
         $parameters = @{}
