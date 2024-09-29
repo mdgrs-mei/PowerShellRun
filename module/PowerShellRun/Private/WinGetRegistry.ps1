@@ -1,4 +1,6 @@
 using module ./_EntryRegistry.psm1
+
+[NoRunspaceAffinity()]
 class WinGetRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $subMenuEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()

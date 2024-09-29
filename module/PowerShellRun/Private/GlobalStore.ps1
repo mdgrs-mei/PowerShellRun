@@ -1,6 +1,7 @@
 using module ./_EntryRegistry.psm1
 using module ./_EntryGroup.psm1
 
+[NoRunspaceAffinity()]
 class GlobalStore {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryInitialized = $false

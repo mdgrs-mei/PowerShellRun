@@ -21,6 +21,21 @@
         $function:Test = $null
     }
 
+    It 'should register a redefined function' {
+        Enable-PSRunEntry -Category Function
+
+        function global:Test {}
+        Start-PSRunFunctionRegistration
+        function global:Test {}
+        Stop-PSRunFunctionRegistration
+
+        InModuleScope 'PowerShellRun' {
+            $registry = $script:globalStore.GetRegistry('FunctionRegistry')
+            $registry.entries.Count | Should -Be 1
+        }
+        $function:Test = $null
+    }
+
     It 'should not register a function if category is disabled' {
         Enable-PSRunEntry -Category Script
 

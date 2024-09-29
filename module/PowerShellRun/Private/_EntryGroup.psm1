@@ -1,3 +1,4 @@
+[NoRunspaceAffinity()]
 class EntryGroup {
     [Object]$Registry
     [String]$Name

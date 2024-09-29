@@ -1,6 +1,7 @@
 using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
 
+[NoRunspaceAffinity()]
 class ScriptRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryUpdated = $false
