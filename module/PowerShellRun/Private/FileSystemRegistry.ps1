@@ -192,7 +192,7 @@ class FileSystemRegistry : EntryRegistry {
     $fileManagerLoop = {
         param($rootDir, $arguments)
 
-        $option = $script:globalStore.psRunSelectorOption.DeepClone()
+        $option = $script:globalStore.GetPSRunSelectorOption()
         $option.QuitWithBackspaceOnEmptyQuery = $true
 
         $distance = 0

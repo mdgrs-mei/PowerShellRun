@@ -43,7 +43,7 @@ class WinGetRegistry : EntryRegistry {
         $callback = {
             $thisClass = $args[0].ArgumentList
 
-            $option = Get-PSRunDefaultSelectorOption
+            $option = $script:globalStore.GetPSRunSelectorOption()
             $option.Prompt = 'WinGet (PSRun) > '
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
@@ -119,7 +119,7 @@ class WinGetRegistry : EntryRegistry {
         $callback = {
             param ($thisClass)
 
-            $option = Get-PSRunDefaultSelectorOption
+            $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
             $promptContext = $null
 
@@ -220,7 +220,7 @@ class WinGetRegistry : EntryRegistry {
         $callback = {
             param ($thisClass)
 
-            $option = Get-PSRunDefaultSelectorOption
+            $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
             $packages = Get-WinGetPackage | Where-Object { $_.IsUpdateAvailable }
@@ -295,7 +295,7 @@ class WinGetRegistry : EntryRegistry {
         $callback = {
             param ($thisClass)
 
-            $option = Get-PSRunDefaultSelectorOption
+            $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
             $packages = Get-WinGetPackage
