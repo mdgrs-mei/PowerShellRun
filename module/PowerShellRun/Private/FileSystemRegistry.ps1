@@ -1,6 +1,7 @@
 using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
 
+[NoRunspaceAffinity()]
 class FileSystemRegistry : EntryRegistry {
     $favoritesEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $fileManagerEntry = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()

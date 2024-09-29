@@ -1,4 +1,6 @@
 using module ./_EntryRegistry.psm1
+
+[NoRunspaceAffinity()]
 class FunctionRegistry : EntryRegistry {
     $functionsAtRegisterStart = $null
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()

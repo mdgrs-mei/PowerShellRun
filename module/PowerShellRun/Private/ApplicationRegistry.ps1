@@ -1,4 +1,6 @@
 using module ./_EntryRegistry.psm1
+
+[NoRunspaceAffinity()]
 class ApplicationRegistry : EntryRegistry {
     $sync = [System.Collections.Hashtable]::Synchronized(@{})
     $registerEntryJob = $null

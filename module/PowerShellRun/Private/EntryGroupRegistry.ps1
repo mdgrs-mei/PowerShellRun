@@ -1,6 +1,7 @@
 using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
 
+[NoRunspaceAffinity()]
 class EntryGroupRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $normalGroups = [System.Collections.Generic.List[EntryGroup]]::new()
