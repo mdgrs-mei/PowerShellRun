@@ -85,6 +85,7 @@ class ScriptRegistry : EntryRegistry {
 
     [void] AddScriptBlock($scriptBlock, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isEnabled) {
+            Write-Warning -Message '"Script" category is disabled.'
             return
         }
 
@@ -114,6 +115,7 @@ class ScriptRegistry : EntryRegistry {
 
     [void] AddScriptFile($filePath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isEnabled) {
+            Write-Warning -Message '"Script" category is disabled.'
             return
         }
 

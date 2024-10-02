@@ -79,6 +79,7 @@ class FunctionRegistry : EntryRegistry {
             return
         }
         if (-not $this.isEnabled) {
+            Write-Warning -Message '"Function" category is disabled.'
             $this.functionsAtRegisterStart = $null
             return
         }

@@ -98,6 +98,7 @@ class EntryGroupRegistry : EntryRegistry {
 
     [EntryGroup] AddEntryGroup($icon, $name, $description, $preview, [String[]]$categories, [EntryGroup]$parentGroup) {
         if (-not $this.isEnabled) {
+            Write-Warning -Message '"EntryGroup" category is disabled.'
             return $null
         }
 

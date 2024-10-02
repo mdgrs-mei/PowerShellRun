@@ -101,6 +101,7 @@ class FileSystemRegistry : EntryRegistry {
 
     [void] AddFavoriteFolder($folderPath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isFavoritesEnabled) {
+            Write-Warning -Message '"Favorite" category is disabled.'
             return
         }
 
@@ -146,6 +147,7 @@ class FileSystemRegistry : EntryRegistry {
 
     [void] AddFavoriteFile($filePath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isFavoritesEnabled) {
+            Write-Warning -Message '"Favorite" category is disabled.'
             return
         }
 
