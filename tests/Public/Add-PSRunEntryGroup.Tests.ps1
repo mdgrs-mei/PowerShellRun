@@ -35,7 +35,7 @@
 
     It 'should not add an entry if category is disabled' {
         Enable-PSRunEntry -Category Function
-        Add-PSRunEntryGroup -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview'
+        { Add-PSRunEntryGroup -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview' -WarningAction Stop } | Should -Throw
         InModuleScope 'PowerShellRun' {
             $registry = $script:globalStore.GetRegistry('EntryGroupRegistry')
             $registry.entries.Count | Should -Be 0
