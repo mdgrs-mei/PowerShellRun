@@ -60,9 +60,9 @@ class FunctionRegistry : EntryRegistry {
         }
     }
 
-    [void] StartRegistration($errorAction) {
+    [void] StartRegistration() {
         if (-not ($null -eq $this.functionsAtRegisterStart)) {
-            Write-Error -Message 'Function registration already started.' -Category InvalidOperation -ErrorAction $errorAction
+            Write-Error -Message 'Function registration already started.' -Category InvalidOperation
             return
         }
 
@@ -73,9 +73,9 @@ class FunctionRegistry : EntryRegistry {
         }
     }
 
-    [void] StopRegistration($errorAction) {
+    [void] StopRegistration() {
         if ($null -eq $this.functionsAtRegisterStart) {
-            Write-Error -Message 'Function registration has not started yet.' -Category InvalidOperation -ErrorAction $errorAction
+            Write-Error -Message 'Function registration has not started yet.' -Category InvalidOperation
             return
         }
         if (-not $this.isEnabled) {

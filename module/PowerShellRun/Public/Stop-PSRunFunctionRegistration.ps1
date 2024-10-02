@@ -27,5 +27,5 @@ function Stop-PSRunFunctionRegistration {
     param()
 
     $functionRegistry = $script:globalStore.GetRegistry('FunctionRegistry')
-    $functionRegistry.StopRegistration($ErrorActionPreference)
+    $functionRegistry.StopRegistration()
 }
