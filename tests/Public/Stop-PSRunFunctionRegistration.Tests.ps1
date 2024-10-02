@@ -41,7 +41,7 @@
 
         Start-PSRunFunctionRegistration
         function global:Test {}
-        Stop-PSRunFunctionRegistration
+        { Stop-PSRunFunctionRegistration -WarningAction Stop } | Should -Throw
 
         InModuleScope 'PowerShellRun' {
             $registry = $script:globalStore.GetRegistry('FunctionRegistry')

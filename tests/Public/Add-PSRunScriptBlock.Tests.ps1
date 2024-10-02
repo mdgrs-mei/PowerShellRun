@@ -22,7 +22,7 @@
 
     It 'should not add an entry if category is disabled' {
         Enable-PSRunEntry -Category Function
-        Add-PSRunScriptBlock -ScriptBlock { 'hello' } -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview'
+        { Add-PSRunScriptBlock -ScriptBlock { 'hello' } -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview' -WarningAction Stop } | Should -Throw
         InModuleScope 'PowerShellRun' {
             $registry = $script:globalStore.GetRegistry('ScriptRegistry')
             $registry.entries.Count | Should -Be 0

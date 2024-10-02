@@ -22,7 +22,7 @@
 
     It 'should not add an entry if category is disabled' {
         Enable-PSRunEntry -Category Function
-        Add-PSRunFavoriteFolder -Path 'C:/folder' -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview'
+        { Add-PSRunFavoriteFolder -Path 'C:/folder' -Icon '😆' -Name 'Custom Name' -Description 'Custom Desc' -Preview 'Custom Preview' -WarningAction Stop } | Should -Throw
         InModuleScope 'PowerShellRun' {
             $registry = $script:globalStore.GetRegistry('FileSystemRegistry')
             $registry.favoritesEntries.Count | Should -Be 0

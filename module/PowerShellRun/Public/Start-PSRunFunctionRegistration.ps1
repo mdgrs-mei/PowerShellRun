@@ -27,5 +27,5 @@ function Start-PSRunFunctionRegistration {
     param()
 
     $functionRegistry = $script:globalStore.GetRegistry('FunctionRegistry')
-    $functionRegistry.StartRegistration($ErrorActionPreference)
+    $functionRegistry.StartRegistration()
 }
