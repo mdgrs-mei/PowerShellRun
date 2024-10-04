@@ -5,10 +5,6 @@ Opens a launcher.
 .DESCRIPTION
 Opens a launcher that has entries enabled by Enable-PSRunEntry.
 
-.PARAMETER Option
-Specifies an PowerShellRun.SelectorOption that is only effective for this invocation.
-By default, the selector option that is set by Set-PSRunDefaultSelectorOption is used.
-
 .PARAMETER InitialQuery
 The initial query string inputted to the search bar.
 
@@ -20,11 +16,6 @@ Returns the result of the selected entry.
 
 .EXAMPLE
 Invoke-PSRun
-
-.EXAMPLE
-$option = Get-PSRunDefaultSelectorOption
-$option.Prompt = 'Filter: '
-Invoke-PSRun -Option $option -InitialQuery 'code'
 #>
 function Invoke-PSRun {
     [CmdletBinding()]
@@ -38,6 +29,10 @@ function Invoke-PSRun {
     if ($script:globalStore.entries.Count -eq 0) {
         Write-Error -Message 'There is no entry.' -Category InvalidOperation
         return
+    }
+
+    if ($Option -ne $script:globalStore.psRunSelectorOption) {
+        Write-Warning -Message '"-Option" parameter of Invoke-PSRun is deprecated. Use Set-PSRunDefaultSelectorOption instead.'
     }
 
     if ($InitialQuery) {
