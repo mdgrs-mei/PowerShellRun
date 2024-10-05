@@ -1,3 +1,4 @@
+using module ./_EntryGroup.psm1
 using module ./_EntryRegistry.psm1
 
 [NoRunspaceAffinity()]
@@ -90,34 +91,64 @@ class FunctionRegistry : EntryRegistry {
             if ($functionAtStart -eq $function.ScriptBlock) {
                 continue
             }
-            $this.isEntryUpdated = $true
-
-            $help = Get-Help $function.Name
-            $customAttributes = $this.GetFunctionCustomAttributes($help)
-
-            $entry = [PowerShellRun.SelectorEntry]::new()
-            $entry.Icon = if ($customAttributes.Icon) { $customAttributes.Icon } else { '📝' }
-            $entry.Name = if ($customAttributes.Name) { $customAttributes.Name } else { $function.Name }
-            $entry.Preview = if ($customAttributes.Preview) { $customAttributes.Preview } else { '{' + $function.Definition + '}' }
-            if ($customAttributes.Description) {
-                $entry.Description = $customAttributes.Description
-            } elseif ($help.Description) {
-                $entry.Description = $help.Description.Text
-            } elseif ($help.Synopsis) {
-                $entry.Description = $help.Synopsis
-            }
-
-            $entry.ActionKeys = $this.actionKeys
-
-            $entry.UserData = @{
-                ScriptBlock = $this.callback
-                ArgumentList = $function.Name
-            }
-
+            $entry = $this.CreateFunctionEntry($function)
             $this.entries.Add($entry)
+            $this.isEntryUpdated = $true
         }
 
         $this.functionsAtRegisterStart = $null
+    }
+
+    [void] AddFunction($functionName, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+        if (-not $this.isEnabled) {
+            Write-Warning -Message '"Function" category is disabled.'
+            return
+        }
+
+        $function = Get-Command -Type Function -ListImported -Name $functionName -ErrorAction Ignore
+        if (-not $function) {
+            Write-Warning -Message "Function [$functionName] not found."
+            return
+        }
+
+        $entry = $this.CreateFunctionEntry($function)
+        if ($icon) { $entry.Icon = $icon }
+        if ($name) { $entry.Name = $name }
+        if ($description) { $entry.Description = $description }
+        if ($preview) { $entry.Preview = $preview }
+
+        if ($entryGroup) {
+            $entryGroup.AddEntry($entry)
+        } else {
+            $this.entries.Add($entry)
+            $this.isEntryUpdated = $true
+        }
+    }
+
+    [PowerShellRun.SelectorEntry] CreateFunctionEntry($function) {
+        $help = Get-Help $function.Name
+        $customAttributes = $this.GetFunctionCustomAttributes($help)
+
+        $entry = [PowerShellRun.SelectorEntry]::new()
+        $entry.Icon = if ($customAttributes.Icon) { $customAttributes.Icon } else { '📝' }
+        $entry.Name = if ($customAttributes.Name) { $customAttributes.Name } else { $function.Name }
+        $entry.Preview = if ($customAttributes.Preview) { $customAttributes.Preview } else { '{' + $function.Definition + '}' }
+
+        if ($customAttributes.Description) {
+            $entry.Description = $customAttributes.Description
+        } elseif ($help.Description) {
+            $entry.Description = $help.Description.Text
+        } elseif ($help.Synopsis) {
+            $entry.Description = $help.Synopsis
+        }
+
+        $entry.ActionKeys = $this.actionKeys
+
+        $entry.UserData = @{
+            ScriptBlock = $this.callback
+            ArgumentList = $function.Name
+        }
+        return $entry
     }
 
     [object] GetFunctionCustomAttributes($help) {

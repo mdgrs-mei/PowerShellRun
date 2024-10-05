@@ -65,6 +65,7 @@
         'Add-PSRunEntryGroup'
         'Add-PSRunFavoriteFile'
         'Add-PSRunFavoriteFolder'
+        'Add-PSRunFunction'
         'Add-PSRunScriptBlock'
         'Add-PSRunScriptFile'
         'Enable-PSRunEntry'
