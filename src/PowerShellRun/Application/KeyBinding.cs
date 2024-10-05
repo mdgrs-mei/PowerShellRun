@@ -3,6 +3,7 @@
 public class KeyBinding
 {
     public KeyCombination[] QuitKeys { get; set; }
+    public KeyCombination[] RestartKeys { get; set; }
     public KeyCombination[] PageUpKeys { get; set; }
     public KeyCombination[] PageDownKeys { get; set; }
     public KeyCombination[] PreviewVerticalScrollUpKeys { get; set; }
@@ -26,6 +27,10 @@ public class KeyBinding
     {
         QuitKeys = new KeyCombination[]{
             new KeyCombination(KeyModifier.None, Key.Escape),
+        };
+
+        RestartKeys = new KeyCombination[]{
+            new KeyCombination(KeyModifier.Ctrl, Key.R),
         };
 
         PageUpKeys = new KeyCombination[]{

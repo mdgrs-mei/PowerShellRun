@@ -359,6 +359,17 @@ internal class ResultWindow
                 {
                     IsQuit = true;
                     LastKeyCombination = key.KeyCombination;
+                    ExitStatus.Type = ExitType.Quit;
+                    return;
+                }
+            }
+            foreach (var restartKey in keyBinding.RestartKeys)
+            {
+                if (key.KeyCombination.Equals(restartKey))
+                {
+                    IsQuit = true;
+                    LastKeyCombination = key.KeyCombination;
+                    ExitStatus.Type = ExitType.Restart;
                     return;
                 }
             }
@@ -371,6 +382,7 @@ internal class ResultWindow
                     {
                         IsActionAccepted = true;
                         LastKeyCombination = key.KeyCombination;
+                        ExitStatus.Type = ExitType.Accept;
                         return;
                     }
                 }

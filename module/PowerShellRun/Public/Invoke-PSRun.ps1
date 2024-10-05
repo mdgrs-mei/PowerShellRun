@@ -58,6 +58,11 @@ function Invoke-PSRun {
             & $callback $argumentList
         }
 
+        if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::Restart) {
+            $prevContext = $null
+            continue
+        }
+
         if (-not $script:globalStore.IsParentSelectorRestoreRequested()) {
             break
         }
