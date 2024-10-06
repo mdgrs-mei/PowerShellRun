@@ -234,10 +234,8 @@ class FileSystemRegistry : EntryRegistry {
             }
 
             $result = Invoke-PSRunSelectorCustom -Entry $entries -Option $option
-
-            if ($result.KeyCombination -eq 'Backspace') {
+            if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
                 if ($distance -eq 0) {
-                    Restore-PSRunParentSelector
                     break
                 } else {
                     $distance--

@@ -5,7 +5,6 @@ class WinGetRegistry : EntryRegistry {
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $subMenuEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
     $isEntryUpdated = $false
-    $restoreParentMenu = $false
 
     WinGetRegistry() {
     }
@@ -52,22 +51,16 @@ class WinGetRegistry : EntryRegistry {
                 $result = Invoke-PSRunSelectorCustom -Entry $thisClass.subMenuEntries -Option $option -Context $context
                 $context = $result.Context
 
-                if ($result.KeyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                    return
-                }
-
                 $entry = $result.FocusedEntry
                 if (-not $entry) {
                     return
                 }
 
-                $thisClass.restoreParentMenu = $false
                 if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                     & $entry.UserData.ScriptBlock $entry.UserData.ArgumentList
                 }
 
-                if (-not $thisClass.restoreParentMenu) {
+                if ([PowerShellRun.ExitStatus]::Type -ne [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
                     return
                 }
             }
@@ -128,11 +121,7 @@ class WinGetRegistry : EntryRegistry {
                 $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
                 $promptContext = $promptResult.Context
 
-                if ($promptResult.KeyCombination -eq 'Backspace') {
-                    $thisClass.restoreParentMenu = $true
-                    return
-                }
-                if (-not $promptResult.Input) {
+                if ($null -eq $promptResult.Input) {
                     return
                 }
 
@@ -167,7 +156,7 @@ class WinGetRegistry : EntryRegistry {
                     $entry
                 } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
 
-                if ($result.KeyCombination -eq 'Backspace') {
+                if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
                     continue
                 }
 
@@ -242,11 +231,6 @@ class WinGetRegistry : EntryRegistry {
                 $entry.Preview = $_ | Format-List | Out-String
                 $entry
             } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
-
-            if ($result.KeyCombination -eq 'Backspace') {
-                $thisClass.restoreParentMenu = $true
-                return
-            }
 
             if ($result.MarkedEntries) {
                 $upgradePackages = $result.MarkedEntries.UserData
@@ -326,11 +310,6 @@ class WinGetRegistry : EntryRegistry {
                 $entry.Preview = $_ | Format-List | Out-String
                 $entry
             } | Invoke-PSRunSelectorCustom -Option $option -MultiSelection
-
-            if ($result.KeyCombination -eq 'Backspace') {
-                $thisClass.restoreParentMenu = $true
-                return
-            }
 
             if ($result.MarkedEntries) {
                 $uninstallPackages = $result.MarkedEntries.UserData

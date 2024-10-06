@@ -131,6 +131,17 @@ internal class SearchBar
                     {
                         IsQuit = true;
                         LastKeyCombination = key.KeyCombination;
+                        ExitStatus.Type = ExitType.Quit;
+                        return;
+                    }
+                }
+                foreach (var restartKey in keyBinding.RestartKeys)
+                {
+                    if (key.KeyCombination.Equals(restartKey))
+                    {
+                        IsQuit = true;
+                        LastKeyCombination = key.KeyCombination;
+                        ExitStatus.Type = ExitType.Restart;
                         return;
                     }
                 }
@@ -141,6 +152,7 @@ internal class SearchBar
                     {
                         IsAccepted = true;
                         LastKeyCombination = key.KeyCombination;
+                        ExitStatus.Type = ExitType.Accept;
                         return;
                     }
                 }
@@ -185,6 +197,7 @@ internal class SearchBar
                 {
                     IsQuit = true;
                     LastKeyCombination = key.KeyCombination;
+                    ExitStatus.Type = ExitType.QuitWithBackspaceOnEmptyQuery;
                     return;
                 }
                 continue;

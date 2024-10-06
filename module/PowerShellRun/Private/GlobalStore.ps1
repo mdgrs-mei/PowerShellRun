@@ -29,7 +29,6 @@ class GlobalStore {
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
     $entryGroupRegistry = $null
 
-    $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
     $isReadLineReplaced = $false
     $invokePsRunRequest = $false
@@ -164,18 +163,6 @@ class GlobalStore {
                 }
             }
         }
-    }
-
-    [void] RequestParentSelectorRestore() {
-        $this.parentSelectorRestoreRequest = $true
-    }
-
-    [void] ClearParentSelectorRestoreRequest() {
-        $this.parentSelectorRestoreRequest = $false
-    }
-
-    [bool] IsParentSelectorRestoreRequested() {
-        return $this.parentSelectorRestoreRequest
     }
 
     [void] ReplacePSConsoleHostReadLine() {
@@ -325,9 +312,9 @@ class GlobalStore {
         }
     }
 
-    [Object[]] GetParameterList($astParameters) {
+    [Object] GetParameterList($astParameters) {
         if (-not $astParameters) {
-            return @{}, $null
+            return @{}
         }
 
         $option = $this.GetPSRunSelectorOption()
@@ -341,21 +328,21 @@ class GlobalStore {
             $promptContext = $promptContexts[$parameterName]
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
-            if ($promptResult.KeyCombination -eq 'Backspace') {
+            if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
                 $promptContexts[$parameterName] = $null
                 if ($i -eq 0) {
-                    return $null, $promptResult.KeyCombination
+                    return $null
                 } else {
                     --$i
                 }
             } elseif ($null -eq $promptResult.Input) {
-                return $null, $promptResult.KeyCombination
+                return $null
             } else {
                 $parameters[$parameterName] = $promptResult.Input
                 $promptContexts[$parameterName] = $promptResult.Context
                 ++$i
             }
         }
-        return $parameters, $null
+        return $parameters
     }
 }
