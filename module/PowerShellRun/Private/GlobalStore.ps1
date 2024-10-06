@@ -341,7 +341,7 @@ class GlobalStore {
             $promptContext = $promptContexts[$parameterName]
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
-            if ($promptResult.KeyCombination -eq 'Backspace') {
+            if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
                 $promptContexts[$parameterName] = $null
                 if ($i -eq 0) {
                     return $null
