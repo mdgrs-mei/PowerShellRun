@@ -16,5 +16,5 @@ function Restore-PSRunParentSelector {
     [CmdletBinding()]
     param()
 
-    $script:globalStore.RequestParentSelectorRestore()
+    Write-Warning -Message 'Restore-PSRunParentSelector is deprecated. If a selector/prompt is returned by the Backspace key on an empty query, the parent selector is automatically restored.'
 }

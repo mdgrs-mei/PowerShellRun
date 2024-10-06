@@ -29,7 +29,6 @@ class GlobalStore {
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
     $entryGroupRegistry = $null
 
-    $parentSelectorRestoreRequest = $false
     $originalPSConsoleHostReadLine = $null
     $isReadLineReplaced = $false
     $invokePsRunRequest = $false
@@ -164,18 +163,6 @@ class GlobalStore {
                 }
             }
         }
-    }
-
-    [void] RequestParentSelectorRestore() {
-        $this.parentSelectorRestoreRequest = $true
-    }
-
-    [void] ClearParentSelectorRestoreRequest() {
-        $this.parentSelectorRestoreRequest = $false
-    }
-
-    [bool] IsParentSelectorRestoreRequested() {
-        return $this.parentSelectorRestoreRequest
     }
 
     [void] ReplacePSConsoleHostReadLine() {
