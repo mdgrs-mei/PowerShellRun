@@ -325,9 +325,9 @@ class GlobalStore {
         }
     }
 
-    [Object[]] GetParameterList($astParameters) {
+    [Object] GetParameterList($astParameters) {
         if (-not $astParameters) {
-            return @{}, $null
+            return @{}
         }
 
         $option = $this.GetPSRunSelectorOption()
@@ -344,18 +344,18 @@ class GlobalStore {
             if ($promptResult.KeyCombination -eq 'Backspace') {
                 $promptContexts[$parameterName] = $null
                 if ($i -eq 0) {
-                    return $null, $promptResult.KeyCombination
+                    return $null
                 } else {
                     --$i
                 }
             } elseif ($null -eq $promptResult.Input) {
-                return $null, $promptResult.KeyCombination
+                return $null
             } else {
                 $parameters[$parameterName] = $promptResult.Input
                 $promptContexts[$parameterName] = $promptResult.Context
                 ++$i
             }
         }
-        return $parameters, $null
+        return $parameters
     }
 }

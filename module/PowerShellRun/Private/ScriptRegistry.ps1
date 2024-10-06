@@ -42,12 +42,8 @@ class ScriptRegistry : EntryRegistry {
                 $scriptBlock.ToString()
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $astParameters = $scriptBlock.Ast.ParamBlock.Parameters
-                $parameters, $keyCombination = $script:globalStore.GetParameterList($astParameters)
-                if ($keyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                } elseif ($null -eq $parameters) {
-                    return
-                } else {
+                $parameters = $script:globalStore.GetParameterList($astParameters)
+                if ($null -ne $parameters) {
                     & $scriptBlock @parameters
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {

@@ -39,11 +39,7 @@ class ApplicationRegistry : EntryRegistry {
                 Start-Process $path -Verb runAs
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $argumentList, $keyCombination = $script:globalStore.GetArgumentListFor($name)
-                if ($keyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                } elseif ($null -eq $argumentList) {
-                    return
-                } else {
+                if ($null -ne $argumentList) {
                     & $script:globalStore.invokeFile $path $argumentList
                 }
             }
@@ -144,11 +140,7 @@ class ApplicationRegistry : EntryRegistry {
                 & $script:globalStore.invokeFile $fullName
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $argumentList, $keyCombination = $script:globalStore.GetArgumentListFor($name)
-                if ($keyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                } elseif ($null -eq $argumentList) {
-                    return
-                } else {
+                if ($null -ne $argumentList) {
                     & $script:globalStore.invokeFile $fullName $argumentList
                 }
             }

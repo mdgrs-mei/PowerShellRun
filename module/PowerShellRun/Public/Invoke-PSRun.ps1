@@ -43,8 +43,6 @@ function Invoke-PSRun {
     }
 
     while ($true) {
-        $script:globalStore.ClearParentSelectorRestoreRequest()
-
         $mode = [PowerShellRun.SelectorMode]::SingleSelection
         $result = [PowerShellRun.Selector]::Open($script:globalStore.entries, $mode, $Option, $prevContext)
         $prevContext = $result.Context
@@ -56,15 +54,16 @@ function Invoke-PSRun {
                 ArgumentList = $result.FocusedEntry.UserData.ArgumentList
             }
             & $callback $argumentList
+
+            if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
+                continue
+            }
         }
 
         if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::Restart) {
             $prevContext = $null
             continue
         }
-
-        if (-not $script:globalStore.IsParentSelectorRestoreRequested()) {
-            break
-        }
+        break
     }
 }

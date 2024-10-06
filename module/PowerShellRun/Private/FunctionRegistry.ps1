@@ -46,12 +46,8 @@ class FunctionRegistry : EntryRegistry {
                     $function.ScriptBlock.Ast.Body.ParamBlock.Parameters
                 }
 
-                $parameters, $keyCombination = $script:globalStore.GetParameterList($astParameters)
-                if ($keyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                } elseif ($null -eq $parameters) {
-                    return
-                } else {
+                $parameters = $script:globalStore.GetParameterList($astParameters)
+                if ($null -ne $parameters) {
                     & $functionName @parameters
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {

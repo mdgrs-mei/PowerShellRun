@@ -52,11 +52,6 @@ class WinGetRegistry : EntryRegistry {
                 $result = Invoke-PSRunSelectorCustom -Entry $thisClass.subMenuEntries -Option $option -Context $context
                 $context = $result.Context
 
-                if ($result.KeyCombination -eq 'Backspace') {
-                    Restore-PSRunParentSelector
-                    return
-                }
-
                 $entry = $result.FocusedEntry
                 if (-not $entry) {
                     return

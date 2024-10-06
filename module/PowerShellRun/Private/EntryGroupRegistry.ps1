@@ -62,15 +62,8 @@ class EntryGroupRegistry : EntryRegistry {
                 $prevContext = $null
 
                 while ($true) {
-                    $script:globalStore.ClearParentSelectorRestoreRequest()
-
                     $result = Invoke-PSRunSelectorCustom -Entry $group.Entries -Option $option -Context $prevContext
                     $prevContext = $result.Context
-
-                    if ($result.KeyCombination -eq 'Backspace') {
-                        Restore-PSRunParentSelector
-                        return
-                    }
 
                     if ($result.FocusedEntry) {
                         $callback = $result.FocusedEntry.UserData.ScriptBlock
@@ -79,9 +72,11 @@ class EntryGroupRegistry : EntryRegistry {
                             ArgumentList = $result.FocusedEntry.UserData.ArgumentList
                         }
                         & $callback $argumentList
-                    }
 
-                    if (-not $script:globalStore.IsParentSelectorRestoreRequested()) {
+                        if ([PowerShellRun.ExitStatus]::Type -ne [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
+                            break
+                        }
+                    } else {
                         break
                     }
                 }
