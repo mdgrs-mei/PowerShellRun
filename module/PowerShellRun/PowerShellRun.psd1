@@ -22,7 +22,7 @@
     Copyright = '(c) mdgrs-mei. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = 'App, Utility and Function Launcher for PowerShell'
+    Description = 'Terminal Based Launcher and Fuzzy Finder for PowerShell'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion = '7.4'
