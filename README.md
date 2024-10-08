@@ -182,7 +182,13 @@ function global:GitPullRebase() {
 
 ![Function](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/162b90dd-b51a-4b92-ab75-c8c29b3a385d)
 
-It's even possible to open *PowerShellRun*'s TUI inside a registered function entry using the commands described in the following [section](#powershellrun-as-a-generic-selector). To create a pseudo nested menu, we recommend that you use `Restore-PSRunParentSelector` command to restore the parent menu with `Backspace` key. `File Manager (PSRun)` is a good example of the nested menu.
+If you cannot add `Start/Stop-PSRunFunctionRegistration` before and after the functions you would like to register, you can use `Add-PSRunFunction` instead to manually add functions one by one. The parameter extraction from the comment based help still works but the parameters passed to `Add-PSRunFunction` take priority. The registered functions must be defined globally before calling `Add-PSRunFunction`.
+
+```powershell
+Add-PSRunFunction -FunctionName GitPullRebase -Description 'Manually added function'
+```
+
+Inside a registered function entry, it's even possible to open *PowerShellRun*'s TUI using the commands described in the following [section](#powershellrun-as-a-generic-selector). To create a pseudo nested menu, we recommend that you enable the `QuitWithBackspaceOnEmptyQuery` flag in the [options](#options) to restore the parent menu with `Backspace` key. `File Manager (PSRun)` is a good example of the nested menu.
 
 ```powershell
 function global:OpenNestedMenu() {
@@ -196,11 +202,10 @@ function global:OpenNestedMenu() {
         $entry
     } | Invoke-PSRunSelectorCustom -Option $option
 
-    if ($result.KeyCombination -eq 'Backspace') {
-        Restore-PSRunParentSelector
+    if ($null -eq $result.FocusedEntry) {
         return
     }
-    # ... Other key handlings here
+    # ... Key handlings here
 }
 ```
 
@@ -235,6 +240,8 @@ If you add `-Category` parameter to `Add-PSRunEntryGroup`, all the entries that 
 ```powershell
 Add-PSRunEntryGroup -Name 'Functions' -Category Script, Function
 ```
+
+`EntryGroup` forms a nested menu and you can go back to the parent menu by pressing `Backspace` key when the query is empty.
 
 ![EntryGroup](https://github.com/user-attachments/assets/14685437-18f1-4363-b3b0-c5061dcc7fed)
 
