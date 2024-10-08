@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.9.0] - 2024-10-08
+
+### Added
+
+- Added `Add-PSRunFunction`
+- Added `RestartKeys` to `KeyBinding`
+- Added `PowerShellRun.ExitStatus` class
+
+### Changed
+
+- Minimum PowerShell version is changed to 7.4 because of `NoRunspaceAffinity`
+- Warnings are shown when you add an entry to a disabled category
+
+### Fixed
+
+- Fixed an issue where functions redefined between `Start/Stop-PSRunFunctionRegistration` are not registered
+- Fixed an issue where the module refers the old globalStore when it's reloaded by `Import-Module -Force`
+- Fixed an issue where the built-in nested menus used a wrong `DefaultActionKeys`
+
+### Deprecated
+
+- `Option` parameter of `Invoke-PSRun` will be removed in the next release
+- `Restore-PSRunParentSelector` will be removed in the next release
+
 ## [0.8.0] - 2024-09-23
 
 ### Added
