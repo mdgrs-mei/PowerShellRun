@@ -19,4 +19,9 @@ public class ActionKey : DeepCloneable
     {
         return new ActionKey();
     }
+
+    public override string ToString()
+    {
+        return $"{KeyCombination.ToString()}:{Description}";
+    }
 }

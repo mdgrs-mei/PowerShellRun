@@ -19,4 +19,9 @@ public class RemapKey : DeepCloneable
     {
         return new RemapKey();
     }
+
+    public override string ToString()
+    {
+        return $"{Source.ToString()}:{Destination.ToString()}";
+    }
 }

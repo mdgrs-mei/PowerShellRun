@@ -8,4 +8,9 @@ public class BorderSymbol
     public char TopRight { get; set; } = '┐';
     public char BottomLeft { get; set; } = '└';
     public char BottomRight { get; set; } = '┘';
+
+    public override string ToString()
+    {
+        return $"{Vertical} {Horizontal} {TopLeft} {TopRight} {BottomLeft} {BottomRight}";
+    }
 }
