@@ -24,6 +24,7 @@ public class Theme
 
     public string Marker { get; set; } = "✓ ";
 
+    public string PromptSymbol { get; set; } = "> ";
     public FontColor? PromptForegroundColor { get; set; } = FontColor.Magenta;
     public FontColor? PromptBackgroundColor { get; set; } = null;
     public FontColor? QueryForegroundColor { get; set; } = null;
