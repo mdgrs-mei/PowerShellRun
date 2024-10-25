@@ -18,4 +18,9 @@ public class SelectorEntry
     public int PreviewInitialVerticalScroll { get; set; } = 0;
     public ActionKey[]? ActionKeys = null;
     public ActionKey[]? ActionKeysMultiSelection = null;
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
