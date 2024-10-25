@@ -50,7 +50,12 @@ function SearchPSReadLineHistory() {
     $context = [PowerShellRun.SelectorContext]::new()
     $context.Query = $initialQuery
 
-    $result = Invoke-PSRunSelectorCustom -Entry $entries -Context $context
+    $originalCanvasTopMargin = $script:globalStore.psRunSelectorOption.Theme.CanvasTopMargin
+    $script:globalStore.psRunSelectorOption.Theme.CanvasTopMargin += 1
+
+    $result = Invoke-PSRunSelectorCustom -Entry $entries -Context $context -Option $script:globalStore.psRunSelectorOption
+
+    $script:globalStore.psRunSelectorOption.Theme.CanvasTopMargin = $originalCanvasTopMargin
 
     $command = $result.FocusedEntry.UserData.CommandLine
     if (-not $command) {
