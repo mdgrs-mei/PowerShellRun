@@ -24,7 +24,7 @@ $result = Invoke-PSRunPrompt
 
 .EXAMPLE
 $option = Get-PSRunDefaultSelectorOption
-$option.Prompt = 'Type your name: '
+$option.Prompt = 'Type your name'
 $result = Invoke-PSRunPrompt -Option $option
 #>
 function Invoke-PSRunPrompt {

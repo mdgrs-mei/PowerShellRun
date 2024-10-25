@@ -43,7 +43,7 @@ class WinGetRegistry : EntryRegistry {
             $thisClass = $args[0].ArgumentList
 
             $option = $script:globalStore.GetPSRunSelectorOption()
-            $option.Prompt = 'WinGet (PSRun) > '
+            $option.Prompt = 'WinGet (PSRun)'
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
             $context = $null
@@ -115,9 +115,10 @@ class WinGetRegistry : EntryRegistry {
             $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
             $promptContext = $null
+            $originalPrompt = $option.Prompt
 
             while ($true) {
-                $option.Prompt = 'Type application name to search > '
+                $option.Prompt = 'Type application name to search'
                 $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
                 $promptContext = $promptResult.Context
 
@@ -125,7 +126,7 @@ class WinGetRegistry : EntryRegistry {
                     return
                 }
 
-                $option.Prompt = '> '
+                $option.Prompt = $originalPrompt
                 $packages = Find-WinGetPackage -Query $promptResult.Input
                 if (-not $packages) {
                     Write-Warning -Message ('[{0}] No available application found.' -f $promptResult.Input)

@@ -203,7 +203,7 @@ class FileSystemRegistry : EntryRegistry {
             prevDir = $null
         }
         while ($true) {
-            $option.Prompt = "($distance) $($currentDir.path)> "
+            $option.Prompt = "($distance) $($currentDir.path)"
 
             $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $addEntry = {

@@ -275,7 +275,7 @@ class GlobalStore {
 
     [Object[]] GetArgumentListFor([String]$name) {
         $option = $this.GetPSRunSelectorOption()
-        $option.Prompt = 'Type arguments for {0}> ' -f $name
+        $option.Prompt = 'Type arguments for {0}' -f $name
         $option.QuitWithBackspaceOnEmptyQuery = $true
         $promptResult = Invoke-PSRunPrompt -Option $option
 
@@ -324,7 +324,7 @@ class GlobalStore {
         $promptContexts = @{}
         for ($i = 0; $i -lt $astParameters.Count; ) {
             $parameterName = $astParameters[$i].Name.VariablePath.UserPath.Replace('$', '')
-            $option.Prompt = '{0}> ' -f $parameterName
+            $option.Prompt = $parameterName
             $promptContext = $promptContexts[$parameterName]
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
