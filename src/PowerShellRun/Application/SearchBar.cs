@@ -39,11 +39,16 @@ internal class SearchBar
         borderHeight += theme.SearchBarBorderFlags.HasFlag(BorderFlag.Bottom) ? 1 : 0;
         RootLayout.LayoutSizeHeight.Set(LayoutSizeType.Absolute, 1 + borderHeight);
 
-        int promptLength = TextBox.GetDisplayWidth(promptString);
+        string promptLine = theme.PromptSymbol;
+        if (!string.IsNullOrEmpty(promptString))
+        {
+            promptLine = promptString + theme.PromptSymbol;
+        }
+        int promptLength = TextBox.GetDisplayWidth(promptLine);
         _prompt.OnlyStoreLinesInVisibleRange = false;
         _prompt.LayoutSizeWidth.Set(LayoutSizeType.Absolute, promptLength);
         _prompt.ClearAndSetFocusLine(0, 1);
-        _prompt.AddWord(0, promptString, theme.PromptForegroundColor, theme.PromptBackgroundColor);
+        _prompt.AddWord(0, promptLine, theme.PromptForegroundColor, theme.PromptBackgroundColor);
 
         if (theme.QueryBoxBackgroundColor is not null)
         {
