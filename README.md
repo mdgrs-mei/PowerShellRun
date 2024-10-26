@@ -261,8 +261,8 @@ You can customize *PowerShellRun*'s behavior and themes through options. Create 
 
 ```powershell
 $option = [PowerShellRun.SelectorOption]::new()
-$option.Prompt = 'Type words👉 '
-$option.QuitWithBackspaceOnEmptyQuery = $true
+$option.Theme.PromptSymbol = '👉 '
+$option.ActionWindowCycleScrollEnable = $true
 Set-PSRunDefaultSelectorOption $option
 Invoke-PSRun
 ```
@@ -271,7 +271,7 @@ The option you set as default can be returned by `Get-PSRunDefaultSelectorOption
 
 ```powershell
 $option = Get-PSRunDefaultSelectorOption
-$option.Prompt = 'Nested menu prompt > '
+$option.Prompt = 'Nested menu prompt'
 $option.QuitWithBackspaceOnEmptyQuery = $true
 'a', 'b' | Invoke-PSRunSelector -Option $option
 ```
@@ -326,10 +326,10 @@ $roundBorder.TopRight = '╮'
 $roundBorder.BottomLeft = '╰'
 $roundBorder.BottomRight = '╯'
 
-$option.Prompt = ' '
 $theme = $option.Theme
 $theme.CanvasHeightPercentage = 80
 $theme.Cursor = '▸ '
+$theme.PromptSymbol = ' '
 $theme.IconEnable = $false
 $theme.PreviewPosition = [PowerShellRun.PreviewPosition]::Right
 $theme.CanvasBorderFlags = [PowerShellRun.BorderFlag]::All
@@ -407,7 +407,7 @@ $word = Read-Host 'Type word to search for'
 $filter = Read-Host 'Type path filter (e.g. "*.cs")'
 
 $option = [PowerShellRun.SelectorOption]::new()
-$option.Prompt = "Searching for word '{0}'> " -f $word
+$option.Prompt = "Searching for word '{0}'" -f $word
 
 $matchLines = Get-ChildItem $filter -Recurse | Select-String $word
 $result = $matchLines | ForEach-Object {
