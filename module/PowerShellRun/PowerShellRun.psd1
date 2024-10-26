@@ -74,7 +74,6 @@
         'Invoke-PSRunPrompt'
         'Invoke-PSRunSelector'
         'Invoke-PSRunSelectorCustom'
-        'Restore-PSRunParentSelector'
         'Set-PSRunActionKeyBinding'
         'Set-PSRunDefaultEditorScript'
         'Set-PSRunDefaultSelectorOption'

@@ -20,8 +20,6 @@ Invoke-PSRun
 function Invoke-PSRun {
     [CmdletBinding()]
     param (
-        [PowerShellRun.SelectorOption]$Option = $script:globalStore.psRunSelectorOption,
-
         [String]$InitialQuery
     )
 
@@ -29,10 +27,6 @@ function Invoke-PSRun {
     if ($script:globalStore.entries.Count -eq 0) {
         Write-Error -Message 'There is no entry.' -Category InvalidOperation
         return
-    }
-
-    if ($Option -ne $script:globalStore.psRunSelectorOption) {
-        Write-Warning -Message '"-Option" parameter of Invoke-PSRun is deprecated. Use Set-PSRunDefaultSelectorOption instead.'
     }
 
     if ($InitialQuery) {
@@ -44,7 +38,7 @@ function Invoke-PSRun {
 
     while ($true) {
         $mode = [PowerShellRun.SelectorMode]::SingleSelection
-        $result = [PowerShellRun.Selector]::Open($script:globalStore.entries, $mode, $Option, $prevContext)
+        $result = [PowerShellRun.Selector]::Open($script:globalStore.entries, $mode, $script:globalStore.psRunSelectorOption, $prevContext)
         $prevContext = $result.Context
 
         if ($result.FocusedEntry) {
