@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.10.0] - 2024-10-31
+
+### Added
+
+- Added custom `ToString` methods to `FontColor`, `BorderSymbol`, `ActionKey`, `RemapKey`, `PromptContext`, `SelectorContext` and `SelectorEntry`
+- Added `SelectorOption.Theme.PromptSymbol`
+
+### Changed
+
+- Removed `Option` parameter of `Invoke-PSRun`
+  - Use `Set-PSRunDefaultSelectorOption` instead
+- Removed `Restore-PSRunParentSelector`
+  - The parent selector is now automatically restored when returning with backspace on empty query
+- Moved the default prompt symbol `>` from `SelectorOption.Prompt` to `SelectorOption.Theme.PromptSymbol`
+
+### Fixed
+
+- Fixed incorrect `CanvasTopMargin` for PSReadLineHistory view
+
 ## [0.9.0] - 2024-10-08
 
 ### Added
