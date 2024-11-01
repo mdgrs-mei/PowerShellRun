@@ -56,6 +56,22 @@ Instead of typing `Invoke-PSRun` every time, you can assign a shortcut key to qu
 Set-PSRunPSReadLineKeyHandler -InvokePsRunChord 'Ctrl+j'
 ```
 
+## Controls
+
+This is the default key bindings for the major controls. You can customize the bindings through [options](#key-bindings).
+
+| Key | Action |
+| ---- | ---- |
+| `↑`, `↓` | Move cursor. |
+| `PgUp`, `PgDn` | Move cursor up/down one page. |
+| `Enter` | Execute the primary action of the selected entry. |
+| `Tab` | Mark an entry in MultiSelection mode. |
+| `Shift+Tab` | Toggle markers for all entries in MultiSelection mode. |
+| `Backspace` on empty query | Go back to the parent menu. |
+| `Ctrl+R` | Restart the menu. |
+| `Ctrl+K` | Open the Action window. |
+| `Escape` | Quit. |
+
 ## PowerShell Profile
 
 The configurations of *PowerShellRun* are only persistent in a session so you need to add them to your [profile](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles) script to make them set up automatically in every PowerShell session. The typical profile script will look like this:
@@ -476,7 +492,7 @@ Invoke-PSRunPrompt
 ```powershell
 Input KeyCombination Context
 ----- -------------- -------
-hello Enter          PowerShellRun.PromptContext
+hello Enter          hello
 ```
 
 ## Major Limitations
