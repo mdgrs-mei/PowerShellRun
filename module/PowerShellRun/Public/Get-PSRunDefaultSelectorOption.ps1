@@ -18,6 +18,7 @@ Set-PSRunDefaultSelectorOption $option
 #>
 function Get-PSRunDefaultSelectorOption {
     [CmdletBinding()]
+    [OutputType([PowerShellRun.SelectorOption])]
     param ()
 
     $script:globalStore.defaultSelectorOption.DeepClone()
