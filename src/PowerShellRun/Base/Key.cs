@@ -116,7 +116,7 @@ public class KeyCombination : DeepCloneable
         if (string.IsNullOrEmpty(str))
         {
             SetString();
-            return;
+            throw new ArgumentException("Can't construct KeyCombination from an empty string.");
         }
 
         var keys = str.Split('+');
@@ -147,6 +147,10 @@ public class KeyCombination : DeepCloneable
         }
 
         SetString();
+        if (_modifier == KeyModifier.None && _key == Key.None)
+        {
+            throw new ArgumentException($"Invalid string format [{str}]. The format must be like 'Ctrl+Shift+A'.");
+        }
     }
 
     internal static KeyCombination LeftArrow { get; } = new KeyCombination(KeyModifier.None, Key.LeftArrow);
