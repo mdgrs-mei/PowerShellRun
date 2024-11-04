@@ -11,6 +11,17 @@ public class RemapKey : DeepCloneable
         Destination = destination;
     }
 
+    public RemapKey(string str)
+    {
+        var sourceAndDestination = str.Split(':');
+        var source = sourceAndDestination[0];
+        Source = new KeyCombination(source);
+        if (sourceAndDestination.Length > 1)
+        {
+            Destination = new KeyCombination(sourceAndDestination[1]);
+        }
+    }
+
     private RemapKey()
     {
     }

@@ -11,6 +11,17 @@ public class ActionKey : DeepCloneable
         Description = description;
     }
 
+    public ActionKey(string str)
+    {
+        var keyAndDescription = str.Split(':');
+        var key = keyAndDescription[0];
+        KeyCombination = new KeyCombination(key);
+        if (keyAndDescription.Length > 1)
+        {
+            Description = keyAndDescription[1];
+        }
+    }
+
     private ActionKey()
     {
     }

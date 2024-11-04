@@ -3,14 +3,14 @@
         Import-Module $PSScriptRoot/../../module/PowerShellRun -Force
     }
 
-    It 'should be able to be set by a preset name' {
+    It 'is set by a preset name' {
         $option = Get-PSRunDefaultSelectorOption
         $theme = $option.Theme
         $theme.DefaultForegroundColor = 'Black'
         $theme.DefaultForegroundColor -eq [PowerShellRun.FontColor]::Black | Should -BeTrue
     }
 
-    It 'should be able to be set by a hex string' {
+    It 'is set by a hex string' {
         $hex = '#20F230'
         $option = Get-PSRunDefaultSelectorOption
         $theme = $option.Theme
