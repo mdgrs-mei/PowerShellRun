@@ -322,7 +322,14 @@ internal sealed class Canvas : Singleton<Canvas>
                     builder.Append(escapeSequence);
                 }
 
-                builder.Append(cell.Character);
+                if (cell.TextElement is not null)
+                {
+                    builder.Append(cell.TextElement);
+                }
+                else
+                {
+                    builder.Append(cell.Character);
+                }
             }
             builder.Append('\n');
         }

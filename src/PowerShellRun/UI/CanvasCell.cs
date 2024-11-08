@@ -12,9 +12,13 @@ internal class CanvasCell
         ForceResetFont = 1 << 0,
         ForceResetFontNext = 1 << 1,
         EscapeSequenceLowPriority = 1 << 2,
+        SecondCellOfWideCharacter = 1 << 3,
     }
 
+    // base characters
     public char Character { get; set; }
+    // surrogate pairs or combining character sequences
+    public string? TextElement { get; set; }
     public string? EscapeSequence { get; set; }
     public FontColor? ForegroundColor { get; set; }
     public FontColor? BackgroundColor { get; set; }
@@ -29,6 +33,7 @@ internal class CanvasCell
     public void Clear()
     {
         Character = ' ';
+        TextElement = null;
         EscapeSequence = null;
         ForegroundColor = null;
         BackgroundColor = null;
@@ -39,6 +44,7 @@ internal class CanvasCell
     public void CopyTo(CanvasCell cell)
     {
         cell.Character = Character;
+        cell.TextElement = TextElement;
         cell.EscapeSequence = EscapeSequence;
         cell.ForegroundColor = ForegroundColor;
         cell.BackgroundColor = BackgroundColor;
@@ -54,6 +60,22 @@ internal class CanvasCell
         Option optionFlags)
     {
         Character = character;
+        TextElement = null;
+        ForegroundColor = foregroundColor;
+        BackgroundColor = backgroundColor;
+        FontStyle = fontStyle;
+        OptionFlags = optionFlags;
+    }
+
+    public void SetTextElement(
+        string textElement,
+        FontColor? foregroundColor,
+        FontColor? backgroundColor,
+        FontStyle fontStyle,
+        Option optionFlags)
+    {
+        Character = ' ';
+        TextElement = textElement;
         ForegroundColor = foregroundColor;
         BackgroundColor = backgroundColor;
         FontStyle = fontStyle;

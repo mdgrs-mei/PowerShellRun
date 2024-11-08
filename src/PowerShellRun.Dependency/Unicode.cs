@@ -8,13 +8,8 @@ public class Unicode
         return Wcwidth.UnicodeCalculator.GetWidth(character);
     }
 
-    public static int GetDisplayWidth(string str)
+    public static int GetDisplayWidth(int codePoint)
     {
-        int length = 0;
-        foreach (var character in str)
-        {
-            length += Wcwidth.UnicodeCalculator.GetWidth(character);
-        }
-        return length;
+        return Wcwidth.UnicodeCalculator.GetWidth(codePoint);
     }
 }
