@@ -6,11 +6,9 @@ using PowerShellRun.Dependency;
 
 internal class SearchBar
 {
-    private StringBuilder _readKeysBuffer = new StringBuilder();
-    private int _cursorX = 0;
+    private InputBuffer _inputBuffer = new InputBuffer();
     private bool _isFirstFrame = true;
     private bool _isProcessQuitAcceptKeys = false;
-    private bool _isQuerySetFromOutside = false;
     private TextBox _prompt = new TextBox();
     private TextBox _textBox = new TextBox();
 
@@ -19,8 +17,8 @@ internal class SearchBar
     public bool IsQuit { get; set; } = false;
     public bool IsAccepted { get; set; } = false;
     public KeyCombination? LastKeyCombination { get; private set; } = null;
-    public bool IsQueryUpdated { get; set; } = false;
-    public bool IsCursorUpdated { get; set; } = false;
+    public bool IsQueryUpdated { get; private set; } = false;
+    public bool IsCursorUpdated { get; private set; } = false;
     public string DebugPerfString = "";
 
     public SearchBar(string promptString, bool processQuitAcceptKeys)
@@ -59,49 +57,38 @@ internal class SearchBar
 
     public void SetQuery(string query)
     {
-        _readKeysBuffer.Clear();
-        _readKeysBuffer.Append(query);
-        SetCursorX(query.Length);
-        _isQuerySetFromOutside = true;
+        _inputBuffer.ClearInput();
+        _inputBuffer.Add(query);
     }
 
     public (int X, int Y) GetCursorPositionInCanvas()
     {
         int x = _textBox.X;
         int y = _textBox.Y;
-        for (int i = 0; i < _cursorX; ++i)
-        {
-            if (i >= _readKeysBuffer.Length)
-                break;
-
-            int displayWidth = Unicode.GetDisplayWidth(_readKeysBuffer[i]);
-            if (displayWidth <= 0)
-                continue;
-
-            x += displayWidth;
-        }
-
+        x += _inputBuffer.GetCursorOffsetInCanvas();
         return (x, y);
     }
 
     public void Update()
     {
         ReadKeys();
-        if (IsQuit)
-            return;
-
-        Query = _readKeysBuffer.ToString();
-        if (_isQuerySetFromOutside)
+        IsQueryUpdated = _inputBuffer.IsQueryUpdated;
+        IsCursorUpdated = _inputBuffer.IsCursorUpdated;
+        if (_isFirstFrame)
         {
+            _isFirstFrame = false;
             IsQueryUpdated = true;
-            _isQuerySetFromOutside = false;
         }
-
         if (!string.IsNullOrEmpty(DebugPerfString))
         {
             IsQueryUpdated = true;
         }
+        _inputBuffer.ClearState();
 
+        if (IsQuit)
+            return;
+
+        Query = _inputBuffer.GetString();
         if (IsQueryUpdated)
         {
             var theme = SelectorOptionHolder.GetInstance().Option.Theme;
@@ -119,8 +106,6 @@ internal class SearchBar
 
     private void ReadKeys()
     {
-        IsQueryUpdated = false;
-        IsCursorUpdated = false;
         var isRemapMode = KeyInput.GetInstance().IsRemapMode;
         var inputKeys = KeyInput.GetInstance().GetFrameInputs();
         var option = SelectorOptionHolder.GetInstance().Option;
@@ -170,35 +155,33 @@ internal class SearchBar
 
             if (key.KeyCombination.Key == Key.LeftArrow)
             {
-                SetCursorX(_cursorX - 1);
+                _inputBuffer.MoveCursorBackward();
                 continue;
             }
             if (key.KeyCombination.Key == Key.RightArrow)
             {
-                SetCursorX(_cursorX + 1);
+                _inputBuffer.MoveCursorForward();
                 continue;
             }
             if (key.KeyCombination.Key == Key.Home)
             {
-                SetCursorX(0);
+                _inputBuffer.MoveCursorToBeginning();
                 continue;
             }
             if (key.KeyCombination.Key == Key.End)
             {
-                SetCursorX(_readKeysBuffer.Length);
+                _inputBuffer.MoveCursorToEnd();
                 continue;
             }
 
             if (key.KeyCombination.Key == Key.Backspace)
             {
-                if (_readKeysBuffer.Length > 0 && _cursorX > 0)
+                if (_inputBuffer.GetCursorCharIndex() > 0)
                 {
-                    _readKeysBuffer.Remove(_cursorX - 1, 1);
-                    SetCursorX(_cursorX - 1);
-                    IsQueryUpdated = true;
+                    _inputBuffer.Backspace();
                 }
                 else
-                if (option.QuitWithBackspaceOnEmptyQuery && _readKeysBuffer.Length == 0)
+                if (option.QuitWithBackspaceOnEmptyQuery && _inputBuffer.IsEmpty())
                 {
                     IsQuit = true;
                     LastKeyCombination = key.KeyCombination;
@@ -209,11 +192,7 @@ internal class SearchBar
             }
             if (key.KeyCombination.Key == Key.Delete)
             {
-                if (_cursorX < _readKeysBuffer.Length)
-                {
-                    _readKeysBuffer.Remove(_cursorX, 1);
-                    IsQueryUpdated = true;
-                }
+                _inputBuffer.Delete();
                 continue;
             }
 
@@ -224,28 +203,7 @@ internal class SearchBar
             if (key.IsRemapped)
                 continue;
 
-            if (Unicode.GetDisplayWidth(key.ConsoleKeyInfo.KeyChar) <= 0)
-                continue;
-
-            if (_readKeysBuffer.Length >= Constants.QueryCharacterMaxCount)
-                continue;
-
-            if (_cursorX == _readKeysBuffer.Length)
-            {
-                _readKeysBuffer.Append(key.ConsoleKeyInfo.KeyChar);
-            }
-            else
-            {
-                _readKeysBuffer.Insert(_cursorX, key.ConsoleKeyInfo.KeyChar);
-            }
-            SetCursorX(_cursorX + 1);
-            IsQueryUpdated = true;
-        }
-
-        if (_isFirstFrame)
-        {
-            _isFirstFrame = false;
-            IsQueryUpdated = true;
+            _inputBuffer.Add(key.ConsoleKeyInfo.KeyChar);
         }
     }
 
@@ -257,12 +215,5 @@ internal class SearchBar
             IsAccepted = true;
             LastKeyCombination = null;
         }
-    }
-
-    private void SetCursorX(int x)
-    {
-        _cursorX = x;
-        _cursorX = Math.Clamp(_cursorX, 0, _readKeysBuffer.Length);
-        IsCursorUpdated = true;
     }
 }
