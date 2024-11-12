@@ -1,6 +1,7 @@
 ﻿namespace PowerShellRun;
 using System;
 using System.Linq;
+using System.Text;
 
 internal class Searcher
 {
@@ -55,10 +56,14 @@ internal class Searcher
 
     private void AddScores(InternalEntry[] entries, string query, ScoreOperation operation)
     {
-        bool useLowerCase = false;
-        if (!query.Any(x => Char.IsUpper(x)))
+        bool isQueryAllLowerCase = true;
+        foreach (Rune rune in query.EnumerateRunes())
         {
-            useLowerCase = true;
+            if (Rune.IsUpper(rune))
+            {
+                isQueryAllLowerCase = false;
+                break;
+            }
         }
 
         foreach (var entry in entries)
@@ -66,8 +71,8 @@ internal class Searcher
             if (operation == ScoreOperation.And && entry.Score == 0)
                 continue;
 
-            string nameEntry = useLowerCase ? entry.SearchNameLowerCase : entry.SearchName;
-            string descriptionEntry = useLowerCase ? entry.SearchDescriptionLowerCase : entry.SearchDescription;
+            string nameEntry = isQueryAllLowerCase ? entry.SearchNameLowerCase : entry.SearchName;
+            string descriptionEntry = isQueryAllLowerCase ? entry.SearchDescriptionLowerCase : entry.SearchDescription;
 
             int nameScore = CalculateScore(
                 nameEntry,
