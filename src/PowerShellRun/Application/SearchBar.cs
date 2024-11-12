@@ -203,6 +203,9 @@ internal class SearchBar
             if (key.IsRemapped)
                 continue;
 
+            if (key.ConsoleKeyInfo.KeyChar == '\0')
+                continue;
+
             _inputBuffer.Add(key.ConsoleKeyInfo.KeyChar);
         }
     }
