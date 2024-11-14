@@ -2,6 +2,7 @@
 using PowerShellRun.Dependency;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Management.Automation.Language;
 using System.Text;
 
@@ -99,7 +100,7 @@ internal class TextBox : LayoutItem
                 return (null, false);
             }
 
-            void SetCell(Word word, int charIndex, char character)
+            void SetCell(Word word, int charIndex, char character = '\0', string? textElement = null, bool isSecondCellOfWideCharacter = false)
             {
                 FontColor? foregroundColor = word.ForegroundColor;
                 FontColor? backgroundColor = word.BackgroundColor;
@@ -126,14 +127,30 @@ internal class TextBox : LayoutItem
                 {
                     option |= CanvasCell.Option.EscapeSequenceLowPriority;
                 }
+                if (isSecondCellOfWideCharacter)
+                {
+                    option |= CanvasCell.Option.SecondCellOfWideCharacter;
+                }
 
                 var cell = new CanvasCell();
-                cell.SetCharacter(
-                    character,
-                    foregroundColor,
-                    backgroundColor,
-                    fontStyle,
-                    option);
+                if (textElement is not null)
+                {
+                    cell.SetTextElement(
+                        textElement,
+                        foregroundColor,
+                        backgroundColor,
+                        fontStyle,
+                        option);
+                }
+                else
+                {
+                    cell.SetCharacter(
+                        character,
+                        foregroundColor,
+                        backgroundColor,
+                        fontStyle,
+                        option);
+                }
 
                 cell.EscapeSequence = escape.EscapeSequence;
                 Cells.Add(cell);
@@ -143,51 +160,82 @@ internal class TextBox : LayoutItem
 
             foreach (var word in Words)
             {
+                if (cellIndex >= maxWidth)
+                    break;
+
                 bool escaped = false;
-                for (int i = 0; i < word.String.Length; ++i)
+                var textElementIndexes = System.Globalization.StringInfo.ParseCombiningCharacters(word.String);
+                for (int i = 0; i < textElementIndexes.Length; ++i)
                 {
                     if (cellIndex >= maxWidth)
                         break;
 
-                    char character = word.String[i];
-                    if (escaped)
+                    var elementStartIndex = textElementIndexes[i];
+                    var elementStartIndexNext = (i + 1 == textElementIndexes.Length) ? word.String.Length : textElementIndexes[i + 1];
+
+                    var elementCharCount = elementStartIndexNext - elementStartIndex;
+                    bool isBaseCharacter = elementCharCount == 1;
+                    var charIndex = elementStartIndex;
+
+                    if (isBaseCharacter)
                     {
-                        if (character == 'm')
+                        // basic 2 byte characters
+                        char character = word.String[charIndex];
+                        if (escaped)
                         {
-                            escaped = false;
+                            if (character == 'm')
+                            {
+                                escaped = false;
+                            }
+                            AddEscapeSequence(character);
                         }
-                        AddEscapeSequence(character);
-                    }
-                    else
-                    if (character == '\x1b')
-                    {
-                        escaped = true;
-                        AddEscapeSequence(character);
-                    }
-                    else
-                    if (character == '\t')
-                    {
-                        int spaces = tabSize - cellIndex % tabSize;
-                        for (int s = 0; s < spaces; ++s)
+                        else
+                        if (character == '\x1b')
                         {
-                            SetCell(word, i, ' ');
-                            if (cellIndex >= maxWidth)
-                                break;
+                            escaped = true;
+                            AddEscapeSequence(character);
+                        }
+                        else
+                        if (character == '\t')
+                        {
+                            int spaces = tabSize - cellIndex % tabSize;
+                            for (int s = 0; s < spaces; ++s)
+                            {
+                                SetCell(word, charIndex, character: ' ');
+                                if (cellIndex >= maxWidth)
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            int displayWidth = Unicode.GetDisplayWidth(character);
+                            if (displayWidth <= 0)
+                                continue;
+
+                            if (cellIndex + displayWidth > maxWidth)
+                                continue;
+
+                            SetCell(word, charIndex, character: character);
+                            if (displayWidth == 2)
+                            {
+                                SetCell(word, charIndex, character: '\0', isSecondCellOfWideCharacter: true);
+                            }
                         }
                     }
                     else
                     {
-                        int displayWidth = Unicode.GetDisplayWidth(character);
+                        int displayWidth = GetDisplayWidthOfComplexTextElement(word.String, elementStartIndex, elementCharCount);
                         if (displayWidth <= 0)
                             continue;
 
                         if (cellIndex + displayWidth > maxWidth)
                             continue;
 
-                        SetCell(word, i, character);
+                        var textElement = word.String.Substring(elementStartIndex, elementCharCount);
+                        SetCell(word, charIndex, textElement: textElement);
                         if (displayWidth == 2)
                         {
-                            SetCell(word, i, '\0');
+                            SetCell(word, charIndex, character: '\0', isSecondCellOfWideCharacter: true);
                         }
                     }
                 }
@@ -205,39 +253,91 @@ internal class TextBox : LayoutItem
         }
     }
 
+    public static int GetDisplayWidthOfComplexTextElement(string str, int elementCharOffset, int elementCharCount)
+    {
+        Debug.Assert(elementCharCount > 1);
+
+        int displayWidth = 0;
+        if (elementCharCount == 2)
+        {
+            if (Char.IsHighSurrogate(str[elementCharOffset]))
+            {
+                // surrogate pairs
+                int codePoint = Char.ConvertToUtf32(str[elementCharOffset], str[elementCharOffset + 1]);
+                displayWidth = Unicode.GetDisplayWidth(codePoint);
+            }
+            else
+            {
+                // combining characters
+                displayWidth =
+                    Unicode.GetDisplayWidth(str[elementCharOffset]) +
+                    Unicode.GetDisplayWidth(str[elementCharOffset + 1]);
+                displayWidth = Math.Min(displayWidth, 2);
+            }
+        }
+        else
+        {
+            // combining character sequences
+            // It's highly likely a wide character (might not be perfect).
+            displayWidth = 2;
+        }
+
+        return displayWidth;
+    }
+
     public static int GetDisplayWidth(string str)
     {
         int tabSize = SelectorOptionHolder.GetInstance().Option.Theme.TabSize;
         int count = 0;
         bool escaped = false;
-        for (int i = 0; i < str.Length; ++i)
+
+        var textElementIndexes = System.Globalization.StringInfo.ParseCombiningCharacters(str);
+        for (int i = 0; i < textElementIndexes.Length; ++i)
         {
-            char character = str[i];
-            if (escaped)
+            var elementStartIndex = textElementIndexes[i];
+            var elementStartIndexNext = (i + 1 == textElementIndexes.Length) ? str.Length : textElementIndexes[i + 1];
+
+            var elementCharCount = elementStartIndexNext - elementStartIndex;
+            bool isBaseCharacter = elementCharCount == 1;
+            var charIndex = elementStartIndex;
+
+            if (isBaseCharacter)
             {
-                if (character == 'm')
+                char character = str[charIndex];
+                if (escaped)
                 {
-                    escaped = false;
+                    if (character == 'm')
+                    {
+                        escaped = false;
+                    }
+                }
+                else
+                if (character == '\x1b')
+                {
+                    escaped = true;
+                }
+                else
+                if (character == '\t')
+                {
+                    count += tabSize - count % tabSize;
+                }
+                else
+                {
+                    int displayWidth = Unicode.GetDisplayWidth(character);
+                    if (displayWidth <= 0)
+                        continue;
+                    count += displayWidth;
                 }
             }
             else
-            if (character == '\x1b')
             {
-                escaped = true;
-            }
-            else
-            if (character == '\t')
-            {
-                count += tabSize - count % tabSize;
-            }
-            else
-            {
-                int displayWidth = Unicode.GetDisplayWidth(character);
+                int displayWidth = GetDisplayWidthOfComplexTextElement(str, elementStartIndex, elementCharCount);
                 if (displayWidth <= 0)
                     continue;
                 count += displayWidth;
             }
         }
+
         return count;
     }
 
