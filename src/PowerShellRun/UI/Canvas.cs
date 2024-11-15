@@ -165,8 +165,18 @@ internal sealed class Canvas : Singleton<Canvas>
             return;
 
         var cell = _cells[index];
+        if (cell.OptionFlags.HasFlag(CanvasCell.Option.SecondCellOfWideCharacter) && x > 0)
+        {
+            _cells[index - 1].ClearCharacter();
+        }
+
         cell.SetCharacter(character, foregroundColor, backgroundColor, fontStyle, optionFlags);
         cell.EscapeSequence = escapeSequence;
+
+        if (x < Width - 1 && _cells[index + 1].OptionFlags.HasFlag(CanvasCell.Option.SecondCellOfWideCharacter))
+        {
+            _cells[index + 1].ClearCharacter();
+        }
     }
 
     public void SetCell(
@@ -181,7 +191,17 @@ internal sealed class Canvas : Singleton<Canvas>
         if (index < 0 || index >= _cells.Length)
             return;
 
+        if (_cells[index].OptionFlags.HasFlag(CanvasCell.Option.SecondCellOfWideCharacter) && x > 0)
+        {
+            _cells[index - 1].ClearCharacter();
+        }
+
         cell.CopyTo(_cells[index]);
+
+        if (x < Width - 1 && _cells[index + 1].OptionFlags.HasFlag(CanvasCell.Option.SecondCellOfWideCharacter))
+        {
+            _cells[index + 1].ClearCharacter();
+        }
     }
 
     public void AddCellOption(

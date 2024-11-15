@@ -67,6 +67,13 @@ internal class CanvasCell
         OptionFlags = optionFlags;
     }
 
+    public void ClearCharacter()
+    {
+        Character = ' ';
+        TextElement = null;
+        OptionFlags &= ~Option.SecondCellOfWideCharacter;
+    }
+
     public void SetTextElement(
         string textElement,
         FontColor? foregroundColor,
