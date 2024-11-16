@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.11.0] - 2024-11-16
+
+### Added
+
+- Added string constructor to `FontColor`
+- Added string constructor to `ActionKey`
+- Added string constructor to `RemapKey`
+
+### Changed
+
+- Added `OutputType` attribute to `Get-PSRunDefaultSelectorOption`
+
+### Fixed
+
+- Fixed character width calculation for grapheme clusters
+- Fixed broken rendering when wide characters are partially hidden by the Action Window
+
 ## [0.10.0] - 2024-10-31
 
 ### Added
