@@ -3,7 +3,7 @@ param (
     [String]$Configuration = 'Debug'
 )
 
-$netVersion = 'net6.0'
+$netVersion = 'net8.0'
 $copyExtensions = @('.dll', '.pdb')
 $src = "$PSScriptRoot/src"
 $coreSrc = "$src/PowerShellRun"

@@ -3,7 +3,6 @@
 $root = Split-Path $PSScriptRoot -Parent
 Enter-RSSession -OnStart {
     $root = $args[0]
-    $netVersion = 'net6.0'
     $build = "$root/Build.ps1"
 
     & $build Debug

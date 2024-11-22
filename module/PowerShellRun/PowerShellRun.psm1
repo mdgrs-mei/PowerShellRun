@@ -1,5 +1,5 @@
 
-$netVersion = 'net6.0'
+$netVersion = 'net8.0'
 $dll = "$PSScriptRoot/bin/$netVersion/PowerShellRun.dll"
 Import-Module $dll
 
