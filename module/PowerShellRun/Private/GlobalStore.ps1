@@ -24,6 +24,7 @@ class GlobalStore {
         'ScriptRegistry'
         'FileSystemRegistry'
         'WinGetRegistry'
+        'PSResourceGetRegistry'
         'ApplicationRegistry'
     )
     $registries = [System.Collections.Generic.List[EntryRegistry]]::new()
