@@ -372,13 +372,12 @@ class PSResourceGetRegistry : EntryRegistry {
         }
 
         $upgradableResources = @()
-        foreach ($resourceName in $installedResourceVersions.Keys) {
-            Find-PSResource -Name $resourceName | ForEach-Object {
-                if ($_.Version -gt $installedResourceVersions[$resourceName]) {
-                    $upgradableResources += [PSCustomObject]@{
-                        Resource = $_
-                        InstalledVersion = $installedResourceVersions[$resourceName]
-                    }
+        $resourceNames = [string[]]$installedResourceVersions.Keys
+        Find-PSResource -Name $resourceNames | ForEach-Object {
+            if ($_.Version -gt $installedResourceVersions[$_.Name]) {
+                $upgradableResources += [PSCustomObject]@{
+                    Resource = $_
+                    InstalledVersion = $installedResourceVersions[$_.Name]
                 }
             }
         }
