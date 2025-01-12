@@ -145,6 +145,12 @@ Set-PSRunDefaultEditorScript -ScriptBlock {
 
 ![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/225a5e71-cdd7-48ca-ba65-ee0af0dc0dba)
 
+#### PSResourceGet (PSRun)
+
+`PSResourceGet (PSRun)` allows you to install, upgrade and uninstall PowerShell modules. To use this utility, you need [PSResourceGet](https://github.com/PowerShell/PSResourceGet) module which should be pre-installed on PowerShell 7.4.
+
+![image](https://github.com/user-attachments/assets/612af364-5fbe-41a1-b3c3-6250c5853473)
+
 ### ・📁 Favorite
 
 You can register folders or files that you frequently access. The available actions are the same as the ones in `File Manager (PSRun)`.
