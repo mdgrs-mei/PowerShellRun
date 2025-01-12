@@ -332,7 +332,7 @@ class PSResourceGetRegistry : EntryRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 $uninstallResources | ForEach-Object {
-                    Write-Host "Uninstalling [$($_.Resource.Name)]..."
+                    Write-Host "Uninstalling [$($_.Resource.Name) $($_.Resource.Version)]..."
                     Uninstall-PSResource $_.Resource -Scope $_.Scope
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
