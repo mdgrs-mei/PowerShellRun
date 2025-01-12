@@ -91,18 +91,18 @@ class WinGetRegistry : EntryRegistry {
     [PowerShellRun.SelectorEntry] CreatePackageEntry($package) {
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.UserData = $package
-        $entry.Icon = if ($_.Source -eq 'winget') {
+        $entry.Icon = if ($package.Source -eq 'winget') {
             '📦'
-        } elseif ($_.Source -eq 'msstore') {
+        } elseif ($package.Source -eq 'msstore') {
             '🛒'
         } else {
             '🔧'
         }
-        $entry.Name = $_.Name
-        $entry.Description = if ($_.Source) {
-            '[{0}] {1}' -f $_.Source, $_.Id
+        $entry.Name = $package.Name
+        $entry.Description = if ($package.Source) {
+            '[{0}] {1}' -f $package.Source, $package.Id
         } else {
-            $_.Id
+            $package.Id
         }
         return $entry
     }
