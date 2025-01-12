@@ -80,7 +80,6 @@ class WinGetRegistry : EntryRegistry {
 
         $this.entries.Add($topEntry)
 
-        $this.subMenuEntries.Clear()
         $this.subMenuEntries.Add($this.CreateInstallEntry())
         $this.subMenuEntries.Add($this.CreateUpgradeEntry())
         $this.subMenuEntries.Add($this.CreateUninstallEntry())
