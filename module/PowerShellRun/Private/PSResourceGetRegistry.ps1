@@ -169,9 +169,15 @@ class PSResourceGetRegistry : EntryRegistry {
                 }
 
                 if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                    Install-PSResource $installResources -Scope CurrentUser
+                    $installResources | ForEach-Object {
+                        Write-Host "Installing [$($_.Name)]..."
+                        Install-PSResource $_ -Scope CurrentUser -PassThru
+                    }
                 } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
-                    Install-PSResource $installResources -Scope AllUsers
+                    $installResources | ForEach-Object {
+                        Write-Host "Installing [$($_.Name)]..."
+                        Install-PSResource $_ -Scope AllUsers -PassThru
+                    }
                 } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                     $command = @()
                     $installResources | ForEach-Object {
@@ -251,7 +257,8 @@ class PSResourceGetRegistry : EntryRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 $upgradeResources | ForEach-Object {
-                    Update-PSResource -Name $_.Resource.Name -Scope $_.Scope
+                    Write-Host "Upgrading [$($_.Resource.Name)] to [$($_.Resource.Version)]..."
+                    Update-PSResource -Name $_.Resource.Name -Scope $_.Scope -PassThru
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
                 $command = @()
@@ -326,6 +333,7 @@ class PSResourceGetRegistry : EntryRegistry {
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
                 $uninstallResources | ForEach-Object {
+                    Write-Host "Uninstalling [$($_.Resource.Name)]..."
                     Uninstall-PSResource $_.Resource -Scope $_.Scope
                 }
             } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
