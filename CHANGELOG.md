@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.12.0] - 2025-01-12
+
+### Added
+
+- Added `PSResourceGet (PSRun)` utility entry
+
+### Changed
+
+- Changed .NET version from 6.0 to 8.0
+- `WinGet (PSRun)` now shows progress when searching packages
+
 ## [0.11.0] - 2024-11-16
 
 ### Added
