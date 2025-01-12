@@ -4,7 +4,7 @@
     RootModule = 'PowerShellRun.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.11.0'
+    ModuleVersion = '0.12.0'
 
     # Supported PSEditions
     CompatiblePSEditions = 'Core'
@@ -118,7 +118,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            # ReleaseNotes = ''
+            ReleaseNotes = 'https://github.com/mdgrs-mei/PowerShellRun/blob/main/CHANGELOG.md'
 
             # Prerelease string of this module
             # Prerelease = ''
