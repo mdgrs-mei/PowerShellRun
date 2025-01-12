@@ -121,11 +121,11 @@ class WinGetRegistry : EntryRegistry {
                 $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
                 $promptContext = $promptResult.Context
 
-                if ($null -eq $promptResult.Input) {
+                if ([string]::IsNullOrEmpty($promptResult.Input)) {
                     return
                 }
 
-                $option.Prompt = $originalPrompt
+                Write-Host ('Searching packages [{0}]...' -f $promptResult.Input)
                 $packages = Find-WinGetPackage -Query $promptResult.Input
                 if (-not $packages) {
                     Write-Warning -Message ('[{0}] No available application found.' -f $promptResult.Input)
@@ -138,6 +138,7 @@ class WinGetRegistry : EntryRegistry {
                     [PowerShellRun.ActionKey]::new($script:globalStore.copyActionKey, 'Copy install command to Clipboard')
                 )
 
+                $option.Prompt = $originalPrompt
                 $result = $packages | ForEach-Object {
                     $entry = $thisClass.CreatePackageEntry($_)
                     $entry.ActionKeys = $actionKeys
@@ -212,6 +213,7 @@ class WinGetRegistry : EntryRegistry {
             $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
+            Write-Host 'Searching upgradable packages...'
             $packages = Get-WinGetPackage | Where-Object { $_.IsUpdateAvailable }
             if (-not $packages) {
                 Write-Warning -Message 'No upgradable application found.'
@@ -282,6 +284,7 @@ class WinGetRegistry : EntryRegistry {
             $option = $script:globalStore.GetPSRunSelectorOption()
             $option.QuitWithBackspaceOnEmptyQuery = $true
 
+            Write-Host 'Searching installed packages...'
             $packages = Get-WinGetPackage
             if (-not $packages) {
                 Write-Warning -Message 'No application found.'
