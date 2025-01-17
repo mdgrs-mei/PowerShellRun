@@ -22,7 +22,7 @@ Terminal Based Launcher and Fuzzy Finder for PowerShell.
 ## Installation
 
 ```powershell
-Install-Module -Name PowerShellRun -Scope CurrentUser
+Install-PSResource -Name PowerShellRun
 ```
 
 ## Requirements
