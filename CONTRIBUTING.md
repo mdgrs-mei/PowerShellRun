@@ -28,18 +28,20 @@ When you make a code contribution, you must agree that the content you submit is
 
 - File an issue by following the above guidelines before making a PR
 - In the issue, suggest that you are willing to make a PR
-- Make the changes in your forked repository
-- Create a PR
+- Fork this repository
+- Create a branch in your forked repository with a meaningful name (e.g. add-file-manager-entry)
+- Make the changes in the branch and push the commits
+- Create a PR in the original repository
 
 ### Build and Test
 
-Assuming the .NET SDK is installed, you can build the project by calling the build script.
+Before building the project, you need .NET SDK installed. Follow the steps in the [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/core/install/) and install the latest SDK. After getting the access to the `donet` command, you can build the project by calling the build script:
 
 ```powershell
 & .\Build.ps1
 ```
 
-After the build, basic functionalities that are not dependent to the interactive part can be tested using Pester.
+After the build, basic functionalities that are not dependent to the interactive part can be tested using Pester:
 
 ```powershell
 & .\tests\RunPesterTests.ps1
@@ -51,7 +53,7 @@ For interactive testing on the console, we recommend that you install [Restartab
 & .\tests\RestartableSession.ps1
 ```
 
-This script builds the project and import the built module. When you make a code modification, you can just call `restart` command to do the same process (build and import).
+This script builds the project and import the built module. When you make a code modification, you can just call `restart` command to do the same process (build and import). The Pester test can be run by `pester` command.
 
 ### Coding
 
