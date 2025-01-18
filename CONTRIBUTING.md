@@ -51,7 +51,7 @@ For interactive testing on the console, we recommend that you install [Restartab
 & .\tests\RestartableSession.ps1
 ```
 
-This script builds the project, import the built module and call `Enable-PSRunEntry -Category All`. When you make a code modification, you can just call `restart` command to do the same process (build/import/setup).
+This script builds the project and import the built module. When you make a code modification, you can just call `restart` command to do the same process (build and import).
 
 ### Coding
 
