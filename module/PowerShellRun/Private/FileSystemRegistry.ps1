@@ -84,7 +84,7 @@ class FileSystemRegistry : EntryRegistry {
 
         $entry = [PowerShellRun.SelectorEntry]::new()
         $entry.Icon = '🔍'
-        $entry.Name = 'File Manager (PSRun)'
+        $entry.Name = 'File Manager (PSRun) ./'
         $entry.Description = 'Navigate file system with PowerShellRun based on the current directory'
         $entry.ActionKeys = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Explore current directory')
