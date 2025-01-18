@@ -25,9 +25,14 @@ class ApplicationRegistry : EntryRegistry {
     }
 
     [void] StartRegisterEntriesWindows($categories) {
-        $actionKeys = @(
+        $actionKeysAppAndExe = @(
             [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
             [PowerShellRun.ActionKey]::new($script:globalStore.secondActionKey, 'Launch App as Admin')
+            [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Launch App with arguments')
+        )
+        $actionKeysStoreApp = @(
+            # Store Apps don't run as admin
+            [PowerShellRun.ActionKey]::new($script:globalStore.firstActionKey, 'Launch App')
             [PowerShellRun.ActionKey]::new($script:globalStore.thirdActionKey, 'Launch App with arguments')
         )
         $callback = {
@@ -46,7 +51,7 @@ class ApplicationRegistry : EntryRegistry {
         }
 
         $this.registerEntryJob = Start-ThreadJob {
-            param ($categories, $actionKeys, $callback, $sync)
+            param ($categories, $actionKeysAppAndExe, $actionKeysStoreApp, $callback, $sync)
 
             $applicationEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
             $executableEntries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
@@ -69,7 +74,7 @@ class ApplicationRegistry : EntryRegistry {
                         $entry.Name = $link.BaseName
                         $entry.Description = $shortcut.Description
                         $entry.Preview = $link.FullName
-                        $entry.ActionKeys = $actionKeys
+                        $entry.ActionKeys = $actionKeysAppAndExe
 
                         $entry.UserData = @{
                             ScriptBlock = $callback
@@ -92,8 +97,7 @@ class ApplicationRegistry : EntryRegistry {
                     $entry.Icon = '🪟'
                     $entry.Name = $item.Name
                     $entry.Preview = $path
-                    # Store Apps don't run as admin
-                    $entry.ActionKeys = $actionKeys[0], $actionKeys[2]
+                    $entry.ActionKeys = $actionKeysStoreApp
 
                     $entry.UserData = @{
                         ScriptBlock = $callback
@@ -113,7 +117,7 @@ class ApplicationRegistry : EntryRegistry {
                     $entry.Icon = '🔧'
                     $entry.Name = $app.Name
                     $entry.Preview = $app | Select-Object -Property Version, Source | Out-String
-                    $entry.ActionKeys = $actionKeys
+                    $entry.ActionKeys = $actionKeysAppAndExe
 
                     $entry.UserData = @{
                         ScriptBlock = $callback
@@ -125,7 +129,7 @@ class ApplicationRegistry : EntryRegistry {
             }
             $sync.executableEntries = $executableEntries
 
-        } -ArgumentList $categories, $actionKeys, $callback, $this.sync
+        } -ArgumentList $categories, $actionKeysAppAndExe, $actionKeysStoreApp, $callback, $this.sync
     }
 
     [void] StartRegisterEntriesMacOs($categories) {
