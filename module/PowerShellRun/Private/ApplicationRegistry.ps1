@@ -135,13 +135,13 @@ class ApplicationRegistry : EntryRegistry {
         )
         $callback = {
             $result = $args[0].Result
-            $fullName, $name = $args[0].ArgumentList
+            $path, $name = $args[0].ArgumentList
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $script:globalStore.invokeFile $fullName
+                & $script:globalStore.invokeFile $path
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $argumentList, $keyCombination = $script:globalStore.GetArgumentListFor($name)
                 if ($null -ne $argumentList) {
-                    & $script:globalStore.invokeFile $fullName $argumentList
+                    & $script:globalStore.invokeFile $path $argumentList
                 }
             }
         }
