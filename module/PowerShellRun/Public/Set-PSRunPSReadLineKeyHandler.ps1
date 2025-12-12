@@ -12,6 +12,9 @@ The key to call Invoke-PSRun.
 .PARAMETER PSReadLineHistoryChord
 The key to open PSReadLineHistory viewer.
 
+.PARAMETER TabCompletionChord
+The key to open tab completion menu.
+
 .INPUTS
 None.
 
@@ -33,7 +36,10 @@ function Set-PSRunPSReadLineKeyHandler {
         [String[]]$InvokePsRunChord,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$PSReadLineHistoryChord
+        [String[]]$PSReadLineHistoryChord,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [String[]]$TabCompletionChord
     )
 
     process {
@@ -43,6 +49,10 @@ function Set-PSRunPSReadLineKeyHandler {
 
         if ($PSReadLineHistoryChord) {
             $script:globalStore.SetPSReadLineHistoryChord($PSReadLineHistoryChord)
+        }
+
+        if ($TabCompletionChord) {
+            $script:globalStore.SetTabCompletionChord($TabCompletionChord)
         }
     }
 }

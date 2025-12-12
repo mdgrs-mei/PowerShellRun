@@ -19,6 +19,14 @@
         }
     }
 
+    It 'should store key handler for TabCompletion' {
+        Set-PSRunPSReadLineKeyHandler -TabCompletionChord 'Ctrl+t'
+
+        InModuleScope 'PowerShellRun' {
+            $script:globalStore.tabCompletionChord | Should -Be 'Ctrl+t'
+        }
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }
