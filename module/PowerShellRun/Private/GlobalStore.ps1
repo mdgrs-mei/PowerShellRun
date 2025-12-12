@@ -36,6 +36,7 @@ class GlobalStore {
     $invokePsRunRequestQuery = ''
     $invokePsRunChord = $null
     $psReadLineHistoryChord = $null
+    $tabCompletionChord = $null
 
     $firstActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
     $secondActionKey = [PowerShellRun.KeyCombination]::new([PowerShellRun.KeyModifier]::None, [PowerShellRun.Key]::None)
@@ -242,6 +243,22 @@ class GlobalStore {
         if ($this.psReadLineHistoryChord) {
             Remove-PSReadLineKeyHandler -Chord $this.psReadLineHistoryChord
             $this.psReadLineHistoryChord = $null
+        }
+    }
+
+    [void] SetTabCompletionChord($chord) {
+        $this.RemoveTabCompletionChord()
+
+        $this.tabCompletionChord = $chord
+        Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
+            TabComplete
+        }
+    }
+
+    [void] RemoveTabCompletionChord() {
+        if ($this.tabCompletionChord) {
+            Remove-PSReadLineKeyHandler -Chord $this.tabCompletionChord
+            $this.tabCompletionChord = $null
         }
     }
 
