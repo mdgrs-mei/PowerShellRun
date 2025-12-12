@@ -52,7 +52,11 @@ function TabComplete() {
     }
 
     if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($commandCompletion.ReplacementIndex, $commandCompletion.ReplacementLength, $completion.CompletionText)
+        $completionText = $completion.CompletionText
+        if ($completion.ResultType -eq 'ProviderContainer') {
+            $completionText += [System.IO.Path]::DirectorySeparatorChar
+        }
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($commandCompletion.ReplacementIndex, $commandCompletion.ReplacementLength, $completionText)
     }
 }
 
