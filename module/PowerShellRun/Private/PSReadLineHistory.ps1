@@ -59,18 +59,24 @@ function SearchPSReadLineHistory() {
 
     $command = $result.FocusedEntry.UserData.CommandLine
     if (-not $command) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursorPos)
+        # We have to call RevertLine twice to escape from PredictionViewStyle ListView.
+        [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+        [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert($initialQuery)
         return
     }
 
     if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+        [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert($command)
         [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
     } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+        [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert($command)
     } elseif ($result.KeyCombination -eq $script:globalStore.copyActionKey) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         $command | Set-Clipboard
     }
