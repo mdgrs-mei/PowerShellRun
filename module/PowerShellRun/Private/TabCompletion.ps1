@@ -14,7 +14,7 @@ function TabComplete() {
 
     if ($commandCompletion.CompletionMatches.Count -eq 1) {
         $completion = $commandCompletion.CompletionMatches[0]
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($commandCompletion.ReplacementIndex, $commandCompletion.ReplacementLength, $completion.CompletionText)
+        ReplaceTabCompletionText $commandCompletion $completion
         return
     }
 
@@ -53,11 +53,7 @@ function TabComplete() {
     }
 
     if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-        $completionText = $completion.CompletionText
-        if ($completion.ResultType -eq 'ProviderContainer') {
-            $completionText += [System.IO.Path]::DirectorySeparatorChar
-        }
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($commandCompletion.ReplacementIndex, $commandCompletion.ReplacementLength, $completionText)
+        ReplaceTabCompletionText $commandCompletion $completion
     }
 }
 
@@ -123,4 +119,25 @@ function GetTabCompletionPreviewScript($CompletionResult) {
     }
 
     $previewScript, $CompletionResult
+}
+
+function ReplaceTabCompletionText($CommandCompletion, $CompletionResult) {
+    $completionText = $CompletionResult.CompletionText
+    $putCursorBeforeQuote = $false
+
+    # If it's a folder, put DirectorySeparatorChar at the end for the next tab completion.
+    if ($CompletionResult.ResultType -eq 'ProviderContainer') {
+        $lastChar = $completionText[-1]
+        if ($lastChar -eq "'" -or $lastChar -eq '"') {
+            $completionText = $completionText.Substring(0, $completionText.Length - 1) + [System.IO.Path]::DirectorySeparatorChar + $lastChar
+            $putCursorBeforeQuote = $true
+        } else {
+            $completionText += [System.IO.Path]::DirectorySeparatorChar
+        }
+    }
+
+    [Microsoft.PowerShell.PSConsoleReadLine]::Replace($CommandCompletion.ReplacementIndex, $CommandCompletion.ReplacementLength, $completionText)
+    if ($putCursorBeforeQuote) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::BackwardChar()
+    }
 }
