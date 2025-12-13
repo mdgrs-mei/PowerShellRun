@@ -275,7 +275,17 @@ History search functionality is provided outside the *PowerShellRun* menu using 
 Set-PSRunPSReadLineKeyHandler -PSReadLineHistoryChord 'Ctrl+r'
 ```
 
-![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/350afb04-4862-408b-b6b5-3e3c86d90264)
+![HistorySearch](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/350afb04-4862-408b-b6b5-3e3c86d90264)
+
+## Tab Completion
+
+Similar to the History Search, you can also extend the tab completion to use PowerShellRun's selector with the following command:
+
+```powershell
+Set-PSRunPSReadLineKeyHandler -TabCompletionChord 'Tab'
+```
+
+![TabCompletion](https://github.com/user-attachments/assets/db6e7f60-fd46-41a0-a472-92fc7d322cb0)
 
 ## Options
 
