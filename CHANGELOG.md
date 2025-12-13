@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.13.0] - 2025-12-13
+
+### Added
+
+- Added `TabCompletionChord` parameter to `Set-PSRunPSReadLineKeyHandler`
+- Added `*Description` parameters to `Set-PSRunPSReadLineKeyHandler`
+
+### Changed
+
+- Changed the name of `File Manager (PSRun)` utility to `File Manager (PSRun) ./` so that it hits with `./`
+
+### Fixed
+
+- Fixed wrong command insertion of PSReadLine history menu when using PredictionViewStyle ListView
+
+### Deprecated
+
+- `Chord` alias for `InvokePsRunChord` parameter of `Set-PSRunPSReadLineKeyHandler` will be removed in the next release
+
 ## [0.12.0] - 2025-01-12
 
 ### Added
