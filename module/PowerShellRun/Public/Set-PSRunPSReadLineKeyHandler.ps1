@@ -36,23 +36,32 @@ function Set-PSRunPSReadLineKeyHandler {
         [String[]]$InvokePsRunChord,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [String]$InvokePsRunDescription = 'Call Invoke-PSRun (PowerShellRun)',
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String[]]$PSReadLineHistoryChord,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$TabCompletionChord
+        [String]$PSReadLineHistoryDescription = 'Search PSReadLine history (PowerShellRun)',
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [String[]]$TabCompletionChord,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [String]$TabCompletionDescription = 'Open Tab completion menu (PowerShellRun)'
     )
 
     process {
         if ($InvokePsRunChord) {
-            $script:globalStore.SetInvokePsRunChord($InvokePsRunChord)
+            $script:globalStore.SetInvokePsRunChord($InvokePsRunChord, $InvokePsRunDescription)
         }
 
         if ($PSReadLineHistoryChord) {
-            $script:globalStore.SetPSReadLineHistoryChord($PSReadLineHistoryChord)
+            $script:globalStore.SetPSReadLineHistoryChord($PSReadLineHistoryChord, $PSReadLineHistoryDescription)
         }
 
         if ($TabCompletionChord) {
-            $script:globalStore.SetTabCompletionChord($TabCompletionChord)
+            $script:globalStore.SetTabCompletionChord($TabCompletionChord, $TabCompletionDescription)
         }
     }
 }

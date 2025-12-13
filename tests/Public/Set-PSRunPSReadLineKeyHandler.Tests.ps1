@@ -1,33 +1,46 @@
 ﻿Describe 'Set-PSRunPSReadLineKeyHandler' {
     BeforeEach {
         Import-Module $PSScriptRoot/../../module/PowerShellRun -Force
+        $chord = 'Ctrl+j'
+        $desc = 'InvokePSRun'
     }
 
     It 'should store key handler for InvokePSRun' {
-        Set-PSRunPSReadLineKeyHandler -InvokePsRunChord 'Ctrl+j'
+        Remove-PSReadLineKeyHandler -Chord $chord
+        Set-PSRunPSReadLineKeyHandler -InvokePsRunChord $chord -InvokePsRunDescription $desc
 
-        InModuleScope 'PowerShellRun' {
-            $script:globalStore.invokePsRunChord | Should -Be 'Ctrl+j'
-        }
+        $handler = Get-PSReadLineKeyHandler -Chord $chord
+        $handler.Key | Should -Be $chord
+        $handler.Description | Should -Be $desc
     }
 
     It 'should store key handler for PSReadLineHistory' {
-        Set-PSRunPSReadLineKeyHandler -PSReadLineHistoryChord 'Ctrl+f'
+        Remove-PSReadLineKeyHandler -Chord $chord
+        Set-PSRunPSReadLineKeyHandler -PSReadLineHistoryChord $chord -PSReadLineHistoryDescription $desc
 
-        InModuleScope 'PowerShellRun' {
-            $script:globalStore.psReadLineHistoryChord | Should -Be 'Ctrl+f'
-        }
+        $handler = Get-PSReadLineKeyHandler -Chord $chord
+        $handler.Key | Should -Be $chord
+        $handler.Description | Should -Be $desc
     }
 
     It 'should store key handler for TabCompletion' {
-        Set-PSRunPSReadLineKeyHandler -TabCompletionChord 'Ctrl+t'
+        Remove-PSReadLineKeyHandler -Chord $chord
+        Set-PSRunPSReadLineKeyHandler -TabCompletionChord $chord -TabCompletionDescription $desc
 
-        InModuleScope 'PowerShellRun' {
-            $script:globalStore.tabCompletionChord | Should -Be 'Ctrl+t'
-        }
+        $handler = Get-PSReadLineKeyHandler -Chord $chord
+        $handler.Key | Should -Be $chord
+        $handler.Description | Should -Be $desc
+    }
+
+    It 'should remove key handlers by unloading module' {
+        Set-PSRunPSReadLineKeyHandler -InvokePsRunChord $chord -InvokePsRunDescription $desc
+        Remove-Module PowerShellRun -Force
+        Get-PSReadLineKeyHandler -Chord $chord | Should -Be $null
     }
 
     AfterEach {
-        Remove-Module PowerShellRun -Force
+        if (Get-Module PowerShellRun) {
+            Remove-Module PowerShellRun -Force
+        }
     }
 }

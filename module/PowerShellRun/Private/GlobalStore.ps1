@@ -207,12 +207,12 @@ class GlobalStore {
         $this.invokePsRunRequestQuery = $query
     }
 
-    [void] SetInvokePsRunChord($chord) {
+    [void] SetInvokePsRunChord($chord, $description) {
         $this.ReplacePSConsoleHostReadLine()
         $this.RemoveInvokePsRunChord()
 
         $this.invokePsRunChord = $chord
-        Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
+        Set-PSReadLineKeyHandler -Chord $chord -Description $description -ScriptBlock {
             $line = $null
             $cursor = $null
             [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
@@ -230,11 +230,11 @@ class GlobalStore {
         }
     }
 
-    [void] SetPSReadLineHistoryChord($chord) {
+    [void] SetPSReadLineHistoryChord($chord, $description) {
         $this.RemovePSReadLineHistoryChord()
 
         $this.psReadLineHistoryChord = $chord
-        Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
+        Set-PSReadLineKeyHandler -Chord $chord -Description $description -ScriptBlock {
             SearchPSReadLineHistory
         }
     }
@@ -246,11 +246,11 @@ class GlobalStore {
         }
     }
 
-    [void] SetTabCompletionChord($chord) {
+    [void] SetTabCompletionChord($chord, $description) {
         $this.RemoveTabCompletionChord()
 
         $this.tabCompletionChord = $chord
-        Set-PSReadLineKeyHandler -Chord $chord -ScriptBlock {
+        Set-PSReadLineKeyHandler -Chord $chord -Description $description -ScriptBlock {
             TabComplete
         }
     }
