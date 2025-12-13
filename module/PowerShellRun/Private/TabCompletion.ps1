@@ -27,7 +27,7 @@ function TabComplete() {
         $entry.UserData = $completion
         $entry.Icon = GetTabCompletionIcon $completion
         $entry.Name = $completion.ListItemText
-        $entry.Description = $completion.ResultType
+        $entry.Description = "[$($completion.ResultType)] $($completion.CompletionText)"
         # Exclude Description from search.
         $entry.DescriptionSearchablePattern = $noMatchRegex
         $entry.PreviewAsyncScript, $entry.PreviewAsyncScriptArgumentList = GetTabCompletionPreviewScript $completion
@@ -109,7 +109,7 @@ function GetTabCompletionPreviewScript($CompletionResult) {
 
         $preview = switch ($command.CommandType) {
             { $_ -in 'Alias', 'Cmdlet', 'Function', 'Filter' } { Get-Help $commandName | Out-String }
-            default { $command | Out-String }
+            default { $command | Select-Object -Property Version, Source | Out-String }
         }
         $preview
     }
