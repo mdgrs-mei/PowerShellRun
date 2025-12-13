@@ -48,6 +48,7 @@ function TabComplete() {
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert($inputScript)
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursorPos)
         return
     }
 

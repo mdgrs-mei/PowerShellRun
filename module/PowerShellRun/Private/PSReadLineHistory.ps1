@@ -63,6 +63,7 @@ function SearchPSReadLineHistory() {
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert($initialQuery)
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursorPos)
         return
     }
 
