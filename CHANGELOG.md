@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1] - 2025-12-13
+
+### Fixed
+
+- Fixed the position of directory separator added to the tab completed folder path that ends with a quote
+- Fixed an issue that did not add directory separator to the tab completed folder path if it's a single candidate
+
 ## [0.13.0] - 2025-12-13
 
 ### Added
