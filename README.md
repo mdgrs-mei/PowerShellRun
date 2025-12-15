@@ -112,15 +112,15 @@ Enable-PSRunEntry -Category Function, Favorite
 
 In the following sections, we'll see what categories are available.
 
-### ・🚀 Application
+### ・Application
 
 Installed applications are listed by the `Application` category. You can launch (or launch as admin on Windows) the application by pressing the action key.
 
-### ・🔧 Executable
+### ・Executable
 
 Executable files under the PATH are listed by `Executable` category. You can invoke them on the same console where *PowerShellRun* is running.
 
-### ・🔎 Utility
+### ・Utility
 
 PowerShellRun's built in utilities are listed by `Utility` category.
 
@@ -151,7 +151,7 @@ Set-PSRunDefaultEditorScript -ScriptBlock {
 
 ![image](https://github.com/user-attachments/assets/612af364-5fbe-41a1-b3c3-6250c5853473)
 
-### ・📁 Favorite
+### ・Favorite
 
 You can register folders or files that you frequently access. The available actions are the same as the ones in `File Manager (PSRun)`.
 
@@ -166,7 +166,7 @@ Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @
 
 ![Favarites](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d174b169-3c3b-49f3-8d11-1997350c85fc)
 
-### ・📝 Function
+### ・Function
 
 The ability to call PowerShell functions is what makes *PowerShellRun* special. The functions defined between `Start-PSRunFunctionRegistration` and `Stop-PSRunFunctionRegistration` are registered as entries. The scope of the functions needs to be global so that *PowerShellRun* can call them.
 
@@ -231,7 +231,7 @@ function global:OpenNestedMenu() {
 }
 ```
 
-### ・📘 Script
+### ・Script
 
 If you don't want to use the global scope to define function entries, you can use script entries. `Add-PSRunScriptBlock` adds a ScriptBlock and `Add-PSRunScriptFile` adds a `.ps1` file as an entry. They are invoked by pressing `Enter`.
 
@@ -245,7 +245,7 @@ Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '�
 
 ![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
 
-### ・📂 EntryGroup
+### ・EntryGroup
 
 EntryGroups can have other entries as their children. You can use them to organize the launcher menu. EntryGroups are created by `Add-PSRunEntryGroup` function, and `Add-PSRun*` functions take `-EntryGroup` parameter to specify the parent group. The following example creates an EntryGroup for `ProjectA` and adds scripts for the project under that group:
 
