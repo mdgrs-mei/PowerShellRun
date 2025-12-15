@@ -166,9 +166,23 @@ Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @
 
 ![Favarites](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d174b169-3c3b-49f3-8d11-1997350c85fc)
 
+### ・Script
+
+The ability to call PowerShell ScriptBlocks or script files is what makes *PowerShellRun* special.`Add-PSRunScriptBlock` adds a ScriptBlock and `Add-PSRunScriptFile` adds a `.ps1` file as an entry. They are invoked by pressing `Enter`.
+
+```powershell
+Add-PSRunScriptBlock -Name 'Test ScriptBlock' -ScriptBlock {
+    'This is a test ScriptBlock'
+}
+
+Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '💎'
+```
+
+![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
+
 ### ・Function
 
-The ability to call PowerShell functions is what makes *PowerShellRun* special. The functions defined between `Start-PSRunFunctionRegistration` and `Stop-PSRunFunctionRegistration` are registered as entries. The scope of the functions needs to be global so that *PowerShellRun* can call them.
+If you have utility scripts as functions, you can use Function entries. The functions defined between `Start-PSRunFunctionRegistration` and `Stop-PSRunFunctionRegistration` are registered as entries. The scope of the functions needs to be global so that *PowerShellRun* can call them.
 
 ```powershell
 Start-PSRunFunctionRegistration
@@ -230,20 +244,6 @@ function global:OpenNestedMenu() {
     # ... Key handlings here
 }
 ```
-
-### ・Script
-
-If you don't want to use the global scope to define function entries, you can use script entries. `Add-PSRunScriptBlock` adds a ScriptBlock and `Add-PSRunScriptFile` adds a `.ps1` file as an entry. They are invoked by pressing `Enter`.
-
-```powershell
-Add-PSRunScriptBlock -Name 'Test ScriptBlock' -ScriptBlock {
-    'This is a test ScriptBlock'
-}
-
-Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '💎'
-```
-
-![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
 
 ### ・EntryGroup
 
