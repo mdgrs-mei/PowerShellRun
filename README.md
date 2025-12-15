@@ -159,12 +159,12 @@ You can register folders or files that you frequently access. The available acti
 Add-PSRunFavoriteFolder -Path 'D:/PowerShellRun'
 Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @"
 -------------------------------
-💖 This is a custom preview 💖
+   This is a custom preview
 -------------------------------
 "@
 ```
 
-![Favarites](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/d174b169-3c3b-49f3-8d11-1997350c85fc)
+![Favarites](https://github.com/user-attachments/assets/8c27be32-c19b-4170-8796-57f1218707d0)
 
 ### ・Script
 
@@ -275,7 +275,7 @@ History search functionality is provided outside the *PowerShellRun* menu using 
 Set-PSRunPSReadLineKeyHandler -PSReadLineHistoryChord 'Ctrl+r'
 ```
 
-![HistorySearch](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/350afb04-4862-408b-b6b5-3e3c86d90264)
+![HistorySearch](https://github.com/user-attachments/assets/4e5bd0b4-9d02-4417-8a9b-b9b7e9312c3b)
 
 ## Tab Completion
 
