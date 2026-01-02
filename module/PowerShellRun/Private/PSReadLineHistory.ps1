@@ -16,17 +16,12 @@ function SearchPSReadLineHistory() {
 
     $historySet = [System.Collections.Generic.Hashset[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $entries = [System.Collections.Generic.List[PowerShellRun.SelectorEntry]]::new()
-    $maxNameLength = 128
     foreach ($item in $historyItems) {
         $isAdded = $historySet.Add($item.CommandLine)
         if ($isAdded) {
             $entry = [PowerShellRun.SelectorEntry]::new()
             $entry.UserData = $item
-            $entry.Name = if ($item.CommandLine.Length -gt $maxNameLength) {
-                $item.CommandLine.Substring(0, $maxNameLength)
-            } else {
-                $item.CommandLine
-            }
+            $entry.Name = $item.CommandLine
 
             $startTime = if ($item.StartTime -ne [DateTime]::MinValue) {
                 $localTime = $item.StartTime.ToLocalTime()
