@@ -8,6 +8,9 @@ Adds a script file as an entry that can be invoked on selection. The entry belon
 .PARAMETER Path
 The filepath of the script file.
 
+.PARAMETER ArgumentList
+The arguments that are passed to the script file.
+
 .PARAMETER Icon
 The icon string.
 
@@ -42,6 +45,9 @@ function Add-PSRunScriptFile {
         [String]$Path,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object[]]$ArgumentList,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Icon,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
@@ -59,6 +65,6 @@ function Add-PSRunScriptFile {
 
     process {
         $registry = $script:globalStore.GetRegistry('ScriptRegistry')
-        $registry.AddScriptFile($Path, $Icon, $Name, $Description, $Preview, $EntryGroup)
+        $registry.AddScriptFile($Path, $ArgumentList, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }
