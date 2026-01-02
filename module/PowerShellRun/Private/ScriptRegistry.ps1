@@ -34,10 +34,10 @@ class ScriptRegistry : EntryRegistry {
 
         $this.scriptBlockCallback = {
             $result = $args[0].Result
-            $scriptBlock = $args[0].ArgumentList
+            $scriptBlock, $argumentList = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $scriptBlock
+                & $scriptBlock @argumentList
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $scriptBlock.ToString()
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
@@ -60,10 +60,10 @@ class ScriptRegistry : EntryRegistry {
 
         $this.scriptFileCallback = {
             $result = $args[0].Result
-            $filePath = $args[0].ArgumentList
+            $filePath, $argumentList = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $filePath
+                & $filePath @argumentList
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 & $script:globalStore.defaultEditorScript $filePath
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
@@ -79,7 +79,7 @@ class ScriptRegistry : EntryRegistry {
         }
     }
 
-    [void] AddScriptBlock($scriptBlock, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+    [void] AddScriptBlock($scriptBlock, $argumentList, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isEnabled) {
             Write-Warning -Message '"Script" category is disabled.'
             return
@@ -98,7 +98,7 @@ class ScriptRegistry : EntryRegistry {
 
         $entry.UserData = @{
             ScriptBlock = $this.scriptBlockCallback
-            ArgumentList = $scriptBlock
+            ArgumentList = $scriptBlock, $argumentList
         }
 
         if ($entryGroup) {
@@ -109,7 +109,7 @@ class ScriptRegistry : EntryRegistry {
         }
     }
 
-    [void] AddScriptFile($filePath, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+    [void] AddScriptFile($filePath, $argumentList, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isEnabled) {
             Write-Warning -Message '"Script" category is disabled.'
             return
@@ -129,7 +129,7 @@ class ScriptRegistry : EntryRegistry {
 
         $entry.UserData = @{
             ScriptBlock = $this.scriptFileCallback
-            ArgumentList = $filePath
+            ArgumentList = $filePath, $argumentList
         }
 
         if ($entryGroup) {

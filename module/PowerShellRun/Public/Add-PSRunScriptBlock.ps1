@@ -8,6 +8,9 @@ Adds a ScriptBlock as an entry that can be invoked on selection. The entry belon
 .PARAMETER ScriptBlock
 The ScriptBlock that is invoked on selection.
 
+.PARAMETER ArgumentList
+The arguments that are passed to the ScriptBlock.
+
 .PARAMETER Icon
 The icon string.
 
@@ -44,6 +47,9 @@ function Add-PSRunScriptBlock {
         [ScriptBlock]$ScriptBlock,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object[]]$ArgumentList,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Icon,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -61,6 +67,6 @@ function Add-PSRunScriptBlock {
 
     process {
         $registry = $script:globalStore.GetRegistry('ScriptRegistry')
-        $registry.AddScriptBlock($ScriptBlock, $Icon, $Name, $Description, $Preview, $EntryGroup)
+        $registry.AddScriptBlock($ScriptBlock, $ArgumentList, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }
