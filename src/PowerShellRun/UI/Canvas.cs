@@ -303,6 +303,8 @@ internal sealed class Canvas : Singleton<Canvas>
                     shouldSetEscapeSequence = true;
                 }
 
+                // Low priority escape sequence is applied here before color and style settings.
+                // e.g. Escape sequences for highlighted characters. The highlight color setting is stronger.
                 if (escapeSequence is not null && shouldSetEscapeSequence && escapeSequenceLowPriority)
                 {
                     builder.Append(escapeSequence);
@@ -337,6 +339,8 @@ internal sealed class Canvas : Singleton<Canvas>
                     builder.Append(FontStyleTable.GetEscapeCode(cell.FontStyle));
                 }
 
+                // Normal priority escape sequence is applied here after color and style settings.
+                // It is higher priority than color and style settings.
                 if (escapeSequence is not null && shouldSetEscapeSequence && !escapeSequenceLowPriority)
                 {
                     builder.Append(escapeSequence);
