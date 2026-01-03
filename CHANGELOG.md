@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.14.0] - 2026-01-03
+
+### Added
+
+- Added `ArgumentList` parameter to `Add-PSRunScriptBlock` and `Add-PSRunScriptFile`
+
+### Changed
+
+- Removed the name length limit 128 from PSReadLineHistory entries
+
 ## [0.13.1] - 2025-12-13
 
 ### Fixed
