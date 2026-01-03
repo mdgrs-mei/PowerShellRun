@@ -1,9 +1,11 @@
 ﻿namespace PowerShellRun;
+
 using PowerShellRun.Dependency;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management.Automation.Language;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 internal class TextBox : LayoutItem
@@ -163,40 +165,22 @@ internal class TextBox : LayoutItem
                 if (cellIndex >= maxWidth)
                     break;
 
-                bool escaped = false;
-                var textElementIndexes = System.Globalization.StringInfo.ParseCombiningCharacters(word.String);
-                for (int i = 0; i < textElementIndexes.Length; ++i)
+                var textElement = new TextElementEnumerator(word.String);
+                while (textElement.MoveNext())
                 {
                     if (cellIndex >= maxWidth)
                         break;
 
-                    var elementStartIndex = textElementIndexes[i];
-                    var elementStartIndexNext = (i + 1 == textElementIndexes.Length) ? word.String.Length : textElementIndexes[i + 1];
-
-                    var elementCharCount = elementStartIndexNext - elementStartIndex;
-                    bool isBaseCharacter = elementCharCount == 1;
-                    var charIndex = elementStartIndex;
-
-                    if (isBaseCharacter)
+                    int charIndex = textElement.ElementStartCharIndex;
+                    if (textElement.IsBaseCharacter)
                     {
-                        // basic 2 byte characters
-                        char character = word.String[charIndex];
-                        if (escaped)
+                        if (textElement.IsEscapeSequence)
                         {
-                            if (character == 'm')
-                            {
-                                escaped = false;
-                            }
-                            AddEscapeSequence(character);
+                            AddEscapeSequence(textElement.Character);
+                            continue;
                         }
-                        else
-                        if (character == '\x1b')
-                        {
-                            escaped = true;
-                            AddEscapeSequence(character);
-                        }
-                        else
-                        if (character == '\t')
+
+                        if (textElement.IsTab)
                         {
                             int spaces = tabSize - cellIndex % tabSize;
                             for (int s = 0; s < spaces; ++s)
@@ -205,38 +189,28 @@ internal class TextBox : LayoutItem
                                 if (cellIndex >= maxWidth)
                                     break;
                             }
+                            continue;
                         }
-                        else
-                        {
-                            int displayWidth = Unicode.GetDisplayWidth(character);
-                            if (displayWidth <= 0)
-                                continue;
+                    }
 
-                            if (cellIndex + displayWidth > maxWidth)
-                                continue;
+                    if (textElement.DisplayWidth <= 0)
+                        continue;
 
-                            SetCell(word, charIndex, character: character);
-                            if (displayWidth == 2)
-                            {
-                                SetCell(word, charIndex, character: '\0', isSecondCellOfWideCharacter: true);
-                            }
-                        }
+                    if (cellIndex + textElement.DisplayWidth > maxWidth)
+                        continue;
+
+                    if (textElement.IsBaseCharacter)
+                    {
+                        SetCell(word, charIndex, character: textElement.Character);
                     }
                     else
                     {
-                        int displayWidth = GetDisplayWidthOfComplexTextElement(word.String, elementStartIndex, elementCharCount);
-                        if (displayWidth <= 0)
-                            continue;
+                        SetCell(word, charIndex, textElement: textElement.Element);
+                    }
 
-                        if (cellIndex + displayWidth > maxWidth)
-                            continue;
-
-                        var textElement = word.String.Substring(elementStartIndex, elementCharCount);
-                        SetCell(word, charIndex, textElement: textElement);
-                        if (displayWidth == 2)
-                        {
-                            SetCell(word, charIndex, character: '\0', isSecondCellOfWideCharacter: true);
-                        }
+                    if (textElement.DisplayWidth == 2)
+                    {
+                        SetCell(word, charIndex, character: '\0', isSecondCellOfWideCharacter: true);
                     }
                 }
 
@@ -288,57 +262,147 @@ internal class TextBox : LayoutItem
     public static int GetDisplayWidth(string str)
     {
         int tabSize = SelectorOptionHolder.GetInstance().Option.Theme.TabSize;
-        int count = 0;
-        bool escaped = false;
+        int cellCount = 0;
 
-        var textElementIndexes = System.Globalization.StringInfo.ParseCombiningCharacters(str);
-        for (int i = 0; i < textElementIndexes.Length; ++i)
+        var textElement = new TextElementEnumerator(str);
+        while (textElement.MoveNext())
         {
-            var elementStartIndex = textElementIndexes[i];
-            var elementStartIndexNext = (i + 1 == textElementIndexes.Length) ? str.Length : textElementIndexes[i + 1];
-
-            var elementCharCount = elementStartIndexNext - elementStartIndex;
-            bool isBaseCharacter = elementCharCount == 1;
-            var charIndex = elementStartIndex;
-
-            if (isBaseCharacter)
+            if (textElement.IsBaseCharacter)
             {
-                char character = str[charIndex];
-                if (escaped)
+                if (textElement.IsEscapeSequence)
+                    continue;
+
+                if (textElement.IsTab)
                 {
-                    if (character == 'm')
+                    cellCount += tabSize - cellCount % tabSize;
+                    continue;
+                }
+            }
+
+            if (textElement.DisplayWidth <= 0)
+                continue;
+            cellCount += textElement.DisplayWidth;
+        }
+
+        return cellCount;
+    }
+
+    public class TextElementEnumerator
+    {
+        private readonly string _str;
+        private readonly int[] _elementIndexes;
+        private int _currentElementIndex = -1;
+        private int _currentElementCharCount;
+        private bool _isEscaped;
+
+        public bool IsBaseCharacter => _currentElementCharCount == 1;
+        public bool IsEscapeSequence { get; set; }
+        public bool IsTab { get; set; }
+        public int DisplayWidth { get; set; }
+        public char Character {get; set; } = '\0';
+        public string Element {get; set; } = "";
+        public int ElementStartCharIndex {get; set;}
+
+        public TextElementEnumerator(string str)
+        {
+            _str = str;
+            _elementIndexes = System.Globalization.StringInfo.ParseCombiningCharacters(str);
+        }
+
+        public bool MoveNext()
+        {
+            if (_currentElementIndex >= _elementIndexes.Length)
+                return false;
+
+            ++_currentElementIndex;
+
+            if (_currentElementIndex >= _elementIndexes.Length)
+                return false;
+
+            ElementStartCharIndex = _elementIndexes[_currentElementIndex];
+            var elementStartIndexNext = (_currentElementIndex + 1 == _elementIndexes.Length) ? _str.Length : _elementIndexes[_currentElementIndex + 1];
+            _currentElementCharCount = elementStartIndexNext - ElementStartCharIndex;
+
+            IsEscapeSequence = false;
+            IsTab = false;
+            DisplayWidth = 0;
+            Character = '\0';
+            Element = "";
+
+            if (IsBaseCharacter)
+            {
+                // basic 2 byte characters
+                Character = _str[ElementStartCharIndex];
+                if (_isEscaped)
+                {
+                    if (Character == 'm')
                     {
-                        escaped = false;
+                        _isEscaped = false;
                     }
+                    IsEscapeSequence = true;
                 }
                 else
-                if (character == '\x1b')
+                if (Character == '\x1b')
                 {
-                    escaped = true;
+                    _isEscaped = true;
+                    IsEscapeSequence = true;
                 }
                 else
-                if (character == '\t')
+                if (Character == '\t')
                 {
-                    count += tabSize - count % tabSize;
+                    IsTab = true;
                 }
                 else
                 {
-                    int displayWidth = Unicode.GetDisplayWidth(character);
-                    if (displayWidth <= 0)
-                        continue;
-                    count += displayWidth;
+                    DisplayWidth = Unicode.GetDisplayWidth(Character);
                 }
             }
             else
             {
-                int displayWidth = GetDisplayWidthOfComplexTextElement(str, elementStartIndex, elementCharCount);
-                if (displayWidth <= 0)
-                    continue;
-                count += displayWidth;
+                DisplayWidth = GetDisplayWidthOfComplexTextElement(_str, ElementStartCharIndex, _currentElementCharCount);
+                Element = _str.Substring(ElementStartCharIndex, _currentElementCharCount);
             }
+
+            return true;
+        }
+    }
+
+    public class WrappedText
+    {
+        private int _originalLineCount;
+        private int[] _originalLineIndexes;
+        public string[] Lines;
+
+        public WrappedText(string[] lines, int maxWidth)
+        {
+            _originalLineCount = lines.Length;
+
+            List<string> newLines = new(lines.Length);
+            List<int> originalLineIndexes = new(lines.Length);
+
+            for (int i = 0; i < lines.Length; ++i)
+            {
+                newLines.Add(lines[i]);
+                originalLineIndexes.Add(i);
+            }
+
+            Lines = newLines.ToArray();
+            _originalLineIndexes = originalLineIndexes.ToArray();
         }
 
-        return count;
+        // Returns the start line index after wrapping from the original (before wrapping) line index.
+        public int GetStartLineIndex(int originalLineIndex)
+        {
+            originalLineIndex = Math.Min(originalLineIndex, _originalLineCount - 1);
+            for (int i = 0; i < _originalLineIndexes.Length; ++i)
+            {
+                if (_originalLineIndexes[i] == originalLineIndex)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     private List<Line> _lines = new List<Line>();
