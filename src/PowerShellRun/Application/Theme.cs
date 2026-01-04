@@ -88,6 +88,7 @@ public class Theme
     public FontColor? EntryScrollBarBackgroundColor { get; set; } = null;
 
     public bool PreviewEnable { get; set; } = true;
+    public TextWrapMode PreviewTextWrapMode { get; set; } = TextWrapMode.None;
     public FontColor? PreviewForegroundColor { get; set; } = null;
     public FontColor? PreviewBackgroundColor { get; set; } = null;
     public FontStyle PreviewStyle { get; set; } = FontStyle.Default;
