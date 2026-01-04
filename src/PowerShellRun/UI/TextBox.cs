@@ -171,26 +171,23 @@ internal class TextBox : LayoutItem
                     if (cellIndex >= maxWidth)
                         break;
 
-                    int charIndex = textElement.ElementStartCharIndex;
-                    if (textElement.IsBaseCharacter)
+                    if (textElement.IsEscapeSequence)
                     {
-                        if (textElement.IsEscapeSequence)
-                        {
-                            AddEscapeSequence(textElement.Character);
-                            continue;
-                        }
+                        AddEscapeSequence(textElement.Character);
+                        continue;
+                    }
 
-                        if (textElement.IsTab)
+                    int charIndex = textElement.ElementStartCharIndex;
+                    if (textElement.IsTab)
+                    {
+                        int spaces = tabSize - cellIndex % tabSize;
+                        for (int s = 0; s < spaces; ++s)
                         {
-                            int spaces = tabSize - cellIndex % tabSize;
-                            for (int s = 0; s < spaces; ++s)
-                            {
-                                SetCell(word, charIndex, character: ' ');
-                                if (cellIndex >= maxWidth)
-                                    break;
-                            }
-                            continue;
+                            SetCell(word, charIndex, character: ' ');
+                            if (cellIndex >= maxWidth)
+                                break;
                         }
+                        continue;
                     }
 
                     if (textElement.DisplayWidth <= 0)
@@ -235,20 +232,15 @@ internal class TextBox : LayoutItem
         var textElement = new TextElementEnumerator(str);
         while (textElement.MoveNext())
         {
-            if (textElement.IsBaseCharacter)
+            if (textElement.IsTab)
             {
-                if (textElement.IsEscapeSequence)
-                    continue;
-
-                if (textElement.IsTab)
-                {
-                    cellCount += tabSize - cellCount % tabSize;
-                    continue;
-                }
+                cellCount += tabSize - cellCount % tabSize;
+                continue;
             }
 
             if (textElement.DisplayWidth <= 0)
                 continue;
+
             cellCount += textElement.DisplayWidth;
         }
 
@@ -260,16 +252,16 @@ internal class TextBox : LayoutItem
         private readonly string _str;
         private readonly int[] _elementIndexes;
         private int _currentElementIndex = -1;
-        private int _currentElementCharCount;
         private bool _isEscaped;
 
-        public bool IsBaseCharacter => _currentElementCharCount == 1;
+        public bool IsBaseCharacter => ElementCharCount == 1;
         public bool IsEscapeSequence { get; set; }
         public bool IsTab { get; set; }
         public int DisplayWidth { get; set; }
         public char Character {get; set; } = '\0';
         public string Element {get; set; } = "";
         public int ElementStartCharIndex {get; set;}
+        public int ElementCharCount {get; set;}
 
         public TextElementEnumerator(string str)
         {
@@ -289,7 +281,7 @@ internal class TextBox : LayoutItem
 
             ElementStartCharIndex = _elementIndexes[_currentElementIndex];
             var elementStartIndexNext = (_currentElementIndex + 1 == _elementIndexes.Length) ? _str.Length : _elementIndexes[_currentElementIndex + 1];
-            _currentElementCharCount = elementStartIndexNext - ElementStartCharIndex;
+            ElementCharCount = elementStartIndexNext - ElementStartCharIndex;
 
             IsEscapeSequence = false;
             IsTab = false;
@@ -327,8 +319,8 @@ internal class TextBox : LayoutItem
             }
             else
             {
-                DisplayWidth = GetDisplayWidthOfComplexTextElement(_str, ElementStartCharIndex, _currentElementCharCount);
-                Element = _str.Substring(ElementStartCharIndex, _currentElementCharCount);
+                DisplayWidth = GetDisplayWidthOfComplexTextElement(_str, ElementStartCharIndex, ElementCharCount);
+                Element = _str.Substring(ElementStartCharIndex, ElementCharCount);
             }
 
             return true;
@@ -379,10 +371,44 @@ internal class TextBox : LayoutItem
 
             List<string> newLines = new(lines.Length);
             List<int> originalLineIndexes = new(lines.Length);
+            int tabSize = SelectorOptionHolder.GetInstance().Option.Theme.TabSize;
 
             for (int i = 0; i < lines.Length; ++i)
             {
-                newLines.Add(lines[i]);
+                string line = lines[i];
+                int cellCount = 0;
+                var textElement = new TextElementEnumerator(line);
+
+                int copyStartCharIndex = 0;
+                int copyCharCount = 0;
+                while (textElement.MoveNext())
+                {
+                    int displayWidth = textElement.DisplayWidth;
+                    if (textElement.IsTab)
+                    {
+                        displayWidth = tabSize - cellCount % tabSize;
+                    }
+
+                    if (displayWidth <= 0)
+                        continue;
+
+                    cellCount += displayWidth;
+                    if (cellCount <= maxWidth || copyCharCount == 0)
+                    {
+                        copyCharCount += textElement.ElementCharCount;
+                    }
+                    else
+                    {
+                        newLines.Add(line.Substring(copyStartCharIndex, copyCharCount));
+                        originalLineIndexes.Add(i);
+
+                        copyStartCharIndex = copyStartCharIndex + copyCharCount;
+                        copyCharCount = 0;
+                        cellCount = 0;
+                    }
+                }
+
+                newLines.Add(line.Substring(copyStartCharIndex, copyCharCount));
                 originalLineIndexes.Add(i);
             }
 
