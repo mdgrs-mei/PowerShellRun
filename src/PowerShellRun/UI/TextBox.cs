@@ -383,17 +383,13 @@ internal class TextBox : LayoutItem
                 int copyCharCount = 0;
                 while (textElement.MoveNext())
                 {
-                    int displayWidth = textElement.DisplayWidth;
+                    int displayWidth = Math.Max(textElement.DisplayWidth, 0);
                     if (textElement.IsTab)
                     {
                         displayWidth = tabSize - cellCount % tabSize;
                     }
 
-                    if (displayWidth <= 0)
-                        continue;
-
-                    cellCount += displayWidth;
-                    if (cellCount <= maxWidth || copyCharCount == 0)
+                    if (cellCount + displayWidth <= maxWidth || copyCharCount == 0)
                     {
                         copyCharCount += textElement.ElementCharCount;
                     }
@@ -403,9 +399,10 @@ internal class TextBox : LayoutItem
                         originalLineIndexes.Add(i);
 
                         copyStartCharIndex = copyStartCharIndex + copyCharCount;
-                        copyCharCount = 0;
+                        copyCharCount = textElement.ElementCharCount;
                         cellCount = 0;
                     }
+                    cellCount += displayWidth;
                 }
 
                 newLines.Add(line.Substring(copyStartCharIndex, copyCharCount));
