@@ -31,7 +31,7 @@ internal class InternalEntry
     public BackgroundRunspace.Task? PreviewTask { get; set; } = null;
     private int _previewTaskExecutionCount = 0;
     private string[]? _previewLines = null;
-    private readonly object? _previewLinesLock = null;
+    private readonly object? _previewTaskLock = null;
     private bool _previewLinesUpdatedByTask = false;
 
     public InternalEntry(SelectorEntry selectorEntry)
@@ -71,7 +71,7 @@ internal class InternalEntry
 
         if (selectorEntry.PreviewAsyncScript is not null)
         {
-            _previewLinesLock = new object();
+            _previewTaskLock = new object();
         }
     }
 
@@ -89,10 +89,10 @@ internal class InternalEntry
 
     public void CompletePreviewTask(System.Collections.ObjectModel.Collection<PSObject> taskResult)
     {
-        if (_previewLinesLock is null)
+        if (_previewTaskLock is null)
             return;
 
-        lock (_previewLinesLock)
+        lock (_previewTaskLock)
         {
             if (taskResult.Count > 0 && taskResult[0] is not null)
             {
@@ -106,10 +106,10 @@ internal class InternalEntry
 
     public string[]? GetPreviewLines()
     {
-        if (_previewLinesLock is null)
+        if (_previewTaskLock is null)
             return _previewLines;
 
-        lock (_previewLinesLock)
+        lock (_previewTaskLock)
         {
             return _previewLines;
         }
@@ -118,10 +118,10 @@ internal class InternalEntry
     public void UpdatePreviewTask()
     {
         IsUpdated = false;
-        if (_previewLinesLock is null)
+        if (_previewTaskLock is null)
             return;
 
-        lock (_previewLinesLock)
+        lock (_previewTaskLock)
         {
             if (PreviewTask is null && _previewTaskExecutionCount == 0)
             {
