@@ -227,38 +227,6 @@ internal class TextBox : LayoutItem
         }
     }
 
-    public static int GetDisplayWidthOfComplexTextElement(string str, int elementCharOffset, int elementCharCount)
-    {
-        Debug.Assert(elementCharCount > 1);
-
-        int displayWidth = 0;
-        if (elementCharCount == 2)
-        {
-            if (Char.IsHighSurrogate(str[elementCharOffset]))
-            {
-                // surrogate pairs
-                int codePoint = Char.ConvertToUtf32(str[elementCharOffset], str[elementCharOffset + 1]);
-                displayWidth = Unicode.GetDisplayWidth(codePoint);
-            }
-            else
-            {
-                // combining characters
-                displayWidth =
-                    Unicode.GetDisplayWidth(str[elementCharOffset]) +
-                    Unicode.GetDisplayWidth(str[elementCharOffset + 1]);
-                displayWidth = Math.Min(displayWidth, 2);
-            }
-        }
-        else
-        {
-            // combining character sequences
-            // It's highly likely a wide character (might not be perfect).
-            displayWidth = 2;
-        }
-
-        return displayWidth;
-    }
-
     public static int GetDisplayWidth(string str)
     {
         int tabSize = SelectorOptionHolder.GetInstance().Option.Theme.TabSize;
@@ -365,6 +333,38 @@ internal class TextBox : LayoutItem
 
             return true;
         }
+    }
+
+    private static int GetDisplayWidthOfComplexTextElement(string str, int elementCharOffset, int elementCharCount)
+    {
+        Debug.Assert(elementCharCount > 1);
+
+        int displayWidth = 0;
+        if (elementCharCount == 2)
+        {
+            if (Char.IsHighSurrogate(str[elementCharOffset]))
+            {
+                // surrogate pairs
+                int codePoint = Char.ConvertToUtf32(str[elementCharOffset], str[elementCharOffset + 1]);
+                displayWidth = Unicode.GetDisplayWidth(codePoint);
+            }
+            else
+            {
+                // combining characters
+                displayWidth =
+                    Unicode.GetDisplayWidth(str[elementCharOffset]) +
+                    Unicode.GetDisplayWidth(str[elementCharOffset + 1]);
+                displayWidth = Math.Min(displayWidth, 2);
+            }
+        }
+        else
+        {
+            // combining character sequences
+            // It's highly likely a wide character (might not be perfect).
+            displayWidth = 2;
+        }
+
+        return displayWidth;
     }
 
     public class WrappedText
