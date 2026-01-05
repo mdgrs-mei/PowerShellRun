@@ -33,8 +33,8 @@ internal class InternalEntry
     private string[]? _previewLines = null;
     private readonly object? _previewTaskLock = null;
     private bool _previewLinesUpdatedByTask = false;
-    private TextBox.WrappedText? _wrappedPreviewLinesCache = null;
-    private int _wrappedPreviewLinesCacheWidth = 0;
+    private TextBox.WrappedText? _previewWrappedTextCache = null;
+    private int _previewWrappedTextCacheWidth = 0;
 
     public InternalEntry(SelectorEntry selectorEntry)
     {
@@ -117,21 +117,21 @@ internal class InternalEntry
         }
     }
 
-    public TextBox.WrappedText? GetWrappedPreviewLines(int maxWidth)
+    public TextBox.WrappedText? GetPreviewWrappedText(int maxWidth)
     {
         var previewLines = GetPreviewLines();
         if (previewLines == null)
             return null;
 
-        if (_wrappedPreviewLinesCache is not null && _wrappedPreviewLinesCacheWidth == maxWidth)
+        if (_previewWrappedTextCache is not null && _previewWrappedTextCacheWidth == maxWidth)
         {
-            return _wrappedPreviewLinesCache;
+            return _previewWrappedTextCache;
         }
 
-        _wrappedPreviewLinesCache = new TextBox.WrappedText(previewLines, maxWidth);
-        _wrappedPreviewLinesCacheWidth = maxWidth;
+        _previewWrappedTextCache = new TextBox.WrappedText(previewLines, maxWidth);
+        _previewWrappedTextCacheWidth = maxWidth;
 
-        return _wrappedPreviewLinesCache;
+        return _previewWrappedTextCache;
     }
 
     public void UpdatePreviewTask()

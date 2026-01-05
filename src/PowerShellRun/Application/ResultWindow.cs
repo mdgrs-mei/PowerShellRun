@@ -545,7 +545,7 @@ internal class ResultWindow
                     int previewInitialVerticalScroll = 0;
                     if (theme.PreviewTextWrapMode != TextWrapMode.None)
                     {
-                        var wrappedPreview = internalEntry.GetWrappedPreviewLines(_previewBox.GetInnerLayout().Width);
+                        var wrappedPreview = internalEntry.GetPreviewWrappedText(_previewBox.GetInnerLayout().Width);
                         if (wrappedPreview is not null)
                         {
                             previewLines = wrappedPreview.Lines;
