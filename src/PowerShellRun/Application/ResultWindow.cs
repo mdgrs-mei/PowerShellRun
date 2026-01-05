@@ -541,13 +541,28 @@ internal class ResultWindow
             {
                 if (theme.PreviewEnable)
                 {
-                    var previewLines = internalEntry.GetPreviewLines();
+                    string[]? previewLines = null;
+                    int previewInitialVerticalScroll = 0;
+                    if (theme.PreviewTextWrapMode != TextWrapMode.None)
+                    {
+                        var wrappedPreview = internalEntry.GetPreviewWrappedText(_previewBox.GetInnerLayout().Width);
+                        if (wrappedPreview is not null)
+                        {
+                            previewLines = wrappedPreview.Lines;
+                            previewInitialVerticalScroll = wrappedPreview.GetStartLineIndex(selectorEntry.PreviewInitialVerticalScroll);
+                        }
+                    }
+                    else
+                    {
+                        previewLines = internalEntry.GetPreviewLines();
+                        previewInitialVerticalScroll = selectorEntry.PreviewInitialVerticalScroll;
+                    }
                     int previewLineCount = (previewLines is not null) ? previewLines.Length : 0;
 
                     if (IsFocusedEntryUpdated() || _isFocusedEntryContentUpdated)
                     {
                         _previewBox.ClearAndSetVerticalScroll(
-                            selectorEntry.PreviewInitialVerticalScroll,
+                            previewInitialVerticalScroll,
                             previewLineCount);
                     }
                     else
