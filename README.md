@@ -171,14 +171,14 @@ Add-PSRunFavoriteFile -Path 'D:/PowerShellRun/README.md' -Icon '📖' -Preview @
 The ability to call PowerShell ScriptBlocks or script files is what makes *PowerShellRun* special.`Add-PSRunScriptBlock` adds a ScriptBlock and `Add-PSRunScriptFile` adds a `.ps1` file as an entry. They are invoked by pressing `Enter`.
 
 ```powershell
-Add-PSRunScriptBlock -Name 'Test ScriptBlock' -ScriptBlock {
-    'This is a test ScriptBlock'
+Add-PSRunScriptBlock -Name 'GitPullRebase' -ScriptBlock {
+    git pull --rebase
 }
 
 Add-PSRunScriptFile -Path 'D:\PowerShellRun\tests\TestScriptFile.ps1' -Icon '💎'
 ```
 
-![image](https://github.com/mdgrs-mei/PowerShellRun/assets/81177095/1fbeb3ee-1bf9-45f2-8729-8ebaa9d18e88)
+![ScriptBlock](https://github.com/user-attachments/assets/172b4222-c9b8-4917-8d9b-2670914acdfe)
 
 ### ・Function
 
