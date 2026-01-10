@@ -17,6 +17,20 @@
         }
     }
 
+    It 'should accept a pipeline input' {
+        $script = {
+            param($path)
+            & notepad.exe $path
+        }
+
+        $script | Set-PSRunDefaultEditorScript
+
+        InModuleScope 'PowerShellRun' -ArgumentList $script {
+            param($script)
+            $script:globalStore.defaultEditorScript | Should -Be $script
+        }
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }

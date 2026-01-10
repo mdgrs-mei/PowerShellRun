@@ -12,7 +12,7 @@ Use this command to see what properties are available:
 [PowerShellRun.SelectorOption]::new() | Get-Member -MemberType Properties
 
 .INPUTS
-None.
+The Option parameter.
 
 .OUTPUTS
 None.
@@ -26,7 +26,7 @@ function Set-PSRunDefaultSelectorOption {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [PowerShellRun.SelectorOption]$Option
     )
 
