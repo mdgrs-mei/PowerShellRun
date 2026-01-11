@@ -15,7 +15,7 @@ The following script is used by default:
 }
 
 .INPUTS
-None.
+The ScriptBlock parameter.
 
 .OUTPUTS
 None.
@@ -30,7 +30,7 @@ function Set-PSRunDefaultEditorScript {
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ScriptBlock]$ScriptBlock
     )
 

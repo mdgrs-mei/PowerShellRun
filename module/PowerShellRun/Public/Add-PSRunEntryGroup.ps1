@@ -28,7 +28,7 @@ The parent entry group object where this new entry group is added.
 Returns the added entry group if specified.
 
 .INPUTS
-None.
+The Name parameter.
 
 .OUTPUTS
 An object that represents an entry group if PassThru is specified. None otherwise.
@@ -46,7 +46,7 @@ function Add-PSRunEntryGroup {
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Icon,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [String]$Name,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]

@@ -31,11 +31,15 @@ function Invoke-PSRunPrompt {
     [CmdletBinding()]
     [OutputType([PowerShellRun.PromptResult])]
     param (
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [PowerShellRun.SelectorOption]$Option = $script:globalStore.defaultSelectorOption,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [PowerShellRun.PromptContext]$Context
     )
 
-    $result = [PowerShellRun.Prompt]::Open($Option, $Context)
-    $result
+    process {
+        $result = [PowerShellRun.Prompt]::Open($Option, $Context)
+        $result
+    }
 }

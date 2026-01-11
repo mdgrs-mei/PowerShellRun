@@ -25,7 +25,7 @@ The custom preview string.
 The parent entry group object where this new entry is added.
 
 .INPUTS
-None.
+The FunctionName parameter.
 
 .OUTPUTS
 None.
@@ -41,7 +41,7 @@ Add-PSRunFunction -FunctionName TestFunction -Icon '🍏' -Name 'Test Function' 
 function Add-PSRunFunction {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [String]$FunctionName,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]

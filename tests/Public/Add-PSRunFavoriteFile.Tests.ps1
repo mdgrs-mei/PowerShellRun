@@ -29,6 +29,15 @@
         }
     }
 
+    It 'should accept a pipeline input' {
+        Enable-PSRunEntry -Category Favorite
+        'C:/folder/test.txt' | Add-PSRunFavoriteFile
+        InModuleScope 'PowerShellRun' {
+            $registry = $script:globalStore.GetRegistry('FileSystemRegistry')
+            $registry.favoritesEntries.Count | Should -Be 1
+        }
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }
