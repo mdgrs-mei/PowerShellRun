@@ -10,7 +10,7 @@ By default, all categories are enabled.
 Specifies a category or an array of categories to enable.
 
 .INPUTS
-None.
+The Category parameter.
 
 .OUTPUTS
 None.
@@ -24,17 +24,36 @@ Enable-PSRunEntry -Category Application, Function, Utility
 function Enable-PSRunEntry {
     [CmdletBinding()]
     param (
+        [Parameter(ValueFromPipeline = $true)]
         [ValidateSet('All', 'Application', 'Executable', 'Function', 'Utility', 'Favorite', 'Script', 'EntryGroup')]
         [String[]]$Category = 'All'
     )
 
-    if ($script:globalStore.IsEntriesInitialized()) {
-        Write-Error -Message 'Entries already initialized. This function must be called only once.' -Category InvalidOperation
-        return
-    }
+    begin {
+        if ($script:globalStore.IsEntriesInitialized()) {
+            Write-Error -Message 'Entries already initialized. This function must be called only once.' -Category InvalidOperation
+            return
+        }
 
-    if ($Category -contains 'All') {
-        $Category = $script:globalStore.allCategoryNames
+        $categories = [System.Collections.Generic.List[String]]::new()
     }
-    $script:globalStore.InitializeEntries($Category)
+    process {
+        if ($script:globalStore.IsEntriesInitialized()) {
+            return
+        }
+
+        foreach ($c in $Category) {
+            $categories.Add($c)
+        }
+    }
+    end {
+        if ($script:globalStore.IsEntriesInitialized()) {
+            return
+        }
+
+        if ($categories -contains 'All') {
+            $categories = $script:globalStore.allCategoryNames
+        }
+        $script:globalStore.InitializeEntries($categories)
+    }
 }
