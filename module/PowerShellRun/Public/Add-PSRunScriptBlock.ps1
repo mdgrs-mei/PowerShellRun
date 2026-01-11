@@ -27,7 +27,7 @@ The custom preview string. The definition of the ScriptBlock is used by default.
 The parent entry group object where this new entry is added.
 
 .INPUTS
-None.
+The ScriptBlock parameter.
 
 .OUTPUTS
 None.
@@ -43,7 +43,7 @@ Add-PSRunScriptBlock -Icon '🥏' -Name 'GitPullRebase' -Description 'git pull w
 function Add-PSRunScriptBlock {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ScriptBlock]$ScriptBlock,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]

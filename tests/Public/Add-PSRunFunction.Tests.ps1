@@ -40,6 +40,17 @@
         $function:Test = $null
     }
 
+    It 'should accept a pipeline input' {
+        Enable-PSRunEntry -Category Function
+        function global:Test {}
+        'Test' | Add-PSRunFunction
+        InModuleScope 'PowerShellRun' {
+            $registry = $script:globalStore.GetRegistry('FunctionRegistry')
+            $registry.entries.Count | Should -Be 1
+        }
+        $function:Test = $null
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }

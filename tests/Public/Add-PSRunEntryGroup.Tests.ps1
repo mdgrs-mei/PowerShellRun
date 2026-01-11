@@ -48,6 +48,15 @@
         $group | Should -Not -BeNullOrEmpty
     }
 
+    It 'should accept a pipeline input' {
+        Enable-PSRunEntry -Category EntryGroup
+        'Custom Name' | Add-PSRunEntryGroup
+        InModuleScope 'PowerShellRun' {
+            $registry = $script:globalStore.GetRegistry('EntryGroupRegistry')
+            $registry.entries.Count | Should -Be 1
+        }
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }

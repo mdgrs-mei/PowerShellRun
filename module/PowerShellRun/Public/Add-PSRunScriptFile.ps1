@@ -27,7 +27,7 @@ The custom preview string. The content of the script file is used by default.
 The parent entry group object where this new entry is added.
 
 .INPUTS
-None.
+The Path parameter.
 
 .OUTPUTS
 None.
@@ -41,7 +41,7 @@ Add-PSRunScriptFile -Path 'D:\PowerShellRun\Build.ps1' -Icon '🧪' -Name 'Build
 function Add-PSRunScriptFile {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [String]$Path,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]

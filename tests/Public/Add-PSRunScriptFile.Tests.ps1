@@ -29,6 +29,15 @@
         }
     }
 
+    It 'should accept a pipeline input' {
+        Enable-PSRunEntry -Category Script
+        'D:/test.ps1' | Add-PSRunScriptFile
+        InModuleScope 'PowerShellRun' {
+            $registry = $script:globalStore.GetRegistry('ScriptRegistry')
+            $registry.entries.Count | Should -Be 1
+        }
+    }
+
     AfterEach {
         Remove-Module PowerShellRun -Force
     }

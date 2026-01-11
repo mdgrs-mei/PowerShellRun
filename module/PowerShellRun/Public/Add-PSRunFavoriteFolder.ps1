@@ -24,7 +24,7 @@ The custom preview string.
 The parent entry group object where this new entry is added.
 
 .INPUTS
-None.
+The Path parameter.
 
 .OUTPUTS
 None.
@@ -38,7 +38,7 @@ Add-PSRunFavoriteFolder -Path 'D:/Download' -Icon '🌐'
 function Add-PSRunFavoriteFolder {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [String]$Path,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
