@@ -335,6 +335,16 @@ class GlobalStore {
             return @{}
         }
 
+        $initialPromptContexts = @()
+        for ($i = 0; $i -lt $astParameters.Count; ++$i) {
+            $astParameter = $astParameters[$i]
+            $promptContext = [PowerShellRun.PromptContext]::new()
+            if ($astParameter.DefaultValue.Value -is [String]) {
+                $promptContext.Input = $astParameter.DefaultValue.Value
+            }
+            $initialPromptContexts += $promptContext
+        }
+
         $option = $this.GetPSRunSelectorOption()
         $option.QuitWithBackspaceOnEmptyQuery = $true
 
@@ -344,6 +354,9 @@ class GlobalStore {
             $parameterName = $astParameters[$i].Name.VariablePath.UserPath.Replace('$', '')
             $option.Prompt = $parameterName
             $promptContext = $promptContexts[$parameterName]
+            if ($null -eq $promptContext) {
+                $promptContext = $initialPromptContexts[$i]
+            }
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
             if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {
