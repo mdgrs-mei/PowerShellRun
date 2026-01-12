@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.16.0] - 2026-01-12
+
+### Added
+
+- Added `ValueFromPipeline` attribute to `Set-PSRunDefaultEditorScript` and `Set-PSRunDefaultSelectorOption`
+- Added `ValueFromPipeline` attribute to `Enable-PSRunEntry`
+- Added `ValueFromPipeline` attribute to all `Add-PSRun*` functions
+- Added `ValueFromPipelineByPropertyName` attribute to `Invoke-PSRun` and `Invoke-PSRunPrompt`
+- Added `ArgumentList` parameter to `Add-PSRunFunction`
+- Added default parameter display in the prompt for the `Invoke with arguments` action
+
+### Fixed
+
+- Fixed a bug that always passes `$null` to the first parameter of a ScriptBlock or a script file when `ArgumentList` is empty
+
 ## [0.15.0] - 2026-01-05
 
 ### Added
