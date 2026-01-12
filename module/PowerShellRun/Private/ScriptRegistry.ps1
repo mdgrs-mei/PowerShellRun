@@ -37,7 +37,11 @@ class ScriptRegistry : EntryRegistry {
             $scriptBlock, $argumentList = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $scriptBlock @argumentList
+                if ($null -eq $argumentList) {
+                    & $scriptBlock
+                } else {
+                    & $scriptBlock @argumentList
+                }
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $scriptBlock.ToString()
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
@@ -63,7 +67,11 @@ class ScriptRegistry : EntryRegistry {
             $filePath, $argumentList = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $filePath @argumentList
+                if ($null -eq $argumentList) {
+                    & $filePath
+                } else {
+                    & $filePath @argumentList
+                }
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 & $script:globalStore.defaultEditorScript $filePath
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
