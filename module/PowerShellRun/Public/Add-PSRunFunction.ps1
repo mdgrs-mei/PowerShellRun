@@ -9,6 +9,9 @@ The function must be global and defined before calling this function.
 .PARAMETER FunctionName
 The function name you would like to add as an entry.
 
+.PARAMETER ArgumentList
+The arguments that are passed to the function.
+
 .PARAMETER Icon
 The icon string.
 
@@ -45,6 +48,9 @@ function Add-PSRunFunction {
         [String]$FunctionName,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Object[]]$ArgumentList,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Icon,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
@@ -62,6 +68,6 @@ function Add-PSRunFunction {
 
     process {
         $registry = $script:globalStore.GetRegistry('FunctionRegistry')
-        $registry.AddFunction($FunctionName, $Icon, $Name, $Description, $Preview, $EntryGroup)
+        $registry.AddFunction($FunctionName, $ArgumentList, $Icon, $Name, $Description, $Preview, $EntryGroup)
     }
 }

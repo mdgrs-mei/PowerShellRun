@@ -330,9 +330,21 @@ class GlobalStore {
         }
     }
 
-    [Object] GetParameterList($astParameters) {
+    [Object] GetParameterList($astParameters, $argumentList) {
         if (-not $astParameters) {
             return @{}
+        }
+
+        $initialPromptContexts = @()
+        for ($i = 0; $i -lt $astParameters.Count; ++$i) {
+            $astParameter = $astParameters[$i]
+            $promptContext = [PowerShellRun.PromptContext]::new()
+            if (($null -ne $argumentList) -and ($null -ne $argumentList[$i].ToString)) {
+                $promptContext.Input = $argumentList[$i].ToString()
+            } elseif ($null -ne $astParameter.DefaultValue.Value.ToString) {
+                $promptContext.Input = $astParameter.DefaultValue.Value.ToString()
+            }
+            $initialPromptContexts += $promptContext
         }
 
         $option = $this.GetPSRunSelectorOption()
@@ -344,6 +356,9 @@ class GlobalStore {
             $parameterName = $astParameters[$i].Name.VariablePath.UserPath.Replace('$', '')
             $option.Prompt = $parameterName
             $promptContext = $promptContexts[$parameterName]
+            if ($null -eq $promptContext) {
+                $promptContext = $initialPromptContexts[$i]
+            }
             $promptResult = Invoke-PSRunPrompt -Option $option -Context $promptContext
 
             if ([PowerShellRun.ExitStatus]::Type -eq [PowerShellRun.ExitType]::QuitWithBackspaceOnEmptyQuery) {

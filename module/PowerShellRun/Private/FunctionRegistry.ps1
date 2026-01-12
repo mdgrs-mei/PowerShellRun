@@ -31,10 +31,14 @@ class FunctionRegistry : EntryRegistry {
 
         $this.callback = {
             $result = $args[0].Result
-            $functionName = $args[0].ArgumentList
+            $functionName, $argumentList = $args[0].ArgumentList
 
             if ($result.KeyCombination -eq $script:globalStore.firstActionKey) {
-                & $functionName
+                if ($null -eq $argumentList) {
+                    & $functionName
+                } else {
+                    & $functionName @argumentList
+                }
             } elseif ($result.KeyCombination -eq $script:globalStore.secondActionKey) {
                 $function = Get-Command $functionName
                 $function.Definition
@@ -46,7 +50,7 @@ class FunctionRegistry : EntryRegistry {
                     $function.ScriptBlock.Ast.Body.ParamBlock.Parameters
                 }
 
-                $parameters = $script:globalStore.GetParameterList($astParameters)
+                $parameters = $script:globalStore.GetParameterList($astParameters, $argumentList)
                 if ($null -ne $parameters) {
                     & $functionName @parameters
                 }
@@ -87,7 +91,7 @@ class FunctionRegistry : EntryRegistry {
             if ($functionAtStart -eq $function.ScriptBlock) {
                 continue
             }
-            $entry = $this.CreateFunctionEntry($function)
+            $entry = $this.CreateFunctionEntry($function, $null)
             $this.entries.Add($entry)
             $this.isEntryUpdated = $true
         }
@@ -95,7 +99,7 @@ class FunctionRegistry : EntryRegistry {
         $this.functionsAtRegisterStart = $null
     }
 
-    [void] AddFunction($functionName, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
+    [void] AddFunction($functionName, $argumentList, $icon, $name, $description, $preview, [EntryGroup]$entryGroup) {
         if (-not $this.isEnabled) {
             Write-Warning -Message '"Function" category is disabled.'
             return
@@ -107,7 +111,7 @@ class FunctionRegistry : EntryRegistry {
             return
         }
 
-        $entry = $this.CreateFunctionEntry($function)
+        $entry = $this.CreateFunctionEntry($function, $argumentList)
         if ($icon) { $entry.Icon = $icon }
         if ($name) { $entry.Name = $name }
         if ($description) { $entry.Description = $description }
@@ -121,7 +125,7 @@ class FunctionRegistry : EntryRegistry {
         }
     }
 
-    [PowerShellRun.SelectorEntry] CreateFunctionEntry($function) {
+    [PowerShellRun.SelectorEntry] CreateFunctionEntry($function, $argumentList) {
         $help = Get-Help $function.Name
         $customAttributes = $this.GetFunctionCustomAttributes($help)
 
@@ -142,7 +146,7 @@ class FunctionRegistry : EntryRegistry {
 
         $entry.UserData = @{
             ScriptBlock = $this.callback
-            ArgumentList = $function.Name
+            ArgumentList = $function.Name, $argumentList
         }
         return $entry
     }
