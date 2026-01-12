@@ -50,7 +50,7 @@ class FunctionRegistry : EntryRegistry {
                     $function.ScriptBlock.Ast.Body.ParamBlock.Parameters
                 }
 
-                $parameters = $script:globalStore.GetParameterList($astParameters)
+                $parameters = $script:globalStore.GetParameterList($astParameters, $argumentList)
                 if ($null -ne $parameters) {
                     & $functionName @parameters
                 }

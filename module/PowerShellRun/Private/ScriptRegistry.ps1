@@ -46,7 +46,7 @@ class ScriptRegistry : EntryRegistry {
                 $scriptBlock.ToString()
             } elseif ($result.KeyCombination -eq $script:globalStore.thirdActionKey) {
                 $astParameters = $scriptBlock.Ast.ParamBlock.Parameters
-                $parameters = $script:globalStore.GetParameterList($astParameters)
+                $parameters = $script:globalStore.GetParameterList($astParameters, $argumentList)
                 if ($null -ne $parameters) {
                     & $scriptBlock @parameters
                 }

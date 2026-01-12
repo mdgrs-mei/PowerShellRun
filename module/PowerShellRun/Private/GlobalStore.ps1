@@ -330,7 +330,7 @@ class GlobalStore {
         }
     }
 
-    [Object] GetParameterList($astParameters) {
+    [Object] GetParameterList($astParameters, $argumentList) {
         if (-not $astParameters) {
             return @{}
         }
@@ -339,8 +339,10 @@ class GlobalStore {
         for ($i = 0; $i -lt $astParameters.Count; ++$i) {
             $astParameter = $astParameters[$i]
             $promptContext = [PowerShellRun.PromptContext]::new()
-            if ($astParameter.DefaultValue.Value -is [String]) {
-                $promptContext.Input = $astParameter.DefaultValue.Value
+            if (($null -ne $argumentList) -and ($null -ne $argumentList[$i].ToString)) {
+                $promptContext.Input = $argumentList[$i].ToString()
+            } elseif ($null -ne $astParameter.DefaultValue.Value.ToString) {
+                $promptContext.Input = $astParameter.DefaultValue.Value.ToString()
             }
             $initialPromptContexts += $promptContext
         }
